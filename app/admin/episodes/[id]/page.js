@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
-import { Typography, Box, Button, CircularProgress } from "@mui/material";
-import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
+import { Typography, Box, Button, CircularProgress, Stack } from "@mui/material";
+import { ArrowBack as ArrowBackIcon, Videocam as VideocamIcon } from "@mui/icons-material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import EpisodeForm from "@/components/EpisodeForm";
@@ -52,25 +52,41 @@ export default function EditEpisodePage({ params }) {
 
   return (
     <Box>
-      <Link href="/admin/episodes" style={{ textDecoration: "none" }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Link href="/admin/episodes" style={{ textDecoration: "none" }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            sx={{
+              color: "text.secondary",
+              "&:hover": {
+                backgroundColor: "action.hover",
+              },
+            }}
+          >
+            Back to Episodes
+          </Button>
+        </Link>
+
         <Button
-          startIcon={<ArrowBackIcon />}
-          sx={{ 
-            mb: 3,
-            color: "text.secondary",
+          variant="contained"
+          startIcon={<VideocamIcon />}
+          onClick={() => router.push(`/admin/teleprompter/${resolvedParams.id}`)}
+          sx={{
+            fontWeight: 600,
+            background: "linear-gradient(135deg, #10A84F 0%, #0D8A3F 100%)",
             "&:hover": {
-              backgroundColor: "action.hover",
+              background: "linear-gradient(135deg, #0D8A3F 0%, #0A6D32 100%)",
             },
           }}
         >
-          Back to Episodes
+          Teleprompter Mode
         </Button>
-      </Link>
+      </Stack>
 
       <Box sx={{ mb: 4 }}>
-        <Typography 
-          variant="h3" 
-          sx={{ 
+        <Typography
+          variant="h3"
+          sx={{
             fontWeight: 700,
             mb: 1,
             fontSize: { xs: "2rem", md: "2.75rem" },
