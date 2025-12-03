@@ -43,230 +43,217 @@ export default async function EpisodeDetailPage({ params }) {
   }
 
   return (
-    <Box>
-      {/* Header */}
-      <Box 
-        sx={{ 
+    <Box sx={{ maxWidth: "1000px", mx: "auto" }}>
+      {/* Header with Video */}
+      <Box
+        sx={{
           mb: 5,
-          p: { xs: 3, md: 4 },
           borderRadius: 3,
-          background: "linear-gradient(135deg, rgba(0, 104, 74, 0.05) 0%, rgba(0, 104, 74, 0.02) 100%)",
-          border: "1px solid",
-          borderColor: "divider",
+          overflow: "hidden",
+          backgroundColor: "#FFFFFF",
+          border: "1px solid #E2E8F0",
+          boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.08)",
         }}
       >
-        <Stack direction="row" spacing={1} sx={{ mb: 3, flexWrap: "wrap", gap: 1 }}>
-          {episode.episodeNumber && (
-            <Chip 
-              label={`Episode #${episode.episodeNumber}`} 
-              color="primary"
-              sx={{ fontWeight: 600 }}
-            />
-          )}
-          <Chip 
-            label={episode.category} 
-            sx={{ fontWeight: 500 }}
-          />
-          <Chip 
-            label={episode.difficulty} 
-            variant="outlined"
-            sx={{ fontWeight: 500 }}
-          />
-        </Stack>
-
-        <Typography 
-          variant="h2" 
-          sx={{ 
-            fontWeight: 700,
-            mb: 3,
-            fontSize: { xs: "1.75rem", md: "2.5rem" },
-            lineHeight: 1.2,
-          }}
-        >
-          {episode.title}
-        </Typography>
-
-        {/* Video Link */}
+        {/* Video Embed Area */}
         {episode.videoUrl && (
-          <Button
-            href={episode.videoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="contained"
-            size="large"
-            startIcon={<YouTubeIcon />}
-            sx={{ 
-              fontWeight: 600,
-              px: 4,
-              py: 1.5,
+          <Box
+            sx={{
+              position: "relative",
+              paddingBottom: "56.25%", // 16:9 aspect ratio
+              height: 0,
+              backgroundColor: "#000",
             }}
           >
-            Watch Video
-          </Button>
+            <iframe
+              src={episode.videoUrl.replace('watch?v=', 'embed/')}
+              title={episode.title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+              }}
+            />
+          </Box>
         )}
-      </Box>
 
-      {/* Script Content */}
-      <Paper 
-        sx={{ 
-          p: { xs: 3, md: 5 }, 
-          mb: 4,
-          borderRadius: 3,
-        }}
-      >
-        <Box sx={{ mb: 4 }}>
-          <Typography 
-            variant="overline" 
-            sx={{ 
-              fontSize: "0.875rem",
+        {/* Episode Info */}
+        <Box sx={{ p: { xs: 3, md: 4 } }}>
+          <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: "wrap", gap: 1 }}>
+            {episode.episodeNumber && (
+              <Chip
+                label={`Episode #${episode.episodeNumber}`}
+                size="small"
+                sx={{
+                  backgroundColor: "#EDF2F7",
+                  color: "#001E2B",
+                  fontWeight: 500,
+                  fontSize: "0.75rem",
+                }}
+              />
+            )}
+            <Chip
+              label={episode.category}
+              size="small"
+              sx={{
+                backgroundColor: "#EDF2F7",
+                color: "#001E2B",
+                fontWeight: 500,
+                fontSize: "0.75rem",
+              }}
+            />
+            <Chip
+              label={episode.difficulty}
+              size="small"
+              sx={{
+                backgroundColor: "#EDF2F7",
+                color: "#001E2B",
+                fontWeight: 500,
+                fontSize: "0.75rem",
+              }}
+            />
+          </Stack>
+
+          <Typography
+            variant="h1"
+            sx={{
               fontWeight: 600,
-              letterSpacing: "0.1em",
-              color: "primary.main",
+              fontSize: { xs: "1.75rem", md: "2.25rem" },
+              lineHeight: 1.3,
+              color: "#001E2B",
+              mb: 2,
             }}
           >
-            60-Second Script
+            {episode.title}
+          </Typography>
+
+          <Typography
+            variant="body1"
+            sx={{
+              fontSize: "1.125rem",
+              lineHeight: 1.7,
+              color: "#5F6C76",
+            }}
+          >
+            {episode.hook}
           </Typography>
         </Box>
+      </Box>
 
-        <Box>
-          {/* Hook */}
-          <Box 
-            sx={{ 
-              mb: 4,
-              p: 3,
-              borderRadius: 2,
-              backgroundColor: "primary.main",
-              color: "white",
-            }}
-          >
-            <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
-              <Chip 
-                label="0-5s" 
-                size="small" 
-                sx={{ 
-                  backgroundColor: "rgba(255,255,255,0.2)",
-                  color: "white",
-                  fontWeight: 600,
-                }} 
-              />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: "white" }}>
-                Hook
-              </Typography>
-            </Stack>
-            <Typography variant="body1" sx={{ fontSize: "1.1rem", lineHeight: 1.7, color: "white" }}>
-              {episode.hook}
+      {/* What You'll Learn */}
+      <Paper
+        sx={{
+          p: { xs: 3, md: 4 },
+          mb: 4,
+          borderRadius: 3,
+          backgroundColor: "#FFFFFF",
+          border: "1px solid #E2E8F0",
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: 600,
+            mb: 3,
+            color: "#001E2B",
+          }}
+        >
+          What You'll Learn
+        </Typography>
+
+        {/* The Problem */}
+        {episode.problem && (
+          <Box sx={{ mb: 4 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                mb: 1.5,
+                color: "#00684A",
+                fontSize: "1rem",
+              }}
+            >
+              The Challenge
             </Typography>
-          </Box>
-
-          {/* Problem/Context */}
-          <Box 
-            sx={{ 
-              mb: 4,
-              p: 3,
-              borderRadius: 2,
-              backgroundColor: "rgba(0, 104, 74, 0.05)",
-              borderLeft: "4px solid",
-              borderColor: "primary.main",
-            }}
-          >
-            <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
-              <Chip label="5-15s" size="small" color="primary" sx={{ fontWeight: 600 }} />
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Problem / Context
-              </Typography>
-            </Stack>
-            <Typography variant="body1" sx={{ fontSize: "1.05rem", lineHeight: 1.7, pl: 0 }}>
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: "1rem",
+                lineHeight: 1.7,
+                color: "#001E2B",
+              }}
+            >
               {episode.problem}
             </Typography>
           </Box>
+        )}
 
-          {/* Tip/Solution */}
-          <Box 
-            sx={{ 
-              mb: 4,
-              p: 3,
-              borderRadius: 2,
-              backgroundColor: "rgba(0, 104, 74, 0.08)",
-              borderLeft: "4px solid",
-              borderColor: "primary.light",
-            }}
-          >
-            <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
-              <Chip label="15-45s" size="small" color="primary" sx={{ fontWeight: 600 }} />
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Tip / Solution
-              </Typography>
-            </Stack>
-            <Typography variant="body1" sx={{ fontSize: "1.05rem", lineHeight: 1.7, whiteSpace: "pre-wrap", pl: 0 }}>
+        {/* The Solution */}
+        {episode.tip && (
+          <Box sx={{ mb: 4 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                mb: 1.5,
+                color: "#00684A",
+                fontSize: "1rem",
+              }}
+            >
+              The Solution
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: "1rem",
+                lineHeight: 1.7,
+                color: "#001E2B",
+                whiteSpace: "pre-wrap",
+              }}
+            >
               {episode.tip}
             </Typography>
           </Box>
+        )}
 
-          {/* Quick Win */}
-          <Box 
-            sx={{ 
-              mb: 4,
+        {/* Key Takeaway */}
+        {episode.quickWin && (
+          <Box
+            sx={{
               p: 3,
               borderRadius: 2,
               backgroundColor: "rgba(0, 104, 74, 0.05)",
-              borderLeft: "4px solid",
-              borderColor: "primary.main",
+              borderLeft: "4px solid #00684A",
             }}
           >
-            <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
-              <Chip label="45-52s" size="small" color="primary" sx={{ fontWeight: 600 }} />
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Quick Win / Proof
-              </Typography>
-            </Stack>
-            <Typography variant="body1" sx={{ fontSize: "1.05rem", lineHeight: 1.7, pl: 0 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                mb: 1.5,
+                color: "#00684A",
+                fontSize: "1rem",
+              }}
+            >
+              Key Takeaway
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: "1rem",
+                lineHeight: 1.7,
+                color: "#001E2B",
+              }}
+            >
               {episode.quickWin}
             </Typography>
           </Box>
-
-          {/* CTA */}
-          <Box 
-            sx={{ 
-              mb: 4,
-              p: 3,
-              borderRadius: 2,
-              background: "linear-gradient(135deg, rgba(0, 104, 74, 0.1) 0%, rgba(0, 104, 74, 0.05) 100%)",
-              borderLeft: "4px solid",
-              borderColor: "primary.dark",
-            }}
-          >
-            <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
-              <Chip label="52-60s" size="small" color="primary" sx={{ fontWeight: 600 }} />
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                CTA + Tease
-              </Typography>
-            </Stack>
-            <Typography variant="body1" sx={{ fontSize: "1.05rem", lineHeight: 1.7, pl: 0 }}>
-              {episode.cta}
-            </Typography>
-          </Box>
-
-          {/* Visual Suggestion */}
-          {episode.visualSuggestion && (
-            <Box 
-              sx={{ 
-                mt: 4,
-                p: 3,
-                borderRadius: 2,
-                backgroundColor: "background.paper",
-                border: "1px dashed",
-                borderColor: "divider",
-              }}
-            >
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
-                Visual Suggestion
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7, fontSize: "0.95rem" }}>
-                {episode.visualSuggestion}
-              </Typography>
-            </Box>
-          )}
-        </Box>
+        )}
       </Paper>
 
       {/* Social Links */}
