@@ -8,13 +8,13 @@ import {
   MenuItem,
   Typography,
   Paper,
-  Grid,
   Divider,
   Stack,
   Chip,
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Grid,
 } from "@mui/material";
 import {
   Save as SaveIcon,
@@ -88,7 +88,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
     <Box component="form" onSubmit={handleSubmit}>
       <Grid container spacing={4}>
         {/* Left Sidebar - Metadata */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 5 }}>
           <Box
             sx={{
               position: { md: "sticky" },
@@ -99,108 +99,165 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
           >
             <Paper
               sx={{
-                p: 3,
                 borderRadius: 3,
                 border: "1px solid",
                 borderColor: "divider",
+                overflow: "hidden",
+                boxShadow: "0px 2px 8px rgba(0,0,0,0.04)",
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                Episode Details
-              </Typography>
+              {/* Header Section */}
+              <Box
+                sx={{
+                  background: "linear-gradient(135deg, rgba(16, 168, 79, 0.08) 0%, rgba(16, 168, 79, 0.03) 100%)",
+                  p: 3,
+                  borderBottom: "1px solid",
+                  borderColor: "divider",
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 700, color: "primary.main" }}>
+                  Episode Details
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+                  Basic information and metadata
+                </Typography>
+              </Box>
 
-              <Stack spacing={3}>
-                {/* Title - Most Important */}
-                <TextField
-                  fullWidth
-                  required
-                  label="Episode Title"
-                  value={formData.title}
-                  onChange={(e) => handleChange("title", e.target.value)}
-                  variant="outlined"
-                  sx={{
-                    "& .MuiInputBase-root": {
-                      fontSize: "1.1rem",
-                      fontWeight: 500,
-                    },
-                  }}
-                />
+              {/* Form Fields Section */}
+              <Box sx={{ p: 3 }}>
+                <Stack spacing={3}>
+                  {/* Title - Most Important */}
+                  <Box>
+                    <TextField
+                      fullWidth
+                      required
+                      label="Episode Title"
+                      value={formData.title}
+                      onChange={(e) => handleChange("title", e.target.value)}
+                      variant="outlined"
+                      sx={{
+                        "& .MuiInputBase-root": {
+                          fontSize: "1.1rem",
+                          fontWeight: 500,
+                        },
+                      }}
+                    />
+                  </Box>
 
-                {/* Episode Number */}
-                <TextField
-                  fullWidth
-                  label="Episode Number"
-                  type="number"
-                  value={formData.episodeNumber}
-                  onChange={(e) => handleChange("episodeNumber", parseInt(e.target.value) || "")}
-                  variant="outlined"
-                />
+                  {/* Episode Number */}
+                  <Box>
+                    <TextField
+                      fullWidth
+                      label="Episode Number"
+                      type="number"
+                      value={formData.episodeNumber}
+                      onChange={(e) => handleChange("episodeNumber", parseInt(e.target.value) || "")}
+                      variant="outlined"
+                      size="small"
+                    />
+                  </Box>
 
-                {/* Category */}
-                <TextField
-                  fullWidth
-                  required
-                  select
-                  label="Category"
-                  value={formData.category}
-                  onChange={(e) => handleChange("category", e.target.value)}
-                  variant="outlined"
-                >
-                  {CATEGORIES.map((cat) => (
-                    <MenuItem key={cat} value={cat}>
-                      {cat}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                  <Divider sx={{ my: 1 }} />
 
-                {/* Difficulty */}
-                <TextField
-                  fullWidth
-                  required
-                  select
-                  label="Difficulty Level"
-                  value={formData.difficulty}
-                  onChange={(e) => handleChange("difficulty", e.target.value)}
-                  variant="outlined"
-                >
-                  {DIFFICULTIES.map((diff) => (
-                    <MenuItem key={diff} value={diff}>
-                      {diff}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                  {/* Classification Group */}
+                  <Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1.5, display: "block", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                      Classification
+                    </Typography>
+                    <Stack spacing={2}>
+                      {/* Category */}
+                      <TextField
+                        fullWidth
+                        required
+                        select
+                        label="Category"
+                        value={formData.category}
+                        onChange={(e) => handleChange("category", e.target.value)}
+                        variant="outlined"
+                        size="small"
+                      >
+                        {CATEGORIES.map((cat) => (
+                          <MenuItem key={cat} value={cat}>
+                            {cat}
+                          </MenuItem>
+                        ))}
+                      </TextField>
 
-                {/* Status */}
-                <TextField
-                  fullWidth
-                  required
-                  select
-                  label="Status"
-                  value={formData.status}
-                  onChange={(e) => handleChange("status", e.target.value)}
-                  variant="outlined"
-                >
-                  {STATUSES.map((status) => (
-                    <MenuItem key={status} value={status}>
-                      {status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, " ")}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                      {/* Difficulty */}
+                      <TextField
+                        fullWidth
+                        required
+                        select
+                        label="Difficulty Level"
+                        value={formData.difficulty}
+                        onChange={(e) => handleChange("difficulty", e.target.value)}
+                        variant="outlined"
+                        size="small"
+                      >
+                        {DIFFICULTIES.map((diff) => (
+                          <MenuItem key={diff} value={diff}>
+                            {diff}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </Stack>
+                  </Box>
 
-                {/* Slug */}
-                <TextField
-                  fullWidth
-                  label="URL Slug"
-                  value={formData.slug}
-                  onChange={(e) => handleChange("slug", e.target.value)}
-                  helperText="Leave blank to auto-generate from title"
-                  variant="outlined"
-                  size="small"
-                />
-              </Stack>
+                  <Divider sx={{ my: 1 }} />
+
+                  {/* Workflow Group */}
+                  <Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1.5, display: "block", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                      Workflow
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      required
+                      select
+                      label="Status"
+                      value={formData.status}
+                      onChange={(e) => handleChange("status", e.target.value)}
+                      variant="outlined"
+                      size="small"
+                    >
+                      {STATUSES.map((status) => (
+                        <MenuItem key={status} value={status}>
+                          {status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, " ")}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Box>
+
+                  <Divider sx={{ my: 1 }} />
+
+                  {/* URL Settings */}
+                  <Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1.5, display: "block", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                      URL Settings
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      label="URL Slug"
+                      value={formData.slug}
+                      onChange={(e) => handleChange("slug", e.target.value)}
+                      helperText="Leave blank to auto-generate from title"
+                      variant="outlined"
+                      size="small"
+                    />
+                  </Box>
+                </Stack>
+              </Box>
 
               {/* Save Button - Sticky at bottom of sidebar */}
-              <Box sx={{ mt: 4, pt: 3, borderTop: "1px solid", borderColor: "divider" }}>
+              <Box
+                sx={{
+                  p: 3,
+                  pt: 2,
+                  borderTop: "1px solid",
+                  borderColor: "divider",
+                  backgroundColor: "grey.50",
+                }}
+              >
                 <Button
                   type="submit"
                   variant="contained"
@@ -211,6 +268,10 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   sx={{
                     fontWeight: 600,
                     py: 1.5,
+                    boxShadow: "0px 4px 12px rgba(16, 168, 79, 0.3)",
+                    "&:hover": {
+                      boxShadow: "0px 6px 16px rgba(16, 168, 79, 0.4)",
+                    },
                   }}
                 >
                   {saving ? "Saving..." : submitLabel}
@@ -221,7 +282,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
         </Grid>
 
         {/* Right Column - Content Editor */}
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 7 }}>
           <Stack spacing={4}>
 
             {/* Script Content Section */}
@@ -525,7 +586,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   />
                   <Divider>Social Media Links</Divider>
                   <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <TextField
                         fullWidth
                         label="YouTube"
@@ -535,7 +596,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                         size="small"
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <TextField
                         fullWidth
                         label="TikTok"
@@ -545,7 +606,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                         size="small"
                       />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid size={{ xs: 12, sm: 4 }}>
                       <TextField
                         fullWidth
                         label="LinkedIn"
@@ -555,7 +616,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                         size="small"
                       />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid size={{ xs: 12, sm: 4 }}>
                       <TextField
                         fullWidth
                         label="Instagram"
@@ -565,7 +626,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                         size="small"
                       />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid size={{ xs: 12, sm: 4 }}>
                       <TextField
                         fullWidth
                         label="X (Twitter)"
