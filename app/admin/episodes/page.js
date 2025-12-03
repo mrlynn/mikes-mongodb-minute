@@ -177,7 +177,7 @@ export default function AdminEpisodesPage() {
                       color="primary"
                       sx={{
                         "&:hover": {
-                          backgroundColor: "rgba(16, 168, 79, 0.1)",
+                          backgroundColor: "rgba(0, 104, 74, 0.1)",
                         },
                       }}
                     >

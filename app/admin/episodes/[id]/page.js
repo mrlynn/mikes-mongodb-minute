@@ -73,9 +73,9 @@ export default function EditEpisodePage({ params }) {
           onClick={() => router.push(`/admin/teleprompter/${resolvedParams.id}`)}
           sx={{
             fontWeight: 600,
-            background: "linear-gradient(135deg, #10A84F 0%, #0D8A3F 100%)",
+            background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
             "&:hover": {
-              background: "linear-gradient(135deg, #0D8A3F 0%, #0A6D32 100%)",
+              background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
             },
           }}
         >

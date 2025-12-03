@@ -139,41 +139,37 @@ export default function HomePage() {
       {/* Hero Section */}
       <Box
         sx={{
-          background: "linear-gradient(135deg, #10A84F 0%, #0A7A3A 100%)",
-          borderRadius: 4,
-          p: { xs: 4, md: 6 },
-          mb: 6,
-          color: "white",
-          position: "relative",
-          overflow: "hidden",
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)",
-          },
+          background: "#FFFFFF",
+          borderRadius: 8,
+          p: { xs: 4, md: 5 },
+          mb: 4,
+          border: "1px solid #E2E8F0",
+          boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.08), 0px 1px 2px rgba(0, 0, 0, 0.04)",
         }}
       >
         <Box sx={{ position: "relative", zIndex: 1 }}>
           <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: "wrap", gap: 1 }}>
             <Chip 
               label={`${episodeCounts.all} Episodes`} 
+              size="small"
               sx={{ 
-                backgroundColor: "rgba(255,255,255,0.2)", 
-                color: "white",
-                fontWeight: 600,
+                backgroundColor: "#EDF2F7", 
+                color: "#001E2B",
+                fontWeight: 500,
+                fontSize: "0.75rem",
+                height: "24px",
               }} 
             />
             <Chip 
-              icon={<PlayArrowIcon sx={{ color: "white !important" }} />}
+              icon={<PlayArrowIcon sx={{ color: "#00684A !important", fontSize: "16px !important" }} />}
               label="60-Second Tips" 
+              size="small"
               sx={{ 
-                backgroundColor: "rgba(255,255,255,0.2)", 
-                color: "white",
-                fontWeight: 600,
+                backgroundColor: "#EDF2F7", 
+                color: "#001E2B",
+                fontWeight: 500,
+                fontSize: "0.75rem",
+                height: "24px",
               }} 
             />
           </Stack>
@@ -181,23 +177,25 @@ export default function HomePage() {
           <Typography 
             variant="h2" 
             sx={{ 
-              fontWeight: 700, 
+              fontWeight: 600, 
               mb: 2,
-              fontSize: { xs: "2rem", md: "3rem" },
-              lineHeight: 1.2,
+              fontSize: { xs: "1.75rem", md: "2.25rem" },
+              lineHeight: 1.3,
+              color: "#001E2B",
             }}
           >
             Learn MongoDB in 60 Seconds
           </Typography>
           
           <Typography 
-            variant="h6" 
+            variant="body1" 
             sx={{ 
-              mb: 4, 
-              opacity: 0.95,
-              fontSize: { xs: "1rem", md: "1.25rem" },
+              mb: 0, 
+              fontSize: { xs: "0.9375rem", md: "1rem" },
               fontWeight: 400,
               maxWidth: "600px",
+              color: "#5F6C76",
+              lineHeight: 1.6,
             }}
           >
             Quick, practical tips on data modeling, indexing, Atlas features, Vector Search, and more. 
@@ -211,9 +209,8 @@ export default function HomePage() {
         sx={{
           p: 3,
           mb: 4,
-          borderRadius: 3,
-          border: "1px solid",
-          borderColor: "divider",
+          borderRadius: 8,
+          backgroundColor: "#FFFFFF",
         }}
       >
         {/* Search Bar */}
@@ -257,8 +254,17 @@ export default function HomePage() {
             <Chip
               label="All Categories"
               onClick={() => setSelectedCategory(null)}
-              color={selectedCategory === null ? "primary" : "default"}
-              sx={{ fontWeight: selectedCategory === null ? 600 : 400 }}
+              size="small"
+              sx={{ 
+                fontWeight: selectedCategory === null ? 500 : 400,
+                backgroundColor: selectedCategory === null ? "#00684A" : "#EDF2F7",
+                color: selectedCategory === null ? "#FFFFFF" : "#001E2B",
+                fontSize: "0.75rem",
+                height: "24px",
+                "&:hover": {
+                  backgroundColor: selectedCategory === null ? "#004D37" : "#CBD5E0",
+                },
+              }}
             />
             {availableCategories.map((category) => (
               <Chip
@@ -267,8 +273,17 @@ export default function HomePage() {
                 onClick={() =>
                   setSelectedCategory(selectedCategory === category ? null : category)
                 }
-                color={selectedCategory === category ? "primary" : "default"}
-                sx={{ fontWeight: selectedCategory === category ? 600 : 400 }}
+                size="small"
+                sx={{ 
+                  fontWeight: selectedCategory === category ? 500 : 400,
+                  backgroundColor: selectedCategory === category ? "#00684A" : "#EDF2F7",
+                  color: selectedCategory === category ? "#FFFFFF" : "#001E2B",
+                  fontSize: "0.75rem",
+                  height: "24px",
+                  "&:hover": {
+                    backgroundColor: selectedCategory === category ? "#004D37" : "#CBD5E0",
+                  },
+                }}
               />
             ))}
           </Stack>
@@ -283,8 +298,17 @@ export default function HomePage() {
             <Chip
               label="All Levels"
               onClick={() => setSelectedDifficulty(null)}
-              color={selectedDifficulty === null ? "primary" : "default"}
-              sx={{ fontWeight: selectedDifficulty === null ? 600 : 400 }}
+              size="small"
+              sx={{ 
+                fontWeight: selectedDifficulty === null ? 500 : 400,
+                backgroundColor: selectedDifficulty === null ? "#00684A" : "#EDF2F7",
+                color: selectedDifficulty === null ? "#FFFFFF" : "#001E2B",
+                fontSize: "0.75rem",
+                height: "24px",
+                "&:hover": {
+                  backgroundColor: selectedDifficulty === null ? "#004D37" : "#CBD5E0",
+                },
+              }}
             />
             {availableDifficulties.map((difficulty) => (
               <Chip
@@ -293,8 +317,17 @@ export default function HomePage() {
                 onClick={() =>
                   setSelectedDifficulty(selectedDifficulty === difficulty ? null : difficulty)
                 }
-                color={selectedDifficulty === difficulty ? "primary" : "default"}
-                sx={{ fontWeight: selectedDifficulty === difficulty ? 600 : 400 }}
+                size="small"
+                sx={{ 
+                  fontWeight: selectedDifficulty === difficulty ? 500 : 400,
+                  backgroundColor: selectedDifficulty === difficulty ? "#00684A" : "#EDF2F7",
+                  color: selectedDifficulty === difficulty ? "#FFFFFF" : "#001E2B",
+                  fontSize: "0.75rem",
+                  height: "24px",
+                  "&:hover": {
+                    backgroundColor: selectedDifficulty === difficulty ? "#004D37" : "#CBD5E0",
+                  },
+                }}
               />
             ))}
           </Stack>
@@ -306,15 +339,16 @@ export default function HomePage() {
         <Typography 
           variant="h4" 
           sx={{ 
-            fontWeight: 700, 
+            fontWeight: 600, 
             mb: 1,
-            fontSize: { xs: "1.75rem", md: "2.125rem" },
+            fontSize: { xs: "1.5rem", md: "1.75rem" },
+            color: "#001E2B",
           }}
         >
           Episodes {filteredEpisodes.length > 0 && `(${filteredEpisodes.length})`}
         </Typography>
         {(searchQuery || selectedCategory || selectedDifficulty || statusTab > 0) && (
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+          <Typography variant="body2" sx={{ mb: 4, color: "#5F6C76", fontSize: "0.875rem" }}>
             Showing filtered results
           </Typography>
         )}

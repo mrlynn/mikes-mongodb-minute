@@ -50,7 +50,7 @@ export default async function EpisodeDetailPage({ params }) {
           mb: 5,
           p: { xs: 3, md: 4 },
           borderRadius: 3,
-          background: "linear-gradient(135deg, rgba(16, 168, 79, 0.05) 0%, rgba(16, 168, 79, 0.02) 100%)",
+          background: "linear-gradient(135deg, rgba(0, 104, 74, 0.05) 0%, rgba(0, 104, 74, 0.02) 100%)",
           border: "1px solid",
           borderColor: "divider",
         }}
@@ -164,7 +164,7 @@ export default async function EpisodeDetailPage({ params }) {
               mb: 4,
               p: 3,
               borderRadius: 2,
-              backgroundColor: "rgba(16, 168, 79, 0.05)",
+              backgroundColor: "rgba(0, 104, 74, 0.05)",
               borderLeft: "4px solid",
               borderColor: "primary.main",
             }}
@@ -186,7 +186,7 @@ export default async function EpisodeDetailPage({ params }) {
               mb: 4,
               p: 3,
               borderRadius: 2,
-              backgroundColor: "rgba(16, 168, 79, 0.08)",
+              backgroundColor: "rgba(0, 104, 74, 0.08)",
               borderLeft: "4px solid",
               borderColor: "primary.light",
             }}
@@ -208,7 +208,7 @@ export default async function EpisodeDetailPage({ params }) {
               mb: 4,
               p: 3,
               borderRadius: 2,
-              backgroundColor: "rgba(16, 168, 79, 0.05)",
+              backgroundColor: "rgba(0, 104, 74, 0.05)",
               borderLeft: "4px solid",
               borderColor: "primary.main",
             }}
@@ -230,7 +230,7 @@ export default async function EpisodeDetailPage({ params }) {
               mb: 4,
               p: 3,
               borderRadius: 2,
-              background: "linear-gradient(135deg, rgba(16, 168, 79, 0.1) 0%, rgba(16, 168, 79, 0.05) 100%)",
+              background: "linear-gradient(135deg, rgba(0, 104, 74, 0.1) 0%, rgba(0, 104, 74, 0.05) 100%)",
               borderLeft: "4px solid",
               borderColor: "primary.dark",
             }}

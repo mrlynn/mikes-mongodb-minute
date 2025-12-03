@@ -43,7 +43,7 @@ export default function AdminLayout({ children }) {
       <AppBar
         position="static"
         sx={{
-          background: "linear-gradient(135deg, #10A84F 0%, #0D8A3F 100%)",
+          background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
         }}
       >
         <Toolbar>

@@ -34,7 +34,7 @@ function VerifyContent() {
         <CircularProgress
           size={60}
           sx={{
-            color: "#10A84F",
+            color: "#00684A",
             mb: 3,
           }}
         />

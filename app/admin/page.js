@@ -91,9 +91,9 @@ export default function AdminDashboard() {
             sx={{
               fontWeight: 600,
               px: 4,
-              background: "linear-gradient(135deg, #10A84F 0%, #0D8A3F 100%)",
+              background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
               "&:hover": {
-                background: "linear-gradient(135deg, #0D8A3F 0%, #0A6D32 100%)",
+                background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
               },
             }}
           >
@@ -136,12 +136,12 @@ export default function AdminDashboard() {
               p: 3, 
               textAlign: "center",
               borderRadius: 3,
-              background: "linear-gradient(135deg, rgba(16, 168, 79, 0.1) 0%, rgba(16, 168, 79, 0.05) 100%)",
+              background: "linear-gradient(135deg, rgba(0, 104, 74, 0.1) 0%, rgba(0, 104, 74, 0.05) 100%)",
               border: "1px solid",
               borderColor: "divider",
             }}
           >
-            <Typography variant="h3" color="primary" sx={{ fontWeight: 700, mb: 1 }}>
+            <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: "#00684A" }}>
               {stats.total}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
@@ -212,12 +212,12 @@ export default function AdminDashboard() {
               p: 3, 
               textAlign: "center",
               borderRadius: 3,
-              background: "linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%)",
+              background: "linear-gradient(135deg, rgba(0, 237, 100, 0.1) 0%, rgba(0, 237, 100, 0.05) 100%)",
               border: "1px solid",
               borderColor: "divider",
             }}
           >
-            <Typography variant="h3" color="success.dark" sx={{ fontWeight: 700, mb: 1 }}>
+            <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: "#00ED64" }}>
               {stats.published}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>

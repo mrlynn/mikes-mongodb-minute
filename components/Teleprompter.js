@@ -238,7 +238,7 @@ export default function Teleprompter({ episode, onClose }) {
             left: 0,
             right: 0,
             height: "4px",
-            background: "linear-gradient(90deg, transparent, #10A84F, transparent)",
+            background: "linear-gradient(90deg, transparent, #00ED64, transparent)",
             transform: "translateY(-50%)",
             pointerEvents: "none",
             zIndex: 5,
@@ -271,7 +271,7 @@ export default function Teleprompter({ episode, onClose }) {
             <Box key={index} sx={{ mb: 6, width: "100%", maxWidth: "1200px" }}>
               <Typography
                 sx={{
-                  color: "#10A84F",
+                  color: "#00ED64",
                   fontSize: fontSize * 0.5,
                   fontWeight: 600,
                   mb: 2,

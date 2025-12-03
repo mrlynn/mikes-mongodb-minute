@@ -99,32 +99,30 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
           >
             <Paper
               sx={{
-                borderRadius: 3,
-                border: "1px solid",
-                borderColor: "divider",
+                borderRadius: 8,
+                border: "1px solid #E2E8F0",
                 overflow: "hidden",
-                boxShadow: "0px 2px 8px rgba(0,0,0,0.04)",
+                boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.08), 0px 1px 2px rgba(0, 0, 0, 0.04)",
               }}
             >
               {/* Header Section */}
               <Box
                 sx={{
-                  background: "linear-gradient(135deg, rgba(16, 168, 79, 0.08) 0%, rgba(16, 168, 79, 0.03) 100%)",
-                  p: 3,
-                  borderBottom: "1px solid",
-                  borderColor: "divider",
+                  background: "#F7FAFC",
+                  p: 2.5,
+                  borderBottom: "1px solid #E2E8F0",
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 700, color: "primary.main" }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: "#001E2B", fontSize: "1rem" }}>
                   Episode Details
                 </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+                <Typography variant="caption" sx={{ mt: 0.5, display: "block", color: "#5F6C76", fontSize: "0.75rem" }}>
                   Basic information and metadata
                 </Typography>
               </Box>
 
               {/* Form Fields Section */}
-              <Box sx={{ p: 3 }}>
+              <Box sx={{ p: 2.5 }}>
                 <Stack spacing={3}>
                   {/* Title - Most Important */}
                   <Box>
@@ -251,27 +249,23 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* Save Button - Sticky at bottom of sidebar */}
               <Box
                 sx={{
-                  p: 3,
+                  p: 2.5,
                   pt: 2,
-                  borderTop: "1px solid",
-                  borderColor: "divider",
-                  backgroundColor: "grey.50",
+                  borderTop: "1px solid #E2E8F0",
+                  backgroundColor: "#F7FAFC",
                 }}
               >
                 <Button
                   type="submit"
                   variant="contained"
                   fullWidth
-                  size="large"
+                  size="medium"
                   startIcon={<SaveIcon />}
                   disabled={saving}
                   sx={{
-                    fontWeight: 600,
-                    py: 1.5,
-                    boxShadow: "0px 4px 12px rgba(16, 168, 79, 0.3)",
-                    "&:hover": {
-                      boxShadow: "0px 6px 16px rgba(16, 168, 79, 0.4)",
-                    },
+                    fontWeight: 500,
+                    py: 1,
+                    fontSize: "0.875rem",
                   }}
                 >
                   {saving ? "Saving..." : submitLabel}
@@ -299,12 +293,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* Hook Section */}
               <Paper
                 sx={{
-                  p: 4,
-                  mb: 3,
-                  borderRadius: 3,
-                  background: "linear-gradient(135deg, rgba(16, 168, 79, 0.1) 0%, rgba(16, 168, 79, 0.05) 100%)",
-                  border: "2px solid",
-                  borderColor: "primary.main",
+                  p: 3,
+                  mb: 2.5,
+                  borderRadius: 8,
+                  backgroundColor: "#F7FAFC",
+                  border: "1px solid #E2E8F0",
+                  borderLeft: "3px solid #00684A",
                 }}
               >
                 <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
@@ -343,14 +337,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* Problem Section */}
               <Paper
                 sx={{
-                  p: 4,
-                  mb: 3,
-                  borderRadius: 3,
-                  backgroundColor: "background.paper",
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderLeft: "4px solid",
-                  borderLeftColor: "primary.light",
+                  p: 3,
+                  mb: 2.5,
+                  borderRadius: 8,
+                  backgroundColor: "#FFFFFF",
+                  border: "1px solid #E2E8F0",
+                  borderLeft: "3px solid #00ED64",
                 }}
               >
                 <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
@@ -388,14 +380,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* Tip/Solution Section - Largest */}
               <Paper
                 sx={{
-                  p: 4,
-                  mb: 3,
-                  borderRadius: 3,
-                  backgroundColor: "background.paper",
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderLeft: "4px solid",
-                  borderLeftColor: "primary.main",
+                  p: 3,
+                  mb: 2.5,
+                  borderRadius: 8,
+                  backgroundColor: "#FFFFFF",
+                  border: "1px solid #E2E8F0",
+                  borderLeft: "3px solid #00684A",
                 }}
               >
                 <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
@@ -433,14 +423,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* Quick Win Section */}
               <Paper
                 sx={{
-                  p: 4,
-                  mb: 3,
-                  borderRadius: 3,
-                  backgroundColor: "background.paper",
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderLeft: "4px solid",
-                  borderLeftColor: "primary.light",
+                  p: 3,
+                  mb: 2.5,
+                  borderRadius: 8,
+                  backgroundColor: "#FFFFFF",
+                  border: "1px solid #E2E8F0",
+                  borderLeft: "3px solid #00ED64",
                 }}
               >
                 <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
@@ -478,14 +466,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* CTA Section */}
               <Paper
                 sx={{
-                  p: 4,
-                  mb: 3,
-                  borderRadius: 3,
-                  background: "linear-gradient(135deg, rgba(16, 168, 79, 0.08) 0%, rgba(16, 168, 79, 0.03) 100%)",
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderLeft: "4px solid",
-                  borderLeftColor: "primary.dark",
+                  p: 3,
+                  mb: 2.5,
+                  borderRadius: 8,
+                  backgroundColor: "#F7FAFC",
+                  border: "1px solid #E2E8F0",
+                  borderLeft: "3px solid #004D37",
                 }}
               >
                 <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
@@ -526,10 +512,9 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
             <Paper
               sx={{
                 p: 3,
-                borderRadius: 3,
-                backgroundColor: "background.paper",
-                border: "1px dashed",
-                borderColor: "divider",
+                borderRadius: 8,
+                backgroundColor: "#FFFFFF",
+                border: "1px dashed #CBD5E0",
               }}
             >
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>

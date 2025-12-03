@@ -82,7 +82,7 @@ export default function LoginPage() {
             <CheckCircleIcon
               sx={{
                 fontSize: 80,
-                color: "#10A84F",
+                color: "#00684A",
                 mb: 2,
               }}
             />
@@ -136,7 +136,7 @@ export default function LoginPage() {
               sx={{
                 fontWeight: 700,
                 mb: 1,
-                background: "linear-gradient(135deg, #10A84F 0%, #0D8A3F 100%)",
+                background: "linear-gradient(135deg, #00684A 0%, #00ED64 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}
@@ -192,9 +192,9 @@ export default function LoginPage() {
               sx={{
                 py: 1.5,
                 fontWeight: 600,
-                background: "linear-gradient(135deg, #10A84F 0%, #0D8A3F 100%)",
+                background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
                 "&:hover": {
-                  background: "linear-gradient(135deg, #0D8A3F 0%, #0A6D32 100%)",
+                  background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
                 },
               }}
             >

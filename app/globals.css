@@ -1,6 +1,9 @@
 :root {
-  --background: #fafafa;
-  --foreground: #1a1a1a;
+  --background: #ffffff;
+  --foreground: #001E2B;
+  --mongodb-green: #00684A;
+  --mongodb-green-light: #00ED64;
+  --mongodb-dark: #001E2B;
 }
 
 html,
@@ -12,10 +15,11 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Inter", "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: "Inter", "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
+  line-height: 1.5;
+  font-size: 14px;
 }
 
 * {
@@ -45,16 +49,16 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #10a84f;
+  background: #00684A;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #0a7a3a;
+  background: #004D37;
 }
 
 /* Selection color */
 ::selection {
-  background-color: rgba(16, 168, 79, 0.2);
+  background-color: rgba(0, 237, 100, 0.3);
   color: inherit;
 }

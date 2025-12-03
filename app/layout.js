@@ -9,57 +9,81 @@ import { useState } from "react";
 const theme = createTheme({
   palette: {
     primary: { 
-      main: "#10A84F",
-      light: "#4EC274",
-      dark: "#0A7A3A",
+      main: "#00684A", // MongoDB official brand green
+      light: "#00ED64", // MongoDB UI green
+      dark: "#004D37",
       contrastText: "#FFFFFF"
     },
     secondary: { 
-      main: "#25313C",
-      light: "#4A5568",
-      dark: "#1A2329",
+      main: "#001E2B", // MongoDB dark teal
+      light: "#003D52",
+      dark: "#000F15",
       contrastText: "#FFFFFF"
     },
     background: {
-      default: "#FAFAFA",
+      default: "#FFFFFF",
       paper: "#FFFFFF",
     },
     text: {
-      primary: "#1A1A1A",
-      secondary: "#666666",
+      primary: "#001E2B",
+      secondary: "#5F6C76",
+    },
+    grey: {
+      50: "#F7FAFC",
+      100: "#EDF2F7",
+      200: "#E2E8F0",
+      300: "#CBD5E0",
+      400: "#A0AEC0",
+      500: "#718096",
+      600: "#4A5568",
+      700: "#2D3748",
+      800: "#1A202C",
+      900: "#171923",
     },
   },
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
     h1: {
       fontWeight: 700,
       letterSpacing: "-0.02em",
+      color: "#001E2B",
     },
     h2: {
       fontWeight: 700,
       letterSpacing: "-0.02em",
+      color: "#001E2B",
     },
     h3: {
       fontWeight: 600,
       letterSpacing: "-0.01em",
+      color: "#001E2B",
     },
     h4: {
       fontWeight: 600,
       letterSpacing: "-0.01em",
+      color: "#001E2B",
     },
     h5: {
       fontWeight: 600,
+      color: "#001E2B",
     },
     h6: {
       fontWeight: 600,
+      color: "#001E2B",
     },
     button: {
       textTransform: "none",
       fontWeight: 600,
     },
+    body1: {
+      color: "#001E2B",
+    },
+    body2: {
+      color: "#5F6C76",
+    },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 6,
   },
   shadows: [
     "none",
@@ -74,16 +98,37 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
-          padding: "10px 24px",
+          borderRadius: 6,
+          padding: "8px 16px",
+          fontSize: "0.875rem",
+          fontWeight: 500,
+          textTransform: "none",
           boxShadow: "none",
+          transition: "all 0.2s ease",
           "&:hover": {
-            boxShadow: "0px 4px 12px rgba(16, 168, 79, 0.3)",
+            boxShadow: "none",
           },
         },
         contained: {
+          backgroundColor: "#00684A",
+          color: "#FFFFFF",
           "&:hover": {
-            boxShadow: "0px 6px 16px rgba(16, 168, 79, 0.4)",
+            backgroundColor: "#004D37",
+            boxShadow: "0px 2px 4px rgba(0, 104, 74, 0.2)",
+          },
+        },
+        outlined: {
+          borderColor: "#CBD5E0",
+          color: "#001E2B",
+          "&:hover": {
+            borderColor: "#00684A",
+            backgroundColor: "rgba(0, 104, 74, 0.04)",
+          },
+        },
+        text: {
+          color: "#001E2B",
+          "&:hover": {
+            backgroundColor: "rgba(0, 104, 74, 0.04)",
           },
         },
       },
@@ -91,12 +136,13 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          boxShadow: "0px 4px 12px rgba(0,0,0,0.08)",
-          transition: "all 0.3s ease-in-out",
+          borderRadius: 8,
+          boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.08), 0px 1px 2px rgba(0, 0, 0, 0.04)",
+          border: "1px solid #E2E8F0",
+          transition: "all 0.2s ease",
           "&:hover": {
-            boxShadow: "0px 8px 24px rgba(0,0,0,0.12)",
-            transform: "translateY(-4px)",
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1), 0px 2px 4px rgba(0, 0, 0, 0.06)",
+            borderColor: "#CBD5E0",
           },
         },
       },
@@ -104,7 +150,28 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
+          borderRadius: 8,
+          border: "1px solid #E2E8F0",
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 6,
+            backgroundColor: "#FFFFFF",
+            "& fieldset": {
+              borderColor: "#CBD5E0",
+            },
+            "&:hover fieldset": {
+              borderColor: "#A0AEC0",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "#00684A",
+              borderWidth: "1.5px",
+            },
+          },
         },
       },
     },
@@ -138,11 +205,12 @@ function Navigation() {
         position="sticky" 
         elevation={0}
         sx={{ 
-          background: "linear-gradient(135deg, #10A84F 0%, #0A7A3A 100%)",
-          borderBottom: "1px solid rgba(255,255,255,0.1)",
+          background: "#FFFFFF",
+          borderBottom: "1px solid #E2E8F0",
+          color: "#001E2B",
         }}
       >
-        <Toolbar sx={{ py: { xs: 1, md: 1.5 } }}>
+        <Toolbar sx={{ py: { xs: 1, md: 1.5 }, px: { xs: 2, md: 3 } }}>
           <Typography
             variant="h6"
             component={Link}
@@ -150,28 +218,31 @@ function Navigation() {
             sx={{
               flexGrow: { xs: 1, md: 0 },
               textDecoration: "none",
-              color: "inherit",
-              fontWeight: 700,
-              fontSize: { xs: "1.1rem", md: "1.25rem" },
-              letterSpacing: "-0.02em",
+              color: "#001E2B",
+              fontWeight: 600,
+              fontSize: { xs: "1rem", md: "1.125rem" },
+              letterSpacing: "-0.01em",
             }}
           >
-            Mike&apos;s MongoDB Minute
+            MongoDB Minute
           </Typography>
           
           {!isMobile && (
-            <Box sx={{ flexGrow: 1, display: "flex", gap: 1, ml: 4 }}>
+            <Box sx={{ flexGrow: 1, display: "flex", gap: 0.5, ml: 4 }}>
               {navItems.map((item) => (
                 <Button
                   key={item.href}
                   component={Link}
                   href={item.href}
+                  variant="text"
                   sx={{
-                    color: "white",
+                    color: "#5F6C76",
                     fontWeight: 500,
                     px: 2,
+                    fontSize: "0.875rem",
                     "&:hover": {
-                      backgroundColor: "rgba(255,255,255,0.1)",
+                      backgroundColor: "rgba(0, 104, 74, 0.04)",
+                      color: "#001E2B",
                     },
                   }}
                 >
@@ -241,13 +312,14 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Navigation />
-          <Box sx={{ minHeight: "calc(100vh - 64px)", backgroundColor: "background.default" }}>
-            <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
+          <Box sx={{ minHeight: "calc(100vh - 64px)", backgroundColor: "#F7FAFC" }}>
+            <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 }, px: { xs: 2, md: 3 } }}>
               {children}
             </Container>
           </Box>
