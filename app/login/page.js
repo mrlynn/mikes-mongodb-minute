@@ -1,0 +1,220 @@
+"use client";
+
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Paper,
+  Alert,
+  CircularProgress,
+  Container,
+} from "@mui/material";
+import { Email as EmailIcon, CheckCircle as CheckCircleIcon } from "@mui/icons-material";
+
+export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+
+  const errorParam = searchParams.get("error");
+
+  const errorMessages = {
+    "missing-token": "Invalid link. Please request a new sign-in link.",
+    expired: "This link has expired. Please request a new sign-in link.",
+    "invalid-token": "Invalid link. Please request a new sign-in link.",
+    unauthorized: "Unauthorized access. Only @mongodb.com addresses are allowed.",
+    "server-error": "An error occurred. Please try again.",
+  };
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/request-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "An error occurred");
+        setLoading(false);
+        return;
+      }
+
+      setSent(true);
+      setLoading(false);
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+      setLoading(false);
+    }
+  }
+
+  if (sent) {
+    return (
+      <Container maxWidth="sm">
+        <Box
+          sx={{
+            minHeight: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Paper
+            elevation={3}
+            sx={{
+              p: 5,
+              textAlign: "center",
+              borderRadius: 3,
+              maxWidth: 500,
+            }}
+          >
+            <CheckCircleIcon
+              sx={{
+                fontSize: 80,
+                color: "#10A84F",
+                mb: 2,
+              }}
+            />
+            <Typography variant="h4" sx={{ mb: 2, fontWeight: 700 }}>
+              Check your email
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+              We've sent a magic link to <strong>{email}</strong>
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Click the link in the email to sign in. The link will expire in 15 minutes.
+            </Typography>
+            <Button
+              variant="text"
+              onClick={() => {
+                setSent(false);
+                setEmail("");
+              }}
+              sx={{ mt: 3 }}
+            >
+              Use a different email
+            </Button>
+          </Paper>
+        </Box>
+      </Container>
+    );
+  }
+
+  return (
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Paper
+          elevation={3}
+          sx={{
+            p: 5,
+            borderRadius: 3,
+            width: "100%",
+            maxWidth: 500,
+          }}
+        >
+          <Box sx={{ textAlign: "center", mb: 4 }}>
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 700,
+                mb: 1,
+                background: "linear-gradient(135deg, #10A84F 0%, #0D8A3F 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              🎬 MongoDB Minute
+            </Typography>
+            <Typography variant="h5" color="text.secondary">
+              Sign In
+            </Typography>
+          </Box>
+
+          {errorParam && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {errorMessages[errorParam] || "An error occurred"}
+            </Alert>
+          )}
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Box component="form" onSubmit={handleSubmit}>
+            <Typography variant="body1" sx={{ mb: 3, textAlign: "center" }}>
+              Enter your <strong>@mongodb.com</strong> email address and we'll send you a magic
+              link to sign in.
+            </Typography>
+
+            <TextField
+              fullWidth
+              type="email"
+              label="MongoDB Email"
+              placeholder="your.name@mongodb.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+              InputProps={{
+                startAdornment: (
+                  <EmailIcon sx={{ mr: 1, color: "text.secondary" }} />
+                ),
+              }}
+              sx={{ mb: 3 }}
+            />
+
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              size="large"
+              disabled={loading || !email}
+              sx={{
+                py: 1.5,
+                fontWeight: 600,
+                background: "linear-gradient(135deg, #10A84F 0%, #0D8A3F 100%)",
+                "&:hover": {
+                  background: "linear-gradient(135deg, #0D8A3F 0%, #0A6D32 100%)",
+                },
+              }}
+            >
+              {loading ? (
+                <CircularProgress size={24} sx={{ color: "white" }} />
+              ) : (
+                "Send Magic Link"
+              )}
+            </Button>
+
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: "block", textAlign: "center", mt: 3 }}
+            >
+              Only @mongodb.com email addresses are allowed
+            </Typography>
+          </Box>
+        </Paper>
+      </Box>
+    </Container>
+  );
+}
