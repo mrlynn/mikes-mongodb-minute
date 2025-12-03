@@ -29,6 +29,7 @@ export default function EpisodeCard({ episode }) {
   return (
       <Card
         sx={{
+          width: "100%",
           height: "100%",
           display: "flex",
           flexDirection: "column",
@@ -52,14 +53,29 @@ export default function EpisodeCard({ episode }) {
           height: 3,
           background: categoryColor,
           width: "100%",
+          flexShrink: 0,
         }}
       />
 
-      <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
-        <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: "wrap", gap: 0.75 }}>
-          {episode.episodeNumber && (
+      <CardContent sx={{ flexGrow: 1, p: 2.5, display: "flex", flexDirection: "column", pb: 1, width: "100%", boxSizing: "border-box" }}>
+        {/* Tags section - fixed height */}
+        <Box sx={{ mb: 2, height: "30px", display: "flex", alignItems: "flex-start" }}>
+          <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 0.75 }}>
+            {episode.episodeNumber && (
+              <Chip
+                label={`Episode #${episode.episodeNumber}`}
+                size="small"
+                sx={{
+                  backgroundColor: "#EDF2F7",
+                  color: "#001E2B",
+                  fontWeight: 500,
+                  fontSize: "0.6875rem",
+                  height: "22px",
+                }}
+              />
+            )}
             <Chip
-              label={`Episode #${episode.episodeNumber}`}
+              label={episode.category}
               size="small"
               sx={{
                 backgroundColor: "#EDF2F7",
@@ -69,56 +85,52 @@ export default function EpisodeCard({ episode }) {
                 height: "22px",
               }}
             />
-          )}
-          <Chip
-            label={episode.category}
-            size="small"
+          </Stack>
+        </Box>
+
+        {/* Title section - fixed height with 2 line clamp */}
+        <Box sx={{ mb: 1.5, height: "56px", width: "100%" }}>
+          <Typography
+            variant="h6"
             sx={{
-              backgroundColor: "#EDF2F7",
+              fontWeight: 600,
+              fontSize: "1.125rem",
+              lineHeight: 1.4,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              overflowWrap: "break-word",
+              wordBreak: "break-word",
               color: "#001E2B",
-              fontWeight: 500,
-              fontSize: "0.6875rem",
-              height: "22px",
             }}
-          />
-        </Stack>
+          >
+            {episode.title}
+          </Typography>
+        </Box>
 
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: 600,
-            mb: 1.5,
-            minHeight: { xs: "auto", md: "56px" },
-            fontSize: { xs: "1rem", md: "1.125rem" },
-            lineHeight: 1.4,
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            color: "#001E2B",
-          }}
-        >
-          {episode.title}
-        </Typography>
+        {/* Description section - fixed height with 3 line clamp */}
+        <Box sx={{ mb: 2, height: "63px", width: "100%" }}>
+          <Typography
+            variant="body2"
+            sx={{
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              overflowWrap: "break-word",
+              wordBreak: "break-word",
+              lineHeight: 1.5,
+              color: "#5F6C76",
+              fontSize: "0.875rem",
+            }}
+          >
+            {episode.hook}
+          </Typography>
+        </Box>
 
-        <Typography
-          variant="body2"
-          sx={{
-            mb: 2,
-            minHeight: "40px",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            lineHeight: 1.5,
-            color: "#5F6C76",
-            fontSize: "0.875rem",
-          }}
-        >
-          {episode.hook}
-        </Typography>
-
-        <Stack direction="row" spacing={2} sx={{ mt: "auto", alignItems: "center" }}>
+        {/* Difficulty chip - fixed at bottom */}
+        <Box sx={{ mt: "auto" }}>
           <Chip
             icon={<ScheduleIcon sx={{ fontSize: "14px !important", color: "#5F6C76 !important" }} />}
             label={episode.difficulty}
@@ -131,10 +143,10 @@ export default function EpisodeCard({ episode }) {
               height: "22px",
             }}
           />
-        </Stack>
+        </Box>
       </CardContent>
 
-      <CardActions sx={{ p: 2, pt: 0 }}>
+      <CardActions sx={{ p: 2, pt: 0, flexShrink: 0 }}>
         <Button
           component={Link}
           href={`/episodes/${episode.slug}`}
