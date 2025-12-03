@@ -1,20 +1,138 @@
-import { listEpisodes } from "@/lib/episodes";
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
 import EpisodeCard from "@/components/EpisodeCard";
-import { Typography, Grid, Box, Button, Container, Stack, Chip } from "@mui/material";
-import { PlayArrow as PlayArrowIcon, TrendingUp as TrendingUpIcon } from "@mui/icons-material";
-import Link from "next/link";
+import {
+  Typography,
+  Grid,
+  Box,
+  Button,
+  Stack,
+  Chip,
+  TextField,
+  InputAdornment,
+  Paper,
+  Tabs,
+  Tab,
+  CircularProgress,
+} from "@mui/material";
+import {
+  PlayArrow as PlayArrowIcon,
+  Search as SearchIcon,
+} from "@mui/icons-material";
 
-export const dynamic = "force-dynamic";
+export default function HomePage() {
+  const [episodes, setEpisodes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+  const [statusTab, setStatusTab] = useState(0); // 0 = all, 1 = published, 2 = draft, etc.
 
-export const metadata = {
-  title: "Mike's MongoDB Minute | 60-Second MongoDB Tips",
-  description: "Learn MongoDB in 60 seconds! Quick, practical tips on data modeling, indexing, Atlas features, Vector Search, and more. Perfect for developers of all levels.",
-  keywords: "MongoDB, Database, NoSQL, Atlas, Vector Search, Aggregation, Indexing, Data Modeling",
-};
+  useEffect(() => {
+    async function fetchEpisodes() {
+      try {
+        const res = await fetch("/api/episodes");
+        const data = await res.json();
+        setEpisodes(data);
+      } catch (error) {
+        console.error("Error fetching episodes:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchEpisodes();
+  }, []);
 
-export default async function HomePage() {
-  const episodes = await listEpisodes({ publishedOnly: true });
-  const latest = episodes.slice(-6).reverse();
+  // Filter episodes based on search and filters
+  const filteredEpisodes = useMemo(() => {
+    let filtered = [...episodes];
+
+    // Filter by status tab
+    if (statusTab === 1) {
+      filtered = filtered.filter((ep) => ep.status === "published");
+    } else if (statusTab === 2) {
+      filtered = filtered.filter((ep) => ep.status === "draft");
+    } else if (statusTab === 3) {
+      filtered = filtered.filter((ep) => ep.status === "ready-to-record");
+    } else if (statusTab === 4) {
+      filtered = filtered.filter((ep) => ep.status === "recorded");
+    }
+
+    // Filter by category
+    if (selectedCategory) {
+      filtered = filtered.filter((ep) => ep.category === selectedCategory);
+    }
+
+    // Filter by difficulty
+    if (selectedDifficulty) {
+      filtered = filtered.filter((ep) => ep.difficulty === selectedDifficulty);
+    }
+
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter((ep) => {
+        const searchableText = [
+          ep.title,
+          ep.hook,
+          ep.problem,
+          ep.tip,
+          ep.quickWin,
+          ep.cta,
+          ep.category,
+          ep.difficulty,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return searchableText.includes(query);
+      });
+    }
+
+    // Sort by episode number (descending for newest first, then by date)
+    return filtered.sort((a, b) => {
+      if (a.episodeNumber && b.episodeNumber) {
+        return b.episodeNumber - a.episodeNumber;
+      }
+      if (a.episodeNumber) return -1;
+      if (b.episodeNumber) return 1;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+  }, [episodes, searchQuery, selectedCategory, selectedDifficulty, statusTab]);
+
+  // Get unique categories and difficulties from episodes
+  const availableCategories = useMemo(() => {
+    return [...new Set(episodes.map((ep) => ep.category).filter(Boolean))].sort();
+  }, [episodes]);
+
+  const availableDifficulties = useMemo(() => {
+    return [...new Set(episodes.map((ep) => ep.difficulty).filter(Boolean))].sort();
+  }, [episodes]);
+
+  // Count episodes by status
+  const episodeCounts = useMemo(() => {
+    return {
+      all: episodes.length,
+      published: episodes.filter((ep) => ep.status === "published").length,
+      draft: episodes.filter((ep) => ep.status === "draft").length,
+      "ready-to-record": episodes.filter((ep) => ep.status === "ready-to-record").length,
+      recorded: episodes.filter((ep) => ep.status === "recorded").length,
+    };
+  }, [episodes]);
+
+  const handleStatusTabChange = (event, newValue) => {
+    setStatusTab(newValue);
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 400 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -42,7 +160,7 @@ export default async function HomePage() {
         <Box sx={{ position: "relative", zIndex: 1 }}>
           <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: "wrap", gap: 1 }}>
             <Chip 
-              label={`${episodes.length}+ Episodes`} 
+              label={`${episodeCounts.all} Episodes`} 
               sx={{ 
                 backgroundColor: "rgba(255,255,255,0.2)", 
                 color: "white",
@@ -85,54 +203,105 @@ export default async function HomePage() {
             Quick, practical tips on data modeling, indexing, Atlas features, Vector Search, and more. 
             Perfect for developers of all levels who want to master MongoDB efficiently.
           </Typography>
-          
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-            <Link href="/episodes" style={{ textDecoration: 'none' }}>
-              <Button
-                variant="contained"
-                size="large"
-                endIcon={<PlayArrowIcon />}
-                sx={{
-                  backgroundColor: "white",
-                  color: "#10A84F",
-                  fontWeight: 600,
-                  px: 4,
-                  py: 1.5,
-                  "&:hover": {
-                    backgroundColor: "rgba(255,255,255,0.9)",
-                    transform: "translateY(-2px)",
-                    boxShadow: "0px 8px 24px rgba(0,0,0,0.2)",
-                  },
-                }}
-              >
-                Browse Episodes
-              </Button>
-            </Link>
-            <Link href="/episodes" style={{ textDecoration: 'none' }}>
-              <Button
-                variant="outlined"
-                size="large"
-                endIcon={<TrendingUpIcon />}
-                sx={{
-                  borderColor: "white",
-                  color: "white",
-                  fontWeight: 600,
-                  px: 4,
-                  py: 1.5,
-                  "&:hover": {
-                    borderColor: "rgba(255,255,255,0.9)",
-                    backgroundColor: "rgba(255,255,255,0.1)",
-                  },
-                }}
-              >
-                Popular Topics
-              </Button>
-            </Link>
-          </Stack>
         </Box>
       </Box>
 
-      {/* Latest Episodes Section */}
+      {/* Search and Filter Section */}
+      <Paper
+        sx={{
+          p: 3,
+          mb: 4,
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "divider",
+        }}
+      >
+        {/* Search Bar */}
+        <TextField
+          fullWidth
+          placeholder="Search episodes by title, content, category, or difficulty..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ mb: 3 }}
+        />
+
+        {/* Status Tabs */}
+        <Box sx={{ mb: 3, borderBottom: 1, borderColor: "divider" }}>
+          <Tabs
+            value={statusTab}
+            onChange={handleStatusTabChange}
+            variant="scrollable"
+            scrollButtons="auto"
+          >
+            <Tab label={`All (${episodeCounts.all})`} />
+            <Tab label={`Published (${episodeCounts.published})`} />
+            <Tab label={`Draft (${episodeCounts.draft})`} />
+            <Tab label={`Ready (${episodeCounts["ready-to-record"]})`} />
+            <Tab label={`Recorded (${episodeCounts.recorded})`} />
+          </Tabs>
+        </Box>
+
+        {/* Category Filters */}
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5 }}>
+            Category
+          </Typography>
+          <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
+            <Chip
+              label="All Categories"
+              onClick={() => setSelectedCategory(null)}
+              color={selectedCategory === null ? "primary" : "default"}
+              sx={{ fontWeight: selectedCategory === null ? 600 : 400 }}
+            />
+            {availableCategories.map((category) => (
+              <Chip
+                key={category}
+                label={category}
+                onClick={() =>
+                  setSelectedCategory(selectedCategory === category ? null : category)
+                }
+                color={selectedCategory === category ? "primary" : "default"}
+                sx={{ fontWeight: selectedCategory === category ? 600 : 400 }}
+              />
+            ))}
+          </Stack>
+        </Box>
+
+        {/* Difficulty Filters */}
+        <Box>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5 }}>
+            Difficulty
+          </Typography>
+          <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
+            <Chip
+              label="All Levels"
+              onClick={() => setSelectedDifficulty(null)}
+              color={selectedDifficulty === null ? "primary" : "default"}
+              sx={{ fontWeight: selectedDifficulty === null ? 600 : 400 }}
+            />
+            {availableDifficulties.map((difficulty) => (
+              <Chip
+                key={difficulty}
+                label={difficulty}
+                onClick={() =>
+                  setSelectedDifficulty(selectedDifficulty === difficulty ? null : difficulty)
+                }
+                color={selectedDifficulty === difficulty ? "primary" : "default"}
+                sx={{ fontWeight: selectedDifficulty === difficulty ? 600 : 400 }}
+              />
+            ))}
+          </Stack>
+        </Box>
+      </Paper>
+
+      {/* Results Section */}
       <Box sx={{ mb: 2 }}>
         <Typography 
           variant="h4" 
@@ -142,16 +311,18 @@ export default async function HomePage() {
             fontSize: { xs: "1.75rem", md: "2.125rem" },
           }}
         >
-          Latest Episodes
+          Episodes {filteredEpisodes.length > 0 && `(${filteredEpisodes.length})`}
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-          Start your MongoDB journey with these recent tips
-        </Typography>
+        {(searchQuery || selectedCategory || selectedDifficulty || statusTab > 0) && (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+            Showing filtered results
+          </Typography>
+        )}
       </Box>
 
-      {latest.length > 0 ? (
+      {filteredEpisodes.length > 0 ? (
         <Grid container spacing={3}>
-          {latest.map((ep) => (
+          {filteredEpisodes.map((ep) => (
             <Grid item xs={12} sm={6} md={4} key={ep._id}>
               <EpisodeCard episode={ep} />
             </Grid>
@@ -170,10 +341,12 @@ export default async function HomePage() {
           }}
         >
           <Typography variant="h6" color="text.secondary" gutterBottom>
-            No episodes published yet
+            No episodes found
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Check back soon for new MongoDB tips!
+            {searchQuery || selectedCategory || selectedDifficulty
+              ? "Try adjusting your search or filters"
+              : "Check back soon for new MongoDB tips!"}
           </Typography>
         </Box>
       )}
