@@ -346,117 +346,201 @@ function TeleprompterRecorderContent({ initialScript = "", episodeId = null }) {
 
                 {/* Fullscreen Controls Overlay */}
                 {isFullscreen && (
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      zIndex: 20,
-                      background: "linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%)",
-                      p: 3,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      {/* Timer */}
-                      <Box
+                  <>
+                    {/* Top Controls - Speed and Exit */}
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 20,
+                        background: "linear-gradient(to bottom, rgba(0, 0, 0, 0.9) 0%, transparent 100%)",
+                        p: 2,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      {/* Speed Controls */}
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <IconButton
+                          onClick={() => setScrollSpeed((prev) => Math.max(prev - 0.5, 0.5))}
+                          sx={{
+                            backgroundColor: "rgba(0, 0, 0, 0.6)",
+                            color: "#FFF",
+                            "&:hover": {
+                              backgroundColor: "rgba(0, 0, 0, 0.8)",
+                            },
+                          }}
+                        >
+                          <Typography sx={{ fontSize: "1.5rem", fontWeight: 700 }}>-</Typography>
+                        </IconButton>
+                        <Box
+                          sx={{
+                            backgroundColor: "rgba(0, 0, 0, 0.7)",
+                            px: 2,
+                            py: 1,
+                            borderRadius: 1,
+                            minWidth: 80,
+                            textAlign: "center",
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: "#00ED64",
+                              fontWeight: 700,
+                              fontSize: "0.9rem",
+                            }}
+                          >
+                            {scrollSpeed.toFixed(1)}x
+                          </Typography>
+                        </Box>
+                        <IconButton
+                          onClick={() => setScrollSpeed((prev) => Math.min(prev + 0.5, 10.0))}
+                          sx={{
+                            backgroundColor: "rgba(0, 0, 0, 0.6)",
+                            color: "#FFF",
+                            "&:hover": {
+                              backgroundColor: "rgba(0, 0, 0, 0.8)",
+                            },
+                          }}
+                        >
+                          <Typography sx={{ fontSize: "1.5rem", fontWeight: 700 }}>+</Typography>
+                        </IconButton>
+                      </Stack>
+
+                      {/* Exit Fullscreen */}
+                      <IconButton
+                        onClick={toggleFullscreen}
                         sx={{
-                          backgroundColor: "rgba(0, 0, 0, 0.7)",
-                          px: 3,
-                          py: 1.5,
-                          borderRadius: 2,
+                          backgroundColor: "rgba(0, 0, 0, 0.6)",
+                          color: "#FFF",
+                          width: 48,
+                          height: 48,
+                          "&:hover": {
+                            backgroundColor: "rgba(0, 0, 0, 0.8)",
+                          },
                         }}
                       >
-                        <Typography
-                          variant="h5"
-                          sx={{
-                            fontFamily: "monospace",
-                            fontWeight: 700,
-                            color: isRecording ? "#E63946" : "#FFF",
-                          }}
-                        >
-                          {formatTime(recordingTime)}
-                        </Typography>
-                      </Box>
+                        <FullscreenExitIcon sx={{ fontSize: 28 }} />
+                      </IconButton>
+                    </Box>
 
-                      {/* Recording Controls */}
-                      {!isRecording && !recordedBlob && (
-                        <Button
-                          variant="contained"
-                          size="large"
-                          onClick={startRecording}
-                          startIcon={<FiberManualRecord />}
+                    {/* Bottom Controls - Recording */}
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 20,
+                        background: "linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%)",
+                        p: 3,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" justifyContent="center">
+                        {/* Timer */}
+                        <Box
                           sx={{
-                            backgroundColor: "#E63946",
-                            color: "#FFF",
-                            fontWeight: 700,
-                            px: 4,
+                            backgroundColor: "rgba(0, 0, 0, 0.7)",
+                            px: 3,
                             py: 1.5,
-                            fontSize: "1.1rem",
-                            "&:hover": {
-                              backgroundColor: "#D62828",
-                            },
+                            borderRadius: 2,
                           }}
                         >
-                          Start Recording
-                        </Button>
-                      )}
+                          <Typography
+                            variant="h5"
+                            sx={{
+                              fontFamily: "monospace",
+                              fontWeight: 700,
+                              color: isRecording ? "#E63946" : "#FFF",
+                            }}
+                          >
+                            {formatTime(recordingTime)}
+                          </Typography>
+                        </Box>
 
-                      {isRecording && !isPaused && (
-                        <IconButton
-                          onClick={pauseRecording}
-                          sx={{
-                            backgroundColor: "#FFA500",
-                            color: "#FFF",
-                            width: 64,
-                            height: 64,
-                            "&:hover": {
-                              backgroundColor: "#FF8C00",
-                            },
-                          }}
-                        >
-                          <Pause sx={{ fontSize: 32 }} />
-                        </IconButton>
-                      )}
+                        {/* Recording Controls */}
+                        {!isRecording && !recordedBlob && (
+                          <Button
+                            variant="contained"
+                            size="large"
+                            onClick={startRecording}
+                            startIcon={<FiberManualRecord />}
+                            sx={{
+                              backgroundColor: "#E63946",
+                              color: "#FFF",
+                              fontWeight: 700,
+                              px: 4,
+                              py: 1.5,
+                              fontSize: "1.1rem",
+                              "&:hover": {
+                                backgroundColor: "#D62828",
+                              },
+                            }}
+                          >
+                            Start Recording
+                          </Button>
+                        )}
 
-                      {isRecording && isPaused && (
-                        <IconButton
-                          onClick={resumeRecording}
-                          sx={{
-                            backgroundColor: "#00ED64",
-                            color: "#000",
-                            width: 64,
-                            height: 64,
-                            "&:hover": {
-                              backgroundColor: "#00C853",
-                            },
-                          }}
-                        >
-                          <PlayArrow sx={{ fontSize: 32 }} />
-                        </IconButton>
-                      )}
+                        {isRecording && !isPaused && (
+                          <IconButton
+                            onClick={pauseRecording}
+                            sx={{
+                              backgroundColor: "#FFA500",
+                              color: "#FFF",
+                              width: 64,
+                              height: 64,
+                              "&:hover": {
+                                backgroundColor: "#FF8C00",
+                              },
+                            }}
+                          >
+                            <Pause sx={{ fontSize: 32 }} />
+                          </IconButton>
+                        )}
 
-                      {isRecording && (
-                        <IconButton
-                          onClick={stopRecording}
-                          sx={{
-                            backgroundColor: "#64748B",
-                            color: "#FFF",
-                            width: 64,
-                            height: 64,
-                            "&:hover": {
-                              backgroundColor: "#475569",
-                            },
-                          }}
-                        >
-                          <Stop sx={{ fontSize: 32 }} />
-                        </IconButton>
-                      )}
-                    </Stack>
-                  </Box>
+                        {isRecording && isPaused && (
+                          <IconButton
+                            onClick={resumeRecording}
+                            sx={{
+                              backgroundColor: "#00ED64",
+                              color: "#000",
+                              width: 64,
+                              height: 64,
+                              "&:hover": {
+                                backgroundColor: "#00C853",
+                              },
+                            }}
+                          >
+                            <PlayArrow sx={{ fontSize: 32 }} />
+                          </IconButton>
+                        )}
+
+                        {isRecording && (
+                          <IconButton
+                            onClick={stopRecording}
+                            sx={{
+                              backgroundColor: "#64748B",
+                              color: "#FFF",
+                              width: 64,
+                              height: 64,
+                              "&:hover": {
+                                backgroundColor: "#475569",
+                              },
+                            }}
+                          >
+                            <Stop sx={{ fontSize: 32 }} />
+                          </IconButton>
+                        )}
+                      </Stack>
+                    </Box>
+                  </>
                 )}
               </Box>
 
