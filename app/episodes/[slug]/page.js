@@ -334,11 +334,11 @@ export default async function EpisodeDetailPage({ params }) {
 
       {/* Back Button */}
       <Box sx={{ mt: 4 }}>
-        <Link href="/episodes" style={{ textDecoration: 'none' }}>
-          <Button 
-            variant="outlined" 
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <Button
+            variant="outlined"
             size="large"
-            sx={{ 
+            sx={{
               fontWeight: 600,
               px: 4,
             }}

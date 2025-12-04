@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 import { AppBar, Toolbar, Typography, Container, Box, Button, IconButton, useMediaQuery, Drawer, List, ListItem, ListItemText } from "@mui/material";
 import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 
 const theme = createTheme({
@@ -195,7 +196,6 @@ function Navigation() {
   };
 
   const navItems = [
-    { label: "Episodes", href: "/episodes" },
     { label: "Admin", href: "/admin" },
   ];
 
@@ -211,21 +211,36 @@ function Navigation() {
         }}
       >
         <Toolbar sx={{ py: { xs: 1, md: 1.5 }, px: { xs: 2, md: 3 } }}>
-          <Typography
-            variant="h6"
+          <Box
             component={Link}
             href="/"
             sx={{
               flexGrow: { xs: 1, md: 0 },
               textDecoration: "none",
-              color: "#001E2B",
-              fontWeight: 600,
-              fontSize: { xs: "1rem", md: "1.125rem" },
-              letterSpacing: "-0.01em",
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
             }}
           >
-            MongoDB Minute
-          </Typography>
+            <Image
+              src="/logo.png"
+              alt="MongoDB Minute Logo"
+              width={40}
+              height={40}
+              style={{ display: "block" }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                color: "#001E2B",
+                fontWeight: 600,
+                fontSize: { xs: "1rem", md: "1.125rem" },
+                letterSpacing: "-0.01em",
+              }}
+            >
+              MongoDB Minute
+            </Typography>
+          </Box>
           
           {!isMobile && (
             <Box sx={{ flexGrow: 1, display: "flex", gap: 0.5, ml: 4 }}>

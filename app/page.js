@@ -12,8 +12,6 @@ import {
   TextField,
   InputAdornment,
   Paper,
-  Tabs,
-  Tab,
   CircularProgress,
 } from "@mui/material";
 import {
@@ -27,7 +25,6 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
-  const [statusTab, setStatusTab] = useState(0); // 0 = all, 1 = published, 2 = draft, etc.
 
   useEffect(() => {
     async function fetchEpisodes() {
@@ -48,16 +45,7 @@ export default function HomePage() {
   const filteredEpisodes = useMemo(() => {
     let filtered = [...episodes];
 
-    // Filter by status tab
-    if (statusTab === 1) {
-      filtered = filtered.filter((ep) => ep.status === "published");
-    } else if (statusTab === 2) {
-      filtered = filtered.filter((ep) => ep.status === "draft");
-    } else if (statusTab === 3) {
-      filtered = filtered.filter((ep) => ep.status === "ready-to-record");
-    } else if (statusTab === 4) {
-      filtered = filtered.filter((ep) => ep.status === "recorded");
-    }
+    // Status tabs removed since we only show published episodes
 
     // Filter by category
     if (selectedCategory) {
@@ -100,7 +88,7 @@ export default function HomePage() {
       if (b.episodeNumber) return 1;
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
-  }, [episodes, searchQuery, selectedCategory, selectedDifficulty, statusTab]);
+  }, [episodes, searchQuery, selectedCategory, selectedDifficulty]);
 
   // Get unique categories and difficulties from episodes
   const availableCategories = useMemo(() => {
@@ -111,20 +99,6 @@ export default function HomePage() {
     return [...new Set(episodes.map((ep) => ep.difficulty).filter(Boolean))].sort();
   }, [episodes]);
 
-  // Count episodes by status
-  const episodeCounts = useMemo(() => {
-    return {
-      all: episodes.length,
-      published: episodes.filter((ep) => ep.status === "published").length,
-      draft: episodes.filter((ep) => ep.status === "draft").length,
-      "ready-to-record": episodes.filter((ep) => ep.status === "ready-to-record").length,
-      recorded: episodes.filter((ep) => ep.status === "recorded").length,
-    };
-  }, [episodes]);
-
-  const handleStatusTabChange = (event, newValue) => {
-    setStatusTab(newValue);
-  };
 
   if (loading) {
     return (
@@ -149,28 +123,28 @@ export default function HomePage() {
       >
         <Box sx={{ position: "relative", zIndex: 1 }}>
           <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: "wrap", gap: 1 }}>
-            <Chip 
-              label={`${episodeCounts.all} Episodes`} 
+            <Chip
+              label={`${episodes.length} Episodes`}
               size="small"
-              sx={{ 
-                backgroundColor: "#EDF2F7", 
+              sx={{
+                backgroundColor: "#EDF2F7",
                 color: "#001E2B",
                 fontWeight: 500,
                 fontSize: "0.75rem",
                 height: "24px",
-              }} 
+              }}
             />
-            <Chip 
+            <Chip
               icon={<PlayArrowIcon sx={{ color: "#00684A !important", fontSize: "16px !important" }} />}
-              label="60-Second Tips" 
+              label="60-Second Tips"
               size="small"
-              sx={{ 
-                backgroundColor: "#EDF2F7", 
+              sx={{
+                backgroundColor: "#EDF2F7",
                 color: "#001E2B",
                 fontWeight: 500,
                 fontSize: "0.75rem",
                 height: "24px",
-              }} 
+              }}
             />
           </Stack>
           
@@ -228,22 +202,6 @@ export default function HomePage() {
           }}
           sx={{ mb: 3 }}
         />
-
-        {/* Status Tabs */}
-        <Box sx={{ mb: 3, borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
-            value={statusTab}
-            onChange={handleStatusTabChange}
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            <Tab label={`All (${episodeCounts.all})`} />
-            <Tab label={`Published (${episodeCounts.published})`} />
-            <Tab label={`Draft (${episodeCounts.draft})`} />
-            <Tab label={`Ready (${episodeCounts["ready-to-record"]})`} />
-            <Tab label={`Recorded (${episodeCounts.recorded})`} />
-          </Tabs>
-        </Box>
 
         {/* Category Filters */}
         <Box sx={{ mb: 2 }}>
@@ -347,7 +305,7 @@ export default function HomePage() {
         >
           Episodes {filteredEpisodes.length > 0 && `(${filteredEpisodes.length})`}
         </Typography>
-        {(searchQuery || selectedCategory || selectedDifficulty || statusTab > 0) && (
+        {(searchQuery || selectedCategory || selectedDifficulty) && (
           <Typography variant="body2" sx={{ mb: 4, color: "#5F6C76", fontSize: "0.875rem" }}>
             Showing filtered results
           </Typography>
