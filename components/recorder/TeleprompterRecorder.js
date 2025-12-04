@@ -354,23 +354,29 @@ function TeleprompterRecorderContent({ initialScript = "", episodeId = null }) {
                         top: 0,
                         left: 0,
                         right: 0,
-                        zIndex: 20,
+                        zIndex: 30,
                         background: "linear-gradient(to bottom, rgba(0, 0, 0, 0.9) 0%, transparent 100%)",
                         p: 2,
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
+                        pointerEvents: "none",
                       }}
                     >
                       {/* Speed Controls */}
-                      <Stack direction="row" spacing={1} alignItems="center">
+                      <Stack direction="row" spacing={1} alignItems="center" sx={{ pointerEvents: "auto" }}>
                         <IconButton
                           onClick={() => setScrollSpeed((prev) => Math.max(prev - 0.5, 0.5))}
                           sx={{
                             backgroundColor: "rgba(0, 0, 0, 0.6)",
                             color: "#FFF",
+                            pointerEvents: "auto",
+                            touchAction: "manipulation",
                             "&:hover": {
                               backgroundColor: "rgba(0, 0, 0, 0.8)",
+                            },
+                            "&:active": {
+                              backgroundColor: "rgba(0, 0, 0, 1)",
                             },
                           }}
                         >
@@ -402,8 +408,13 @@ function TeleprompterRecorderContent({ initialScript = "", episodeId = null }) {
                           sx={{
                             backgroundColor: "rgba(0, 0, 0, 0.6)",
                             color: "#FFF",
+                            pointerEvents: "auto",
+                            touchAction: "manipulation",
                             "&:hover": {
                               backgroundColor: "rgba(0, 0, 0, 0.8)",
+                            },
+                            "&:active": {
+                              backgroundColor: "rgba(0, 0, 0, 1)",
                             },
                           }}
                         >
@@ -413,18 +424,28 @@ function TeleprompterRecorderContent({ initialScript = "", episodeId = null }) {
 
                       {/* Exit Fullscreen */}
                       <IconButton
-                        onClick={toggleFullscreen}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log("Exit fullscreen clicked");
+                          toggleFullscreen();
+                        }}
                         sx={{
-                          backgroundColor: "rgba(0, 0, 0, 0.6)",
+                          backgroundColor: "rgba(230, 57, 70, 0.8)",
                           color: "#FFF",
-                          width: 48,
-                          height: 48,
+                          width: 56,
+                          height: 56,
+                          pointerEvents: "auto",
+                          touchAction: "manipulation",
                           "&:hover": {
-                            backgroundColor: "rgba(0, 0, 0, 0.8)",
+                            backgroundColor: "rgba(230, 57, 70, 1)",
+                          },
+                          "&:active": {
+                            backgroundColor: "rgba(214, 40, 40, 1)",
                           },
                         }}
                       >
-                        <FullscreenExitIcon sx={{ fontSize: 28 }} />
+                        <FullscreenExitIcon sx={{ fontSize: 32 }} />
                       </IconButton>
                     </Box>
 
