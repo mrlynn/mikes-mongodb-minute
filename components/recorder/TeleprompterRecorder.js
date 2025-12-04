@@ -62,10 +62,33 @@ function TeleprompterRecorderContent({ initialScript = "", episodeId = null }) {
 
     try {
       if (!document.fullscreenElement) {
-        await fullscreenRef.current.requestFullscreen();
+        // Try different fullscreen APIs for cross-browser compatibility
+        const element = fullscreenRef.current;
+
+        if (element.requestFullscreen) {
+          await element.requestFullscreen();
+        } else if (element.webkitRequestFullscreen) {
+          // Safari/iOS
+          await element.webkitRequestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+          // Firefox
+          await element.mozRequestFullScreen();
+        } else if (element.msRequestFullscreen) {
+          // IE/Edge
+          await element.msRequestFullscreen();
+        }
         setIsFullscreen(true);
       } else {
-        await document.exitFullscreen();
+        // Exit fullscreen with cross-browser support
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          await document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          await document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          await document.msExitFullscreen();
+        }
         setIsFullscreen(false);
       }
     } catch (error) {
@@ -76,11 +99,27 @@ function TeleprompterRecorderContent({ initialScript = "", episodeId = null }) {
   // Listen for fullscreen changes (in case user exits with ESC)
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+      const isCurrentlyFullscreen = !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      );
+      setIsFullscreen(isCurrentlyFullscreen);
     };
 
+    // Listen to all possible fullscreen change events
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+    document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("mozfullscreenchange", handleFullscreenChange);
+      document.removeEventListener("MSFullscreenChange", handleFullscreenChange);
+    };
   }, []);
 
   // Keyboard shortcuts
