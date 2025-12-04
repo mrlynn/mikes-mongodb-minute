@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+import { getUserSettings } from "@/lib/users";
+
+export const runtime = "nodejs";
 
 export async function POST(req) {
   try {
-    const { topic, category, difficulty, additionalContext } = await req.json();
+    const { topic, category, difficulty, additionalContext, apiKey } = await req.json();
 
     // Validate required fields
     if (!topic || !category || !difficulty) {
@@ -12,11 +17,40 @@ export async function POST(req) {
       );
     }
 
-    // Check for OpenAI API key
-    if (!process.env.OPENAI_API_KEY) {
+    // Determine which API key to use
+    let openaiApiKey = apiKey; // First priority: API key from request
+
+    // If no API key in request, try to get from user settings
+    if (!openaiApiKey) {
+      try {
+        const cookieStore = await cookies();
+        const sessionCookie = cookieStore.get("session");
+
+        if (sessionCookie) {
+          const decoded = jwt.verify(sessionCookie.value, process.env.JWT_SECRET, {
+            clockTolerance: 60,
+          });
+          const userEmail = decoded.email;
+
+          // Get user's saved API key
+          const userSettings = await getUserSettings(userEmail);
+          openaiApiKey = userSettings.openaiApiKey;
+        }
+      } catch (error) {
+        console.error("Error fetching user settings:", error);
+      }
+    }
+
+    // Fall back to system API key
+    if (!openaiApiKey) {
+      openaiApiKey = process.env.OPENAI_API_KEY;
+    }
+
+    // Check if we have any API key
+    if (!openaiApiKey) {
       return NextResponse.json(
-        { error: "OpenAI API key not configured" },
-        { status: 500 }
+        { error: "OpenAI API key not configured. Please add your API key in Settings." },
+        { status: 400 }
       );
     }
 
@@ -59,7 +93,7 @@ Format as JSON with these exact keys: title, hook, problem, tip, quickWin, cta, 
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${openaiApiKey}`,
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",

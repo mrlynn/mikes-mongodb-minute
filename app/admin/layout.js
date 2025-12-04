@@ -17,6 +17,7 @@ import {
   Logout as LogoutIcon,
   VideoLibrary as VideoLibraryIcon,
   AccountCircle as AccountCircleIcon,
+  Settings as SettingsIcon,
 } from "@mui/icons-material";
 import Link from "next/link";
 
@@ -62,6 +63,18 @@ export default function AdminLayout({ children }) {
             }}
           >
             Episodes
+          </Button>
+
+          <Button
+            color="inherit"
+            component={Link}
+            href="/admin/settings"
+            sx={{
+              mr: 2,
+              fontWeight: pathname === "/admin/settings" ? 700 : 400,
+            }}
+          >
+            Settings
           </Button>
 
           <IconButton

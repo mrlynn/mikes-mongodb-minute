@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -15,10 +15,16 @@ import {
   AccordionSummary,
   AccordionDetails,
   Grid,
+  CircularProgress,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import {
   Save as SaveIcon,
   ExpandMore as ExpandMoreIcon,
+  QrCode as QrCodeIcon,
+  Download as DownloadIcon,
+  Refresh as RefreshIcon,
 } from "@mui/icons-material";
 
 const CATEGORIES = [
@@ -62,6 +68,43 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
   });
 
   const [saving, setSaving] = useState(false);
+  const [qrCode, setQrCode] = useState(null);
+  const [loadingQR, setLoadingQR] = useState(false);
+
+  // Fetch QR code when component mounts (if editing existing episode)
+  useEffect(() => {
+    if (initialData._id) {
+      fetchQRCode();
+    }
+  }, [initialData._id]);
+
+  async function fetchQRCode() {
+    if (!initialData._id) return;
+
+    setLoadingQR(true);
+    try {
+      const res = await fetch(`/api/episodes/${initialData._id}/qrcode`);
+      if (res.ok) {
+        const data = await res.json();
+        setQrCode(data.qrCode);
+      }
+    } catch (error) {
+      console.error("Error fetching QR code:", error);
+    } finally {
+      setLoadingQR(false);
+    }
+  }
+
+  function downloadQRCode() {
+    if (!qrCode) return;
+
+    const link = document.createElement("a");
+    link.href = qrCode;
+    link.download = `mongodb-minute-${initialData.slug || initialData._id}-qr.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
   function handleChange(field, value) {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -243,6 +286,82 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                       size="small"
                     />
                   </Box>
+
+                  {/* QR Code Section - Only show for existing episodes */}
+                  {initialData._id && (
+                    <>
+                      <Divider sx={{ my: 1 }} />
+                      <Box>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
+                          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                            QR Code
+                          </Typography>
+                          <Stack direction="row" spacing={0.5}>
+                            <Tooltip title="Refresh QR Code">
+                              <IconButton size="small" onClick={fetchQRCode} disabled={loadingQR}>
+                                <RefreshIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                            {qrCode && (
+                              <Tooltip title="Download QR Code">
+                                <IconButton size="small" onClick={downloadQRCode}>
+                                  <DownloadIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                          </Stack>
+                        </Stack>
+                        {loadingQR ? (
+                          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+                            <CircularProgress size={40} />
+                          </Box>
+                        ) : qrCode ? (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              p: 2,
+                              backgroundColor: "#FFFFFF",
+                              borderRadius: 2,
+                              border: "2px solid #E2E8F0",
+                            }}
+                          >
+                            <img
+                              src={qrCode}
+                              alt="Episode QR Code"
+                              style={{
+                                width: "100%",
+                                maxWidth: "200px",
+                                height: "auto",
+                                display: "block",
+                              }}
+                            />
+                          </Box>
+                        ) : (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              p: 3,
+                              backgroundColor: "#F7FAFC",
+                              borderRadius: 2,
+                              border: "2px dashed #CBD5E0",
+                            }}
+                          >
+                            <QrCodeIcon sx={{ fontSize: 48, color: "#A0AEC0", mb: 1 }} />
+                            <Typography variant="caption" color="text.secondary" align="center">
+                              QR Code unavailable
+                            </Typography>
+                          </Box>
+                        )}
+                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block", textAlign: "center" }}>
+                          Scan to view episode detail page
+                        </Typography>
+                      </Box>
+                    </>
+                  )}
                 </Stack>
               </Box>
 
