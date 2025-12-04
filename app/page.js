@@ -158,7 +158,7 @@ export default function HomePage() {
               color: "#001E2B",
             }}
           >
-            Learn MongoDB in 60 Seconds
+            Learn MongoDB 60 Seconds at a Time
           </Typography>
           
           <Typography 
@@ -167,7 +167,7 @@ export default function HomePage() {
               mb: 0, 
               fontSize: { xs: "0.9375rem", md: "1rem" },
               fontWeight: 400,
-              maxWidth: "600px",
+              maxWidth: "640px",
               color: "#5F6C76",
               lineHeight: 1.6,
             }}

@@ -1,14 +1,14 @@
 # Mike's MongoDB Minute - Project Summary
 
-**Status**: Phase 1 Complete ✅
-**Last Updated**: December 3, 2025
+**Status**: Phase 1 Complete + Enhanced Features ✅
+**Last Updated**: December 4, 2025
 **Environment**: Development server running on port 3001
 
 ## Executive Summary
 
-Mike's MongoDB Minute is a full-stack web application for managing and publishing 60-second educational MongoDB video content. The platform provides a complete content management system with admin CRUD operations and a public-facing site for browsing episodes.
+Mike's MongoDB Minute is a full-stack web application for managing and publishing 60-second educational MongoDB video content. The platform provides a complete content management system with admin CRUD operations, workflow/approval tracking, and a public-facing site for browsing episodes.
 
-**Phase 1 Deliverables**: All core features implemented and functional.
+**Phase 1 Deliverables**: All core features implemented and functional, plus enhanced workflow system for content quality control.
 
 ---
 
@@ -48,25 +48,39 @@ Mike's MongoDB Minute is a full-stack web application for managing and publishin
 mikes-mongodb-minute/
 ├── app/                        # Next.js App Router
 │   ├── admin/                  # Admin interface (protected)
-│   │   ├── page.js            # Dashboard with statistics
+│   │   ├── page.js            # Dashboard with statistics and review queue
+│   │   ├── settings/page.js   # User settings page
 │   │   └── episodes/
 │   │       ├── page.js        # Episode management table
 │   │       ├── new/page.js    # Create episode form
-│   │       └── [id]/page.js   # Edit episode form
+│   │       └── [id]/page.js   # Edit episode form with workflow panel
 │   ├── episodes/              # Public interface
 │   │   ├── page.js            # Browse all published episodes
 │   │   └── [slug]/page.js     # Individual episode detail
-│   ├── api/episodes/          # REST API
-│   │   ├── route.js           # GET (list), POST (create)
-│   │   └── [id]/route.js      # GET, PUT, DELETE by ID
+│   ├── api/                   # REST API
+│   │   ├── episodes/
+│   │   │   ├── route.js       # GET (list), POST (create with workflow)
+│   │   │   └── [id]/
+│   │   │       ├── route.js   # GET, PUT, DELETE by ID
+│   │   │       ├── qrcode/route.js         # QR code generation
+│   │   │       └── workflow/
+│   │   │           ├── submit-review/route.js  # Submit for tech review
+│   │   │           ├── review/route.js         # Approve/request changes
+│   │   │           └── approve/route.js        # Final approval
+│   │   └── user/
+│   │       └── settings/route.js  # User settings management
 │   ├── layout.js              # Root layout (client component)
 │   └── page.js                # Home page (latest episodes)
 ├── components/
-│   ├── EpisodeCard.js         # Reusable episode preview card
-│   └── EpisodeForm.js         # Comprehensive episode form
+│   ├── EpisodeCard.js         # Reusable episode preview card with workflow badges
+│   ├── EpisodeForm.js         # Comprehensive episode form
+│   ├── WorkflowStatus.js      # Workflow management component (310+ lines)
+│   └── AIGenerateDialog.js    # AI episode generation dialog
 ├── lib/
 │   ├── mongodb.js             # Database connection pooling
-│   └── episodes.js            # Database operations layer
+│   ├── episodes.js            # Database operations layer (includes workflow functions)
+│   ├── auth.js                # JWT authentication utilities
+│   └── email.js               # Email service for notifications
 ├── .env.local                 # Environment variables (not in git)
 └── public/                    # Static assets
 ```
@@ -113,8 +127,70 @@ mikes-mongodb-minute/
     x: String
   },
 
+  // Workflow tracking (NEW)
+  workflow: {
+    currentStage: String,           // draft | tech-review | approved
+    draftedBy: {
+      email: String,
+      name: String,
+      timestamp: Date
+    },
+    submittedForReview: {
+      email: String,
+      name: String,
+      timestamp: Date
+    },
+    reviewedBy: {
+      email: String,
+      name: String,
+      timestamp: Date,
+      notes: String,
+      decision: String              // approved | changes-requested
+    },
+    approvedBy: {
+      email: String,
+      name: String,
+      timestamp: Date,
+      notes: String
+    },
+    history: [                      // Complete audit trail
+      {
+        action: String,             // created | submitted-for-review | review-approved |
+                                    // changes-requested | approved
+        stage: String,              // draft | tech-review | approved
+        user: {
+          email: String,
+          name: String
+        },
+        timestamp: Date,
+        notes: String
+      }
+    ]
+  },
+
   createdAt: Date,                  // Auto-set on creation
   updatedAt: Date                   // Auto-set on update
+}
+```
+
+### Collection: `users` (NEW)
+
+```javascript
+{
+  _id: ObjectId,
+  email: String,                    // MongoDB.com email (unique)
+  settings: {
+    openaiApiKey: String,           // Encrypted API key (optional)
+    socialHandles: {                // Social media handles
+      youtube: String,
+      tiktok: String,
+      linkedin: String,
+      instagram: String,
+      x: String
+    }
+  },
+  createdAt: Date,
+  updatedAt: Date
 }
 ```
 
@@ -144,6 +220,15 @@ db.episodes.createIndex({ category: 1 })
 
 // Latest episodes query
 db.episodes.createIndex({ status: 1, createdAt: -1 })
+
+// Workflow stage queries (NEW)
+db.episodes.createIndex({ "workflow.currentStage": 1 })
+
+// Review queue queries (NEW)
+db.episodes.createIndex({ "workflow.currentStage": 1, "workflow.submittedForReview.timestamp": 1 })
+
+// User email lookup (NEW)
+db.users.createIndex({ email: 1 }, { unique: true })
 ```
 
 ---
@@ -217,6 +302,102 @@ Delete episode by ID.
 
 **Response**: `{ "ok": true }`
 
+#### `POST /api/episodes/[id]/workflow/submit-review` (NEW)
+Submit episode for technical review.
+
+**Authentication**: Required (JWT)
+
+**Response**:
+```json
+{
+  "success": true,
+  "episode": { /* updated episode with workflow.currentStage: "tech-review" */ }
+}
+```
+
+#### `POST /api/episodes/[id]/workflow/review` (NEW)
+Perform technical review (approve or request changes).
+
+**Authentication**: Required (JWT)
+
+**Request Body**:
+```json
+{
+  "decision": "approved", // or "changes-requested"
+  "notes": "Looks good, minor typo fixed"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "episode": { /* updated episode */ }
+}
+```
+
+#### `POST /api/episodes/[id]/workflow/approve` (NEW)
+Final approval for recording.
+
+**Authentication**: Required (JWT)
+
+**Request Body**:
+```json
+{
+  "notes": "Ready for recording"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "episode": { /* updated episode with workflow.currentStage: "approved" */ }
+}
+```
+
+#### `GET /api/episodes/[id]/qrcode` (NEW)
+Generate QR code for episode detail page.
+
+**Query Parameters**:
+- `size` (number, optional): QR code size in pixels (default: 256)
+
+**Response**: QR code as SVG image
+
+#### `GET /api/user/settings` (NEW)
+Get current user settings.
+
+**Authentication**: Required (JWT)
+
+**Response**:
+```json
+{
+  "email": "user@mongodb.com",
+  "settings": {
+    "openaiApiKey": "sk-...",
+    "socialHandles": { /* social media handles */ }
+  }
+}
+```
+
+#### `PUT /api/user/settings` (NEW)
+Update user settings.
+
+**Authentication**: Required (JWT)
+
+**Request Body**:
+```json
+{
+  "openaiApiKey": "sk-...",
+  "socialHandles": {
+    "youtube": "@username",
+    "tiktok": "@username"
+  }
+}
+```
+
+**Response**: Updated user settings object
+
 ---
 
 ## Component Reference
@@ -227,14 +408,16 @@ Delete episode by ID.
 Displays episode preview with:
 - Episode number badge
 - Category badge
+- Workflow status badge (Draft/In Review/Approved)
 - Title
 - Hook preview (truncated)
+- Social media link buttons
 - "View script" link
 
 **Props**:
 - `episode` (object): Episode data from database
 
-**Usage**: Home page, episodes listing page
+**Usage**: Home page, episodes listing page, admin dashboard
 
 ---
 
@@ -258,6 +441,50 @@ Comprehensive form for creating/editing episodes.
 - `submitLabel` (string): Button text (default: "Save")
 
 **Usage**: `/admin/episodes/new`, `/admin/episodes/[id]`
+
+---
+
+### `<WorkflowStatus episode={episode} onWorkflowUpdate={callback} />` (NEW)
+**Location**: `components/WorkflowStatus.js`
+
+Complete workflow management interface for episode approval process.
+
+**Features**:
+- Visual progress stepper showing current workflow stage
+- Stage-specific action buttons:
+  - Draft stage: "Submit for Review" button
+  - Tech Review stage: "Approve" and "Request Changes" buttons
+  - Approved stage: Completion indicator
+- Complete workflow history timeline with:
+  - Action types (created, submitted, approved, changes requested)
+  - User attribution (name and email)
+  - Timestamps
+  - Review notes
+- Review and approval dialogs with notes fields
+- Real-time UI updates without page reload
+- MongoDB brand colors for each stage:
+  - Draft: Grey (#5F6C76)
+  - Tech Review: Blue (#0077B5)
+  - Approved: Green (#00684A)
+- QR code display and download for episode link
+
+**Props**:
+- `episode` (object, required): Episode data with workflow field
+- `onWorkflowUpdate` (function, required): Callback with updated episode data
+
+**Usage**: `/admin/episodes/[id]` (edit page)
+
+**Workflow Stages**:
+1. **Draft**: Initial creation state
+2. **Tech Review**: Submitted for technical accuracy review
+3. **Approved**: Final approval, ready for recording
+
+**Actions**:
+- `submitForReview()`: Moves from draft to tech-review
+- `reviewEpisode(decision, notes)`: Approve or request changes
+- `approveEpisode(notes)`: Final approval
+
+**Component Size**: 310+ lines with complete state management
 
 ---
 
@@ -290,7 +517,7 @@ export async function getDb() {
 
 ### Data Layer (lib/episodes.js)
 
-**Functions**:
+**Core Functions**:
 
 ```javascript
 listEpisodes({ publishedOnly = false })  // Query all or published only
@@ -302,7 +529,39 @@ deleteEpisode(id)                        // Remove by ObjectId
 slugify(str)                             // Convert title to slug
 ```
 
-**Note**: All functions are async and return promises.
+**Workflow Functions (NEW)**:
+
+```javascript
+initializeWorkflow(episodeId, user)     // Set up workflow on episode creation
+                                        // - Sets currentStage to "draft"
+                                        // - Records draftedBy user info
+                                        // - Creates initial history entry
+
+submitForReview(episodeId, user)        // Submit episode for technical review
+                                        // - Moves to "tech-review" stage
+                                        // - Records submittedForReview user info
+                                        // - Adds "submitted-for-review" history entry
+
+reviewEpisode(id, user, decision, notes) // Perform technical review
+                                         // - decision: "approved" or "changes-requested"
+                                         // - If changes requested, moves back to "draft"
+                                         // - Records reviewedBy user info with notes
+                                         // - Adds history entry with decision
+
+approveEpisode(episodeId, user, notes)  // Final approval for recording
+                                        // - Moves to "approved" stage
+                                        // - Records approvedBy user info with notes
+                                        // - Adds "approved" history entry
+```
+
+**Auth & User Functions**:
+
+```javascript
+getUserByEmail(email)                   // Fetch user settings by email
+updateUserSettings(email, settings)     // Update user preferences and API keys
+```
+
+**Note**: All functions are async and return promises. Workflow functions require authenticated user object with `email` and `name` fields.
 
 ---
 
@@ -315,12 +574,15 @@ slugify(str)                             // Convert title to slug
 
 **Client Components** (`"use client"`):
 - `app/layout.js` - Uses Material UI ThemeProvider
-- `app/admin/page.js` - Dashboard with fetch on mount
+- `app/admin/page.js` - Dashboard with statistics and review queue
 - `app/admin/episodes/page.js` - Interactive table with delete dialog
 - `app/admin/episodes/new/page.js` - Form with router navigation
-- `app/admin/episodes/[id]/page.js` - Form with data fetching
-- `components/EpisodeCard.js` - Uses Link component
+- `app/admin/episodes/[id]/page.js` - Form with data fetching and workflow panel
+- `app/admin/settings/page.js` - User settings form
+- `components/EpisodeCard.js` - Uses Link component with workflow badges
 - `components/EpisodeForm.js` - Complex form state
+- `components/WorkflowStatus.js` - Workflow management with dialogs (NEW)
+- `components/AIGenerateDialog.js` - AI generation dialog
 
 ---
 
@@ -367,9 +629,10 @@ MONGODB_DB=mikes_mongodb_minute
 
 ### Phase 1 Limitations (By Design)
 
-1. **No Authentication**: Admin routes are unprotected
-   - **Mitigation**: Use Vercel password protection or IP whitelisting
-   - **Roadmap**: NextAuth in Phase 2
+1. **Authentication**: JWT-based with MongoDB.com email restriction ✅
+   - **Implemented**: Magic link authentication
+   - **Restriction**: MongoDB.com email addresses only
+   - **Note**: Workflow system requires authentication for all actions
 
 2. **No Pagination**: All episodes loaded at once
    - **Acceptable for**: <100 episodes
@@ -527,21 +790,37 @@ MONGODB_DB=mikes_mongodb_minute
 
 ---
 
+## Completed Features ✅
+
+### Phase 1 Enhanced Features (Completed)
+- ✅ **Authentication**: JWT-based magic link authentication with MongoDB.com email restriction
+- ✅ **Workflow System**: 3-stage approval process (Draft → Tech Review → Approved)
+- ✅ **Review Queue**: Admin dashboard with pending reviews and notification badges
+- ✅ **User Attribution**: Complete audit trail tracking who did what and when
+- ✅ **QR Code Generation**: Automatic QR codes for episode detail pages
+- ✅ **User Settings**: API key management and social media handle configuration
+- ✅ **AI Integration**: OpenAI script generation with configurable API keys
+- ✅ **Social Media Links**: Platform-specific buttons and icons on episode cards
+- ✅ **Sequential Navigation**: Breadcrumbs and prev/next episode navigation
+
 ## Future Roadmap
 
 ### Phase 2 (Planned)
-- **Authentication**: NextAuth with Google OAuth
-- **AI Integration**: OpenAI script generation button
+- **Enhanced Analytics**: View counts, workflow completion time metrics
 - **Video Embeds**: Iframe/player components for each platform
-- **Search & Filter**: Client-side filtering by category, difficulty, status
-- **Pagination**: Load episodes in batches
+- **Search & Filter**: Client-side filtering by category, difficulty, workflow status
+- **Pagination**: Load episodes in batches for better performance
+- **Email Notifications**: Alert users when episodes need review
+- **Slack Integration**: Post workflow updates to Slack channels
 
 ### Phase 3 (Planned)
-- **Analytics**: View counts, engagement metrics
+- **Advanced Analytics**: Engagement metrics, user activity tracking
 - **Automation**: Social media posting via APIs
-- **Dark Mode**: Theme toggle
+- **Dark Mode**: Theme toggle with persistent preference
 - **RSS Feed**: Syndication for subscribers
 - **TypeScript**: Gradual migration for type safety
+- **Role-Based Permissions**: Separate reviewer and approver roles
+- **Batch Operations**: Bulk episode status updates
 
 ---
 
@@ -596,6 +875,7 @@ npm start
 
 ---
 
-**Document Version**: 1.0
-**Generated**: December 3, 2025
+**Document Version**: 1.1
+**Generated**: December 4, 2025
 **Maintained By**: Development Team
+**Changes in v1.1**: Added workflow/approval system, review queue, QR codes, user settings, and enhanced navigation features

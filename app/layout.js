@@ -2,7 +2,7 @@
 
 import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 import { AppBar, Toolbar, Typography, Container, Box, Button, IconButton, useMediaQuery, Drawer, List, ListItem, ListItemText } from "@mui/material";
-import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
+import { Menu as MenuIcon, Close as CloseIcon, HelpOutline as HelpIcon } from "@mui/icons-material";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
@@ -267,6 +267,25 @@ function Navigation() {
             </Box>
           )}
 
+          {/* Help/Documentation Button */}
+          <IconButton
+            component="a"
+            href="https://docs.mongodbminute.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="documentation"
+            sx={{
+              color: "#5F6C76",
+              mr: isMobile ? 1 : 0,
+              "&:hover": {
+                backgroundColor: "rgba(0, 104, 74, 0.08)",
+                color: "#00684A",
+              },
+            }}
+          >
+            <HelpIcon />
+          </IconButton>
+
           {isMobile && (
             <IconButton
               color="inherit"
@@ -314,6 +333,29 @@ function Navigation() {
               <ListItemText primary={item.label} />
             </ListItem>
           ))}
+          <ListItem
+            component="a"
+            href="https://docs.mongodbminute.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              textDecoration: "none",
+              color: "inherit",
+              display: "flex",
+              gap: 1,
+            }}
+          >
+            <HelpIcon sx={{ color: "#5F6C76" }} />
+            <ListItemText
+              primary="Documentation"
+              secondary="docs.mongodbminute.com"
+              slotProps={{
+                secondary: {
+                  sx: { fontSize: "0.75rem", color: "#A0AEC0" }
+                }
+              }}
+            />
+          </ListItem>
         </List>
       </Drawer>
     </>
@@ -322,14 +364,14 @@ function Navigation() {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Navigation />

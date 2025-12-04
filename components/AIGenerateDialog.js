@@ -26,6 +26,7 @@ const CATEGORIES = [
   "Security",
   "Migration",
   "New Features",
+  "Miscellaneous",
 ];
 
 const DIFFICULTIES = ["Beginner", "Intermediate", "Advanced"];

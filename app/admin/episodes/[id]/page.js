@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
-import { Typography, Box, Button, CircularProgress, Stack } from "@mui/material";
+import { Typography, Box, Button, CircularProgress, Stack, Grid } from "@mui/material";
 import { ArrowBack as ArrowBackIcon, Videocam as VideocamIcon } from "@mui/icons-material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import EpisodeForm from "@/components/EpisodeForm";
+import WorkflowStatus from "@/components/WorkflowStatus";
 
 export default function EditEpisodePage({ params }) {
   const resolvedParams = use(params);
@@ -36,6 +37,10 @@ export default function EditEpisodePage({ params }) {
     if (res.ok) {
       router.push("/admin/episodes");
     }
+  }
+
+  function handleWorkflowUpdate(updatedEpisode) {
+    setEpisode(updatedEpisode);
   }
 
   if (loading) {
@@ -99,7 +104,12 @@ export default function EditEpisodePage({ params }) {
         </Typography>
       </Box>
 
-      <EpisodeForm initialData={episode} onSubmit={handleSubmit} submitLabel="Update Episode" />
+      <Box>
+        <EpisodeForm initialData={episode} onSubmit={handleSubmit} submitLabel="Update Episode" />
+        <Box sx={{ mt: 3 }}>
+          <WorkflowStatus episode={episode} onWorkflowUpdate={handleWorkflowUpdate} />
+        </Box>
+      </Box>
     </Box>
   );
 }

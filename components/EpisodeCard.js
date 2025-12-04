@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardActions, Typography, Chip, Stack, Button, Box } from "@mui/material";
+import { Card, CardContent, CardActions, Typography, Chip, Stack, Button, Box, IconButton, Tooltip } from "@mui/material";
 import {
   ArrowForward as ArrowForwardIcon,
   Schedule as ScheduleIcon,
@@ -12,8 +12,12 @@ import {
   Security as SecurityIcon,
   SwapHoriz as SwapHorizIcon,
   FiberNew as FiberNewIcon,
+  YouTube as YouTubeIcon,
+  LinkedIn as LinkedInIcon,
+  Twitter as TwitterIcon,
 } from "@mui/icons-material";
 import Link from "next/link";
+import Image from "next/image";
 
 const difficultyColors = {
   Beginner: { bg: "#E8F5E9", color: "#2E7D32" },
@@ -153,7 +157,7 @@ export default function EpisodeCard({ episode }) {
 
       <CardContent sx={{ flexGrow: 1, p: 3, display: "flex", flexDirection: "column", pb: 1.5, width: "100%", boxSizing: "border-box", position: "relative", zIndex: 1 }}>
         {/* Tags section with enhanced styling */}
-        <Box sx={{ mb: 2, height: "30px", display: "flex", alignItems: "flex-start" }}>
+        <Box sx={{ mb: 2, minHeight: "30px", display: "flex", alignItems: "flex-start" }}>
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 0.75 }}>
             {episode.episodeNumber && (
               <Chip
@@ -186,6 +190,42 @@ export default function EpisodeCard({ episode }) {
                 transition: "all 0.2s ease",
               }}
             />
+            {/* Workflow Status Badge */}
+            {episode.workflow && (
+              <Chip
+                label={
+                  episode.workflow.currentStage === "draft"
+                    ? "Draft"
+                    : episode.workflow.currentStage === "tech-review"
+                    ? "In Review"
+                    : "Approved"
+                }
+                size="small"
+                sx={{
+                  backgroundColor:
+                    episode.workflow.currentStage === "draft"
+                      ? "rgba(95, 108, 118, 0.1)"
+                      : episode.workflow.currentStage === "tech-review"
+                      ? "rgba(0, 119, 181, 0.1)"
+                      : "rgba(0, 104, 74, 0.1)",
+                  color:
+                    episode.workflow.currentStage === "draft"
+                      ? "#5F6C76"
+                      : episode.workflow.currentStage === "tech-review"
+                      ? "#0077B5"
+                      : "#00684A",
+                  fontWeight: 600,
+                  fontSize: "0.6875rem",
+                  height: "24px",
+                  border:
+                    episode.workflow.currentStage === "draft"
+                      ? "1px solid #5F6C7630"
+                      : episode.workflow.currentStage === "tech-review"
+                      ? "1px solid #0077B530"
+                      : "1px solid #00684A30",
+                }}
+              />
+            )}
           </Stack>
         </Box>
 
@@ -286,6 +326,170 @@ export default function EpisodeCard({ episode }) {
           </Box>
         </Box>
       </CardContent>
+
+      {/* Social Media Links - Only show if any links exist */}
+      {episode.socialLinks && Object.values(episode.socialLinks).some(link => link) && (
+        <Box sx={{ px: 3, pb: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 0.5,
+              flexWrap: "wrap",
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                color: "#5F6C76",
+                fontSize: "0.6875rem",
+                fontWeight: 500,
+                mr: 0.5,
+              }}
+            >
+              Watch on:
+            </Typography>
+            <Stack direction="row" spacing={0.5}>
+              {episode.socialLinks.youtube && (
+                <Tooltip title="YouTube" arrow>
+                  <IconButton
+                    component="a"
+                    href={episode.socialLinks.youtube}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    size="small"
+                    sx={{
+                      width: 28,
+                      height: 28,
+                      backgroundColor: "rgba(255, 0, 0, 0.08)",
+                      color: "#FF0000",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        backgroundColor: "#FF0000",
+                        color: "#FFFFFF",
+                        transform: "scale(1.1)",
+                      },
+                    }}
+                  >
+                    <YouTubeIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {episode.socialLinks.linkedin && (
+                <Tooltip title="LinkedIn" arrow>
+                  <IconButton
+                    component="a"
+                    href={episode.socialLinks.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    size="small"
+                    sx={{
+                      width: 28,
+                      height: 28,
+                      backgroundColor: "rgba(0, 119, 181, 0.08)",
+                      color: "#0077B5",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        backgroundColor: "#0077B5",
+                        color: "#FFFFFF",
+                        transform: "scale(1.1)",
+                      },
+                    }}
+                  >
+                    <LinkedInIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {episode.socialLinks.x && (
+                <Tooltip title="X (Twitter)" arrow>
+                  <IconButton
+                    component="a"
+                    href={episode.socialLinks.x}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    size="small"
+                    sx={{
+                      width: 28,
+                      height: 28,
+                      backgroundColor: "rgba(0, 0, 0, 0.08)",
+                      color: "#000000",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        backgroundColor: "#000000",
+                        color: "#FFFFFF",
+                        transform: "scale(1.1)",
+                      },
+                    }}
+                  >
+                    <TwitterIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {episode.socialLinks.tiktok && (
+                <Tooltip title="TikTok" arrow>
+                  <IconButton
+                    component="a"
+                    href={episode.socialLinks.tiktok}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    size="small"
+                    sx={{
+                      width: 28,
+                      height: 28,
+                      backgroundColor: "rgba(0, 0, 0, 0.08)",
+                      color: "#000000",
+                      transition: "all 0.2s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: 700,
+                      fontSize: "0.625rem",
+                      fontFamily: "monospace",
+                      "&:hover": {
+                        backgroundColor: "#000000",
+                        color: "#FFFFFF",
+                        transform: "scale(1.1)",
+                      },
+                    }}
+                  >
+                    TT
+                  </IconButton>
+                </Tooltip>
+              )}
+              {episode.socialLinks.instagram && (
+                <Tooltip title="Instagram" arrow>
+                  <IconButton
+                    component="a"
+                    href={episode.socialLinks.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    size="small"
+                    sx={{
+                      width: 28,
+                      height: 28,
+                      background: "linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4)",
+                      color: "#FFFFFF",
+                      transition: "all 0.2s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: 700,
+                      fontSize: "0.625rem",
+                      fontFamily: "monospace",
+                      "&:hover": {
+                        transform: "scale(1.1)",
+                        boxShadow: "0px 4px 8px rgba(245, 133, 41, 0.3)",
+                      },
+                    }}
+                  >
+                    IG
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Stack>
+          </Box>
+        </Box>
+      )}
 
       <CardActions sx={{ p: 3, pt: 0, flexShrink: 0 }}>
         <Button
