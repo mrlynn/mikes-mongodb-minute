@@ -274,6 +274,7 @@ function Navigation() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="documentation"
+            data-tour="help-button"
             sx={{
               color: "#5F6C76",
               mr: isMobile ? 1 : 0,
@@ -366,6 +367,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />

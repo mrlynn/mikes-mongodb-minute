@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { reviewEpisode } from "@/lib/episodes";
+import { reviewEpisode, getEpisodeById } from "@/lib/episodes";
 import { getSession } from "@/lib/auth";
+import { sendReviewCompletedNotification } from "@/lib/email";
 
 export async function POST(req, { params }) {
   try {
@@ -20,8 +21,24 @@ export async function POST(req, { params }) {
       );
     }
 
+    // Get episode before review to get submitter info
+    const episodeBefore = await getEpisodeById(id);
+    const submitter = episodeBefore?.workflow?.submittedForReview;
+
     const user = { email: session.email, name: session.email };
     const episode = await reviewEpisode(id, user, decision, notes || "");
+
+    // Send email notification to the submitter
+    if (submitter && submitter.email && submitter.email !== user.email) {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `${req.headers.get("x-forwarded-proto") || "http"}://${req.headers.get("host")}`;
+        await sendReviewCompletedNotification(episode, user, submitter, decision, notes || "", baseUrl);
+        console.log(`✅ Review completed notification sent to ${submitter.email}`);
+      } catch (emailError) {
+        console.error("Error sending review completed notification:", emailError);
+        // Don't fail the request if email fails
+      }
+    }
 
     return NextResponse.json({
       success: true,

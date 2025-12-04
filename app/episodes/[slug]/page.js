@@ -220,31 +220,75 @@ export default async function EpisodeDetailPage({ params }) {
           <CategoryIcon sx={{ fontSize: 200, color: categoryData.color }} />
         </Box>
         {/* Video Embed Area */}
-        {episode.videoUrl && (
-          <Box
-            sx={{
-              position: "relative",
-              paddingBottom: "56.25%", // 16:9 aspect ratio
-              height: 0,
-              backgroundColor: "#000",
-            }}
-          >
-            <iframe
-              src={episode.videoUrl.replace('watch?v=', 'embed/')}
-              title={episode.title}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
+        {episode.videoUrl && (() => {
+          // Extract YouTube video ID from various URL formats
+          const getYouTubeEmbedUrl = (url) => {
+            if (!url) return null;
+
+            // If already an embed URL, return as is
+            if (url.includes('/embed/')) {
+              return url;
+            }
+
+            // Extract video ID from various YouTube URL formats
+            let videoId = null;
+
+            // Format: https://www.youtube.com/watch?v=VIDEO_ID
+            // Format: https://youtube.com/watch?v=VIDEO_ID
+            const watchMatch = url.match(/[?&]v=([^&]+)/);
+            if (watchMatch) {
+              videoId = watchMatch[1];
+            }
+
+            // Format: https://youtu.be/VIDEO_ID
+            const shortMatch = url.match(/youtu\.be\/([^?&]+)/);
+            if (shortMatch) {
+              videoId = shortMatch[1];
+            }
+
+            // Format: https://www.youtube.com/embed/VIDEO_ID
+            const embedMatch = url.match(/\/embed\/([^?&]+)/);
+            if (embedMatch) {
+              videoId = embedMatch[1];
+            }
+
+            // If we found a video ID, construct proper embed URL
+            if (videoId) {
+              return `https://www.youtube.com/embed/${videoId}`;
+            }
+
+            // Fallback: return original URL
+            return url;
+          };
+
+          const embedUrl = getYouTubeEmbedUrl(episode.videoUrl);
+
+          return embedUrl ? (
+            <Box
+              sx={{
+                position: "relative",
+                paddingBottom: "56.25%", // 16:9 aspect ratio
+                height: 0,
+                backgroundColor: "#000",
               }}
-            />
-          </Box>
-        )}
+            >
+              <iframe
+                src={embedUrl}
+                title={episode.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  border: 0,
+                }}
+              />
+            </Box>
+          ) : null;
+        })()}
 
         {/* Episode Info */}
         <Box sx={{ p: { xs: 3, md: 4 }, position: "relative", zIndex: 1 }}>

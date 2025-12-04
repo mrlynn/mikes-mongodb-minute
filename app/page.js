@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import EpisodeCard from "@/components/EpisodeCard";
+import PublicTour from "@/components/PublicTour";
 import {
   Typography,
   Grid,
@@ -193,6 +194,7 @@ export default function HomePage() {
           placeholder="Search episodes by title, content, category, or difficulty..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          data-tour="search-bar"
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -204,7 +206,7 @@ export default function HomePage() {
         />
 
         {/* Category Filters */}
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ mb: 2 }} data-tour="category-filters">
           <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5 }}>
             Category
           </Typography>
@@ -248,7 +250,7 @@ export default function HomePage() {
         </Box>
 
         {/* Difficulty Filters */}
-        <Box>
+        <Box data-tour="difficulty-filters">
           <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5 }}>
             Difficulty
           </Typography>
@@ -325,8 +327,11 @@ export default function HomePage() {
             gridAutoRows: "1fr",
           }}
         >
-          {filteredEpisodes.map((ep) => (
-            <Box key={ep._id}>
+          {filteredEpisodes.map((ep, index) => (
+            <Box
+              key={ep._id}
+              {...(index === 0 ? { "data-tour": "episode-card" } : {})}
+            >
               <EpisodeCard episode={ep} />
             </Box>
           ))}
@@ -353,6 +358,9 @@ export default function HomePage() {
           </Typography>
         </Box>
       )}
+
+      {/* Onboarding Tour */}
+      <PublicTour />
     </>
   );
 }

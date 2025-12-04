@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Add as AddIcon, List as ListIcon, AutoAwesome as AIIcon, RateReview as ReviewIcon, CheckCircle as CheckCircleIcon } from "@mui/icons-material";
 import AIGenerateDialog from "@/components/AIGenerateDialog";
+import AdminTour from "@/components/AdminTour";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -77,14 +78,14 @@ export default function AdminDashboard() {
         >
           Admin Dashboard
         </Typography>
-        <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 400 }}>
+        <Typography variant="h6" color="text.primary" sx={{ fontWeight: 400 }}>
           Manage your MongoDB Minute episodes
         </Typography>
       </Box>
 
       {/* Quick Actions */}
-      <Box 
-        sx={{ 
+      <Box
+        sx={{
           mb: 5,
           p: 3,
           borderRadius: 3,
@@ -92,6 +93,7 @@ export default function AdminDashboard() {
           border: "1px solid",
           borderColor: "divider",
         }}
+        data-tour="quick-actions"
       >
         <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
           Quick Actions
@@ -180,7 +182,7 @@ export default function AdminDashboard() {
       </Box>
 
       {/* Stats Grid */}
-      <Grid container spacing={3}>
+      <Grid container spacing={3} data-tour="statistics">
         <Grid item xs={6} sm={4} md={2.4}>
           <Paper 
             sx={{ 
@@ -279,7 +281,7 @@ export default function AdminDashboard() {
       </Grid>
 
       {/* Workflow Stats */}
-      <Box sx={{ mt: 5 }}>
+      <Box sx={{ mt: 5 }} data-tour="workflow-stats">
         <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
           Workflow Status
         </Typography>
@@ -365,7 +367,7 @@ export default function AdminDashboard() {
 
       {/* Review Queue */}
       {reviewQueue.length > 0 && (
-        <Box id="review-queue" sx={{ mt: 5 }}>
+        <Box id="review-queue" sx={{ mt: 5 }} data-tour="review-queue">
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
             <Typography variant="h5" sx={{ fontWeight: 600 }}>
               Review Queue
@@ -480,6 +482,9 @@ export default function AdminDashboard() {
         onClose={() => setAiDialogOpen(false)}
         onGenerate={handleAIGenerate}
       />
+
+      {/* Onboarding Tour */}
+      <AdminTour />
     </Box>
   );
 }

@@ -45,11 +45,12 @@ export default function AdminLayout({ children }) {
         position="static"
         sx={{
           background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
+          color: "#FFFFFF",
         }}
       >
         <Toolbar>
-          <VideoLibraryIcon sx={{ mr: 2, fontSize: 32 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 700 }}>
+          <VideoLibraryIcon sx={{ mr: 2, fontSize: 32, color: "#FFFFFF" }} />
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 700, color: "#FFFFFF" }}>
             MongoDB Minute - Admin
           </Typography>
 
