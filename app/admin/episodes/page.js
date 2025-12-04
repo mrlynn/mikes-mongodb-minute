@@ -117,11 +117,80 @@ export default function AdminEpisodesPage() {
         </Link>
       </Box>
 
-      <TableContainer 
+      {/* Mobile Card View */}
+      <Box sx={{ display: { xs: "block", md: "none" } }}>
+        {episodes.map((episode) => (
+          <Paper
+            key={episode._id}
+            sx={{
+              p: 3,
+              mb: 2,
+              borderRadius: 3,
+              border: "1px solid #E2E8F0",
+            }}
+          >
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, fontSize: "1.125rem" }}>
+                {episode.title}
+              </Typography>
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
+                {episode.episodeNumber && (
+                  <Chip
+                    label={`#${episode.episodeNumber}`}
+                    size="small"
+                    sx={{ fontSize: "0.75rem", fontWeight: 500 }}
+                  />
+                )}
+                <Chip
+                  label={episode.category}
+                  size="small"
+                  sx={{ fontSize: "0.75rem", fontWeight: 500 }}
+                />
+                <Chip
+                  label={episode.difficulty}
+                  size="small"
+                  sx={{ fontSize: "0.75rem", fontWeight: 500 }}
+                />
+                <Chip
+                  label={episode.status}
+                  size="small"
+                  color={getStatusColor(episode.status)}
+                  sx={{ fontSize: "0.75rem", fontWeight: 500 }}
+                />
+              </Box>
+            </Box>
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <Link href={`/admin/episodes/${episode._id}`} style={{ textDecoration: 'none', flex: 1 }}>
+                <Button
+                  variant="outlined"
+                  startIcon={<EditIcon />}
+                  fullWidth
+                  sx={{ fontWeight: 500 }}
+                >
+                  Edit
+                </Button>
+              </Link>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={() => handleDeleteClick(episode)}
+                sx={{ fontWeight: 500 }}
+              >
+                Delete
+              </Button>
+            </Box>
+          </Paper>
+        ))}
+      </Box>
+
+      {/* Desktop Table View */}
+      <TableContainer
         component={Paper}
-        sx={{ 
+        sx={{
           borderRadius: 3,
           overflow: "hidden",
+          display: { xs: "none", md: "block" },
         }}
       >
         <Table>
@@ -137,8 +206,8 @@ export default function AdminEpisodesPage() {
           </TableHead>
           <TableBody>
             {episodes.map((episode, index) => (
-              <TableRow 
-                key={episode._id} 
+              <TableRow
+                key={episode._id}
                 hover
                 sx={{
                   "&:nth-of-type(even)": {
@@ -153,8 +222,8 @@ export default function AdminEpisodesPage() {
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Chip 
-                    label={episode.category} 
+                  <Chip
+                    label={episode.category}
                     size="small"
                     sx={{ fontWeight: 500 }}
                   />
