@@ -164,7 +164,7 @@ export default function EpisodeCard({ episode }) {
             },
           }}
         >
-          View Script
+          View Details
         </Button>
       </CardActions>
     </Card>
