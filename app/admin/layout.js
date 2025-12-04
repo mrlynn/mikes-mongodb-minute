@@ -69,6 +69,18 @@ export default function AdminLayout({ children }) {
           <Button
             color="inherit"
             component={Link}
+            href="/admin/recorder"
+            sx={{
+              mr: 2,
+              fontWeight: pathname === "/admin/recorder" ? 700 : 400,
+            }}
+          >
+            Recorder
+          </Button>
+
+          <Button
+            color="inherit"
+            component={Link}
             href="/admin/settings"
             sx={{
               mr: 2,

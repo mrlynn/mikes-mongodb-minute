@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use } from "react";
 import { Typography, Box, Button, CircularProgress, Stack, Grid } from "@mui/material";
-import { ArrowBack as ArrowBackIcon, Videocam as VideocamIcon } from "@mui/icons-material";
+import { ArrowBack as ArrowBackIcon, Videocam as VideocamIcon, FiberManualRecord as RecordIcon } from "@mui/icons-material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import EpisodeForm from "@/components/EpisodeForm";
@@ -72,20 +72,38 @@ export default function EditEpisodePage({ params }) {
           </Button>
         </Link>
 
-        <Button
-          variant="contained"
-          startIcon={<VideocamIcon />}
-          onClick={() => router.push(`/admin/teleprompter/${resolvedParams.id}`)}
-          sx={{
-            fontWeight: 600,
-            background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
-            "&:hover": {
-              background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
-            },
-          }}
-        >
-          Teleprompter Mode
-        </Button>
+        <Stack direction="row" spacing={2}>
+          <Button
+            variant="contained"
+            startIcon={<VideocamIcon />}
+            onClick={() => router.push(`/admin/teleprompter/${resolvedParams.id}`)}
+            sx={{
+              fontWeight: 600,
+              background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
+              },
+            }}
+          >
+            Teleprompter Mode
+          </Button>
+
+          <Button
+            variant="contained"
+            startIcon={<RecordIcon />}
+            onClick={() => router.push(`/admin/recorder/${resolvedParams.id}`)}
+            sx={{
+              fontWeight: 600,
+              background: "linear-gradient(135deg, #E63946 0%, #D62828 100%)",
+              color: "#FFF",
+              "&:hover": {
+                background: "linear-gradient(135deg, #F77F00 0%, #E63946 100%)",
+              },
+            }}
+          >
+            Record with Teleprompter
+          </Button>
+        </Stack>
       </Stack>
 
       <Box sx={{ mb: 4 }}>
