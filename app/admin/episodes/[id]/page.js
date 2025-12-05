@@ -57,42 +57,64 @@ export default function EditEpisodePage({ params }) {
   }
 
   return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+    <Box sx={{ px: { xs: 0, sm: 0 } }}>
+      <Stack 
+        direction={{ xs: "column", sm: "row" }} 
+        justifyContent="space-between" 
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        spacing={{ xs: 2, sm: 0 }}
+        sx={{ mb: { xs: 2, md: 3 } }}
+      >
         <Link href="/admin/episodes" style={{ textDecoration: "none" }}>
           <Button
             startIcon={<ArrowBackIcon />}
+            size="small"
             sx={{
               color: "text.secondary",
               "&:hover": {
                 backgroundColor: "action.hover",
               },
+              fontSize: { xs: "0.875rem", md: "1rem" },
             }}
           >
             Back to Episodes
           </Button>
         </Link>
 
-        <Stack direction="row" spacing={2}>
+        <Stack 
+          direction={{ xs: "column", sm: "row" }} 
+          spacing={{ xs: 1.5, sm: 2 }}
+          sx={{ width: { xs: "100%", sm: "auto" } }}
+        >
           <Button
             variant="contained"
             startIcon={<VideocamIcon />}
             onClick={() => router.push(`/admin/teleprompter/${resolvedParams.id}`)}
+            fullWidth={false}
             sx={{
               fontWeight: 600,
               background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
               "&:hover": {
                 background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
               },
+              fontSize: { xs: "0.875rem", md: "1rem" },
+              px: { xs: 2, md: 3 },
+              py: { xs: 1, md: 1.5 },
             }}
           >
-            Teleprompter Mode
+            <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+              Teleprompter Mode
+            </Box>
+            <Box component="span" sx={{ display: { xs: "inline", sm: "none" } }}>
+              Teleprompter
+            </Box>
           </Button>
 
           <Button
             variant="contained"
             startIcon={<RecordIcon />}
             onClick={() => router.push(`/admin/recorder/${resolvedParams.id}`)}
+            fullWidth={false}
             sx={{
               fontWeight: 600,
               background: "linear-gradient(135deg, #E63946 0%, #D62828 100%)",
@@ -100,35 +122,50 @@ export default function EditEpisodePage({ params }) {
               "&:hover": {
                 background: "linear-gradient(135deg, #F77F00 0%, #E63946 100%)",
               },
+              fontSize: { xs: "0.875rem", md: "1rem" },
+              px: { xs: 2, md: 3 },
+              py: { xs: 1, md: 1.5 },
             }}
           >
-            Record with Teleprompter
+            <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+              Record with Teleprompter
+            </Box>
+            <Box component="span" sx={{ display: { xs: "inline", sm: "none" } }}>
+              Record
+            </Box>
           </Button>
         </Stack>
       </Stack>
 
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: { xs: 3, md: 4 } }}>
         <Typography
           variant="h3"
           sx={{
             fontWeight: 700,
             mb: 1,
-            fontSize: { xs: "2rem", md: "2.75rem" },
+            fontSize: { xs: "1.5rem", sm: "2rem", md: "2.75rem" },
           }}
         >
           Edit Episode
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography 
+          variant="body1" 
+          color="text.secondary"
+          sx={{ 
+            fontSize: { xs: "0.875rem", md: "1rem" },
+            wordBreak: "break-word",
+          }}
+        >
           {episode.episodeNumber && `Episode #${episode.episodeNumber}`} {episode.title}
         </Typography>
       </Box>
 
       <Box>
         <EpisodeForm initialData={episode} onSubmit={handleSubmit} submitLabel="Update Episode" />
-        <Box sx={{ mt: 3 }}>
+        <Box sx={{ mt: { xs: 2, md: 3 } }}>
           <WorkflowStatus episode={episode} onWorkflowUpdate={handleWorkflowUpdate} />
         </Box>
-        <Box sx={{ mt: 3 }}>
+        <Box sx={{ mt: { xs: 2, md: 3 } }}>
           <SocialMediaPublisher episode={episode} />
         </Box>
       </Box>

@@ -55,20 +55,29 @@ export default function NewEpisodePage() {
         </Button>
       </Link>
 
-      <Box sx={{ mb: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="flex-end">
+      <Box sx={{ mb: { xs: 3, md: 4 }, px: { xs: 0, sm: 0 } }}>
+        <Stack 
+          direction={{ xs: "column", sm: "row" }} 
+          justifyContent="space-between" 
+          alignItems={{ xs: "flex-start", sm: "flex-end" }}
+          spacing={{ xs: 2, sm: 0 }}
+        >
           <Box>
             <Typography 
               variant="h3" 
               sx={{ 
                 fontWeight: 700,
                 mb: 1,
-                fontSize: { xs: "2rem", md: "2.75rem" },
+                fontSize: { xs: "1.5rem", sm: "2rem", md: "2.75rem" },
               }}
             >
               Create New Episode
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography 
+              variant="body1" 
+              color="text.secondary"
+              sx={{ fontSize: { xs: "0.875rem", md: "1rem" } }}
+            >
               Start crafting your 60-second MongoDB tip
             </Typography>
           </Box>
@@ -76,6 +85,7 @@ export default function NewEpisodePage() {
             variant="outlined"
             startIcon={<TemplateIcon />}
             onClick={() => setTemplateDialogOpen(true)}
+            size="small"
             sx={{
               borderColor: "#00684A",
               color: "#00684A",
@@ -84,6 +94,8 @@ export default function NewEpisodePage() {
                 backgroundColor: "#E6F7F0",
               },
               fontWeight: 600,
+              width: { xs: "100%", sm: "auto" },
+              fontSize: { xs: "0.875rem", md: "1rem" },
             }}
           >
             Use Template

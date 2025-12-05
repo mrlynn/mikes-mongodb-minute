@@ -174,8 +174,8 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
-      <Grid container spacing={4}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ px: { xs: 0, sm: 0 } }}>
+      <Grid container spacing={{ xs: 2, md: 4 }}>
         {/* Left Sidebar - Metadata */}
         <Grid size={{ xs: 12, md: 5 }}>
           <Box
@@ -188,7 +188,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
           >
             <Paper
               sx={{
-                borderRadius: 8,
+                borderRadius: { xs: 2, md: 8 },
                 border: "1px solid #E2E8F0",
                 overflow: "hidden",
                 boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.08), 0px 1px 2px rgba(0, 0, 0, 0.04)",
@@ -198,7 +198,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               <Box
                 sx={{
                   background: "#F7FAFC",
-                  p: 2.5,
+                  p: { xs: 2, md: 2.5 },
                   borderBottom: "1px solid #E2E8F0",
                 }}
               >
@@ -211,8 +211,8 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               </Box>
 
               {/* Form Fields Section */}
-              <Box sx={{ p: 2.5 }}>
-                <Stack spacing={3}>
+              <Box sx={{ p: { xs: 2, md: 2.5 } }}>
+                <Stack spacing={{ xs: 2, md: 3 }}>
                   {/* Title - Most Important */}
                   <Box>
                     <TextField
@@ -414,8 +414,8 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* Save Button - Sticky at bottom of sidebar */}
               <Box
                 sx={{
-                  p: 2.5,
-                  pt: 2,
+                  p: { xs: 2, md: 2.5 },
+                  pt: { xs: 1.5, md: 2 },
                   borderTop: "1px solid #E2E8F0",
                   backgroundColor: "#F7FAFC",
                 }}
@@ -442,7 +442,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
 
         {/* Right Column - Content Editor */}
         <Grid size={{ xs: 12, md: 7 }}>
-          <Stack spacing={4}>
+          <Stack spacing={{ xs: 2, md: 4 }}>
 
             {/* Script Content Section */}
             <Box>
@@ -458,40 +458,54 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* Hook Section */}
               <Paper
                 sx={{
-                  p: 3,
-                  mb: 2.5,
-                  borderRadius: 8,
+                  p: { xs: 2, md: 3 },
+                  mb: { xs: 2, md: 2.5 },
+                  borderRadius: { xs: 2, md: 8 },
                   backgroundColor: "#F7FAFC",
                   border: "1px solid #E2E8F0",
                   borderLeft: "3px solid #00684A",
                 }}
               >
-                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
+                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: { xs: 1.5, md: 2 } }}>
                   <Chip
                     label="0-5s"
                     size="small"
                     color="primary"
-                    sx={{ fontWeight: 600 }}
+                    sx={{ fontWeight: 600, fontSize: { xs: "0.7rem", md: "0.75rem" } }}
                   />
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      fontWeight: 600,
+                      fontSize: { xs: "1rem", md: "1.25rem" },
+                    }}
+                  >
                     Hook
                   </Typography>
                 </Stack>
-                <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: "block" }}>
+                <Typography 
+                  variant="caption" 
+                  color="text.secondary" 
+                  sx={{ 
+                    mb: { xs: 1.5, md: 2 }, 
+                    display: "block",
+                    fontSize: { xs: "0.75rem", md: "0.8125rem" },
+                  }}
+                >
                   Provocative question or surprising stat to grab attention
                 </Typography>
                 <TextField
                   fullWidth
                   required
                   multiline
-                  rows={4}
+                  rows={3}
                   value={formData.hook}
                   onChange={(e) => handleChange("hook", e.target.value)}
                   placeholder="Did you know that most MongoDB performance issues..."
                   variant="outlined"
                   sx={{
                     "& .MuiInputBase-root": {
-                      fontSize: "1.05rem",
+                      fontSize: { xs: "0.95rem", md: "1.05rem" },
                       lineHeight: 1.7,
                       backgroundColor: "white",
                     },
@@ -502,22 +516,28 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* Problem Section */}
               <Paper
                 sx={{
-                  p: 3,
-                  mb: 2.5,
-                  borderRadius: 8,
+                  p: { xs: 2, md: 3 },
+                  mb: { xs: 2, md: 2.5 },
+                  borderRadius: { xs: 2, md: 8 },
                   backgroundColor: "#FFFFFF",
                   border: "1px solid #E2E8F0",
                   borderLeft: "3px solid #00ED64",
                 }}
               >
-                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
+                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: { xs: 1.5, md: 2 } }}>
                   <Chip
                     label="5-15s"
                     size="small"
                     color="primary"
-                    sx={{ fontWeight: 600 }}
+                    sx={{ fontWeight: 600, fontSize: { xs: "0.7rem", md: "0.75rem" } }}
                   />
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      fontWeight: 600,
+                      fontSize: { xs: "1rem", md: "1.25rem" },
+                    }}
+                  >
                     Problem / Context
                   </Typography>
                 </Stack>
@@ -535,14 +555,14 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   fullWidth
                   required
                   multiline
-                  rows={5}
+                  rows={4}
                   value={formData.problem}
                   onChange={(e) => handleChange("problem", e.target.value)}
                   placeholder="Many developers struggle with..."
                   variant="outlined"
                   sx={{
                     "& .MuiInputBase-root": {
-                      fontSize: "1.05rem",
+                      fontSize: { xs: "0.95rem", md: "1.05rem" },
                       lineHeight: 1.7,
                     },
                   }}
@@ -552,47 +572,63 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* Tip/Solution Section - Largest */}
               <Paper
                 sx={{
-                  p: 3,
-                  mb: 2.5,
-                  borderRadius: 8,
+                  p: { xs: 2, md: 3 },
+                  mb: { xs: 2, md: 2.5 },
+                  borderRadius: { xs: 2, md: 8 },
                   backgroundColor: "#FFFFFF",
                   border: "1px solid #E2E8F0",
                   borderLeft: "3px solid #00684A",
                 }}
               >
-                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
+                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: { xs: 1.5, md: 2 } }}>
                   <Chip
                     label="15-45s"
                     size="small"
                     color="primary"
-                    sx={{ fontWeight: 600 }}
+                    sx={{ fontWeight: 600, fontSize: { xs: "0.7rem", md: "0.75rem" } }}
                   />
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      fontWeight: 600,
+                      fontSize: { xs: "1rem", md: "1.25rem" },
+                    }}
+                  >
                     Tip / Solution
                   </Typography>
                 </Stack>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-                  <Typography variant="caption" color="text.secondary">
+                <Stack 
+                  direction={{ xs: "column", sm: "row" }} 
+                  justifyContent="space-between" 
+                  alignItems={{ xs: "flex-start", sm: "center" }}
+                  spacing={{ xs: 0.5, sm: 0 }}
+                  sx={{ mb: 1 }}
+                >
+                  <Typography 
+                    variant="caption" 
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: "0.7rem", md: "0.75rem" } }}
+                  >
                     Core educational content - the main learning point
                   </Typography>
                   <Chip
                     label={`${(formData.tip || "").trim().split(/\s+/).filter(w => w.length > 0).length} words • ~${Math.ceil((formData.tip || "").trim().split(/\s+/).filter(w => w.length > 0).length / 2.5)}s`}
                     size="small"
-                    sx={{ fontSize: "0.65rem", height: "20px", fontWeight: 600 }}
+                    sx={{ fontSize: { xs: "0.6rem", md: "0.65rem" }, height: { xs: "18px", md: "20px" }, fontWeight: 600 }}
                   />
                 </Stack>
                 <TextField
                   fullWidth
                   required
                   multiline
-                  rows={8}
+                  rows={6}
                   value={formData.tip}
                   onChange={(e) => handleChange("tip", e.target.value)}
                   placeholder="Here's the solution: use embedded documents to..."
                   variant="outlined"
                   sx={{
                     "& .MuiInputBase-root": {
-                      fontSize: "1.05rem",
+                      fontSize: { xs: "0.95rem", md: "1.05rem" },
                       lineHeight: 1.7,
                     },
                   }}
@@ -602,47 +638,63 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* Quick Win Section */}
               <Paper
                 sx={{
-                  p: 3,
-                  mb: 2.5,
-                  borderRadius: 8,
+                  p: { xs: 2, md: 3 },
+                  mb: { xs: 2, md: 2.5 },
+                  borderRadius: { xs: 2, md: 8 },
                   backgroundColor: "#FFFFFF",
                   border: "1px solid #E2E8F0",
                   borderLeft: "3px solid #00ED64",
                 }}
               >
-                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
+                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: { xs: 1.5, md: 2 } }}>
                   <Chip
                     label="45-52s"
                     size="small"
                     color="primary"
-                    sx={{ fontWeight: 600 }}
+                    sx={{ fontWeight: 600, fontSize: { xs: "0.7rem", md: "0.75rem" } }}
                   />
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      fontWeight: 600,
+                      fontSize: { xs: "1rem", md: "1.25rem" },
+                    }}
+                  >
                     Quick Win / Proof
                   </Typography>
                 </Stack>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-                  <Typography variant="caption" color="text.secondary">
+                <Stack 
+                  direction={{ xs: "column", sm: "row" }} 
+                  justifyContent="space-between" 
+                  alignItems={{ xs: "flex-start", sm: "center" }}
+                  spacing={{ xs: 0.5, sm: 0 }}
+                  sx={{ mb: 1 }}
+                >
+                  <Typography 
+                    variant="caption" 
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: "0.7rem", md: "0.75rem" } }}
+                  >
                     Show the result or benefit - demonstrate the value
                   </Typography>
                   <Chip
                     label={`${(formData.quickWin || "").trim().split(/\s+/).filter(w => w.length > 0).length} words • ~${Math.ceil((formData.quickWin || "").trim().split(/\s+/).filter(w => w.length > 0).length / 2.5)}s`}
                     size="small"
-                    sx={{ fontSize: "0.65rem", height: "20px", fontWeight: 600 }}
+                    sx={{ fontSize: { xs: "0.6rem", md: "0.65rem" }, height: { xs: "18px", md: "20px" }, fontWeight: 600 }}
                   />
                 </Stack>
                 <TextField
                   fullWidth
                   required
                   multiline
-                  rows={4}
+                  rows={3}
                   value={formData.quickWin}
                   onChange={(e) => handleChange("quickWin", e.target.value)}
                   placeholder="This approach reduced query time by 80%..."
                   variant="outlined"
                   sx={{
                     "& .MuiInputBase-root": {
-                      fontSize: "1.05rem",
+                      fontSize: { xs: "0.95rem", md: "1.05rem" },
                       lineHeight: 1.7,
                     },
                   }}
@@ -652,47 +704,63 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               {/* CTA Section */}
               <Paper
                 sx={{
-                  p: 3,
-                  mb: 2.5,
-                  borderRadius: 8,
+                  p: { xs: 2, md: 3 },
+                  mb: { xs: 2, md: 2.5 },
+                  borderRadius: { xs: 2, md: 8 },
                   backgroundColor: "#F7FAFC",
                   border: "1px solid #E2E8F0",
                   borderLeft: "3px solid #004D37",
                 }}
               >
-                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
+                <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: { xs: 1.5, md: 2 } }}>
                   <Chip
                     label="52-60s"
                     size="small"
                     color="primary"
-                    sx={{ fontWeight: 600 }}
+                    sx={{ fontWeight: 600, fontSize: { xs: "0.7rem", md: "0.75rem" } }}
                   />
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      fontWeight: 600,
+                      fontSize: { xs: "1rem", md: "1.25rem" },
+                    }}
+                  >
                     CTA + Tease
                   </Typography>
                 </Stack>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-                  <Typography variant="caption" color="text.secondary">
+                <Stack 
+                  direction={{ xs: "column", sm: "row" }} 
+                  justifyContent="space-between" 
+                  alignItems={{ xs: "flex-start", sm: "center" }}
+                  spacing={{ xs: 0.5, sm: 0 }}
+                  sx={{ mb: 1 }}
+                >
+                  <Typography 
+                    variant="caption" 
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: "0.7rem", md: "0.75rem" } }}
+                  >
                     Engagement driver - call to action and tease next episode
                   </Typography>
                   <Chip
                     label={`${(formData.cta || "").trim().split(/\s+/).filter(w => w.length > 0).length} words • ~${Math.ceil((formData.cta || "").trim().split(/\s+/).filter(w => w.length > 0).length / 2.5)}s`}
                     size="small"
-                    sx={{ fontSize: "0.65rem", height: "20px", fontWeight: 600 }}
+                    sx={{ fontSize: { xs: "0.6rem", md: "0.65rem" }, height: { xs: "18px", md: "20px" }, fontWeight: 600 }}
                   />
                 </Stack>
                 <TextField
                   fullWidth
                   required
                   multiline
-                  rows={4}
+                  rows={3}
                   value={formData.cta}
                   onChange={(e) => handleChange("cta", e.target.value)}
                   placeholder="Try this today and let me know how it works! Next week, I'll show you..."
                   variant="outlined"
                   sx={{
                     "& .MuiInputBase-root": {
-                      fontSize: "1.05rem",
+                      fontSize: { xs: "0.95rem", md: "1.05rem" },
                       lineHeight: 1.7,
                       backgroundColor: "white",
                     },
@@ -704,8 +772,8 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
             {/* Visual Suggestion */}
             <Paper
               sx={{
-                p: 3,
-                borderRadius: 8,
+                p: { xs: 2, md: 3 },
+                borderRadius: { xs: 2, md: 8 },
                 backgroundColor: "#FFFFFF",
                 border: "1px dashed #CBD5E0",
               }}

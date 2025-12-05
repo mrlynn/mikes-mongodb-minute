@@ -315,8 +315,16 @@ export default function SocialMediaPublisher({ episode }) {
   }
 
   return (
-    <Paper elevation={3} sx={{ p: 2, borderRadius: 3 }}>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: "#00684A", fontSize: "1.1rem" }}>
+    <Paper elevation={3} sx={{ p: { xs: 1.5, md: 2 }, borderRadius: { xs: 2, md: 3 } }}>
+      <Typography 
+        variant="h6" 
+        sx={{ 
+          mb: { xs: 1.5, md: 2 }, 
+          fontWeight: 700, 
+          color: "#00684A", 
+          fontSize: { xs: "1rem", md: "1.1rem" } 
+        }}
+      >
         Social Media Publishing
       </Typography>
 

@@ -80,8 +80,8 @@ export default function AIContentImprover({ formData, onImprove }) {
   return (
     <Paper
       sx={{
-        p: 3,
-        borderRadius: 3,
+        p: { xs: 2, md: 3 },
+        borderRadius: { xs: 2, md: 3 },
         border: "1px solid #E2E8F0",
         backgroundColor: "#FFFFFF",
       }}
