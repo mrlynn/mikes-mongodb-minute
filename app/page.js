@@ -1,52 +1,88 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import EpisodeCard from "@/components/EpisodeCard";
+import EpisodeCardSkeleton from "@/components/EpisodeCardSkeleton";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
 import PublicTour from "@/components/PublicTour";
+import { toast } from "@/components/Toast";
 import {
   Typography,
-  Grid,
   Box,
   Button,
   Stack,
   Chip,
-  TextField,
-  InputAdornment,
   Paper,
   CircularProgress,
+  Fade,
+  Zoom,
 } from "@mui/material";
 import {
   PlayArrow as PlayArrowIcon,
-  Search as SearchIcon,
 } from "@mui/icons-material";
 
 export default function HomePage() {
   const [episodes, setEpisodes] = useState([]);
+  const [allEpisodes, setAllEpisodes] = useState([]); // For infinite scroll
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+  const [showAllEpisodes, setShowAllEpisodes] = useState(false); // Toggle to show unpublished episodes
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(12);
+  const observerTarget = useRef(null);
+  const searchInputRef = useRef(null);
 
+  // Initial load - fetch episodes (published only or all based on filter)
   useEffect(() => {
-    async function fetchEpisodes() {
+    async function fetchAllEpisodes() {
       try {
-        const res = await fetch("/api/episodes");
+        setLoading(true);
+        const publishedOnly = !showAllEpisodes; // If showAllEpisodes is true, don't filter by published
+        const res = await fetch(`/api/episodes?publishedOnly=${publishedOnly}`);
         const data = await res.json();
-        setEpisodes(data);
+
+        // Handle both old format (array) and new format (object with pagination)
+        const episodesList = Array.isArray(data) ? data : data.episodes || [];
+        console.log("📊 API Response:", {
+          isArray: Array.isArray(data),
+          episodesCount: episodesList.length,
+          firstEpisode: episodesList[0] ? {
+            title: episodesList[0].title,
+            status: episodesList[0].status,
+            episodeNumber: episodesList[0].episodeNumber
+          } : null
+        });
+        setAllEpisodes(episodesList);
+        // Initial load - show first pageSize episodes
+        const initialEpisodes = episodesList.slice(0, pageSize);
+        const hasMoreEpisodes = episodesList.length > initialEpisodes.length;
+        console.log("📊 Initial Load:", {
+          showing: initialEpisodes.length,
+          total: episodesList.length,
+          hasMore: hasMoreEpisodes,
+          pageSize
+        });
+        setEpisodes(initialEpisodes);
+        setHasMore(hasMoreEpisodes);
+        setPage(1);
       } catch (error) {
         console.error("Error fetching episodes:", error);
+        toast.error("Failed to load episodes. Please try again.");
       } finally {
         setLoading(false);
       }
     }
-    fetchEpisodes();
-  }, []);
+    fetchAllEpisodes();
+  }, [pageSize, showAllEpisodes]);
 
-  // Filter episodes based on search and filters
-  const filteredEpisodes = useMemo(() => {
-    let filtered = [...episodes];
-
-    // Status tabs removed since we only show published episodes
+  // Get filtered episodes list (for infinite scroll calculation)
+  const allFilteredEpisodes = useMemo(() => {
+    let filtered = [...allEpisodes];
 
     // Filter by category
     if (selectedCategory) {
@@ -58,10 +94,9 @@ export default function HomePage() {
       filtered = filtered.filter((ep) => ep.difficulty === selectedDifficulty);
     }
 
-
     // Search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
+    if (debouncedSearchQuery.trim()) {
+      const query = debouncedSearchQuery.toLowerCase().trim();
       filtered = filtered.filter((ep) => {
         const searchableText = [
           ep.title,
@@ -89,25 +124,152 @@ export default function HomePage() {
       if (b.episodeNumber) return 1;
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
-  }, [episodes, searchQuery, selectedCategory, selectedDifficulty]);
+  }, [allEpisodes, debouncedSearchQuery, selectedCategory, selectedDifficulty]);
 
-  // Get unique categories and difficulties from episodes
+  // Infinite scroll - load more episodes from filtered list
+  const loadMoreEpisodes = useCallback(() => {
+    if (loadingMore || !hasMore) return;
+    
+    setLoadingMore(true);
+    // Use requestAnimationFrame for smoother loading
+    requestAnimationFrame(() => {
+      const nextPage = page + 1;
+      const startIndex = page * pageSize;
+      const endIndex = startIndex + pageSize;
+      const newEpisodes = allFilteredEpisodes.slice(startIndex, endIndex);
+
+      if (newEpisodes.length > 0) {
+        setEpisodes((prev) => [...prev, ...newEpisodes]);
+        setPage(nextPage);
+        const remaining = allFilteredEpisodes.length - endIndex;
+        setHasMore(remaining > 0);
+      } else {
+        setHasMore(false);
+      }
+      setLoadingMore(false);
+    });
+  }, [page, pageSize, allFilteredEpisodes, loadingMore, hasMore]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    // Only set up observer if we have more episodes to load
+    const hasMoreToLoad = hasMore && allFilteredEpisodes.length > episodes.length;
+    
+    console.log("Intersection Observer setup check:", {
+      hasMore,
+      allFilteredEpisodesLength: allFilteredEpisodes.length,
+      episodesLength: episodes.length,
+      hasMoreToLoad,
+      page,
+      pageSize
+    });
+    
+    if (!hasMoreToLoad) {
+      console.log("Not setting up observer - no more episodes to load");
+      return;
+    }
+
+    console.log("Setting up intersection observer");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          console.log("Intersection observer triggered - loading more!");
+          loadMoreEpisodes();
+        }
+      },
+      { threshold: 0.1, rootMargin: "200px" } // Trigger 200px before reaching the element for smoother loading
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+      console.log("Observer attached to element");
+    } else {
+      console.log("Observer target not found - trigger element may not be rendered!");
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore, loadingMore, loadMoreEpisodes, allFilteredEpisodes.length, episodes.length, page, pageSize]);
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Track if initial load has completed
+  const initialLoadComplete = useRef(false);
+  
+  // Reset episodes when filters change (for infinite scroll)
+  useEffect(() => {
+    // Skip if allEpisodes is empty (initial load hasn't completed)
+    if (allEpisodes.length === 0) return;
+    
+    // Skip if initial load hasn't completed yet
+    if (!initialLoadComplete.current) {
+      initialLoadComplete.current = true;
+      return;
+    }
+    
+    console.log("Filters changed - resetting episodes", {
+      allFilteredEpisodes: allFilteredEpisodes.length,
+      currentEpisodes: episodes.length,
+      searchQuery: debouncedSearchQuery,
+      category: selectedCategory,
+      difficulty: selectedDifficulty
+    });
+    
+    setPage(1);
+    const initialEpisodes = allFilteredEpisodes.slice(0, pageSize);
+    setEpisodes(initialEpisodes);
+    setHasMore(allFilteredEpisodes.length > initialEpisodes.length);
+    // Reset loading state when filters change
+    setLoadingMore(false);
+  }, [debouncedSearchQuery, selectedCategory, selectedDifficulty, allFilteredEpisodes.length, pageSize, allEpisodes.length]);
+
+  // Displayed episodes (already filtered and sorted by allFilteredEpisodes, just use what's loaded)
+  const filteredEpisodes = episodes;
+
+  // Get unique categories and difficulties from all episodes (not just loaded ones)
   const availableCategories = useMemo(() => {
-    return [...new Set(episodes.map((ep) => ep.category).filter(Boolean))].sort();
-  }, [episodes]);
+    return [...new Set(allEpisodes.map((ep) => ep.category).filter(Boolean))].sort();
+  }, [allEpisodes]);
 
   const availableDifficulties = useMemo(() => {
-    return [...new Set(episodes.map((ep) => ep.difficulty).filter(Boolean))].sort();
-  }, [episodes]);
+    return [...new Set(allEpisodes.map((ep) => ep.difficulty).filter(Boolean))].sort();
+  }, [allEpisodes]);
 
 
-  if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 400 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // Show skeleton loaders while loading
+  const renderSkeletons = () => (
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "1fr",
+          sm: "repeat(2, 1fr)",
+          md: "repeat(3, 1fr)",
+        },
+        gap: 3,
+      }}
+    >
+      {Array.from({ length: 6 }).map((_, index) => (
+        <Fade in={true} key={index} timeout={300 + index * 50}>
+          <Box>
+            <EpisodeCardSkeleton />
+          </Box>
+        </Fade>
+      ))}
+    </Box>
+  );
 
   return (
     <>
@@ -179,119 +341,167 @@ export default function HomePage() {
         </Box>
       </Box>
 
-      {/* Search and Filter Section */}
+      {/* Search and Filter Section - Minimized */}
       <Paper
         sx={{
-          p: 3,
-          mb: 4,
-          borderRadius: 8,
+          p: 2,
+          mb: 3,
+          borderRadius: 2,
           backgroundColor: "#FFFFFF",
         }}
       >
-        {/* Search Bar */}
-        <TextField
-          fullWidth
-          placeholder="Search episodes by title, content, category, or difficulty..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          data-tour="search-bar"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon color="action" />
-              </InputAdornment>
-            ),
-          }}
-          sx={{ mb: 3 }}
-        />
+        {/* Enhanced Search with Autocomplete */}
+        <Box ref={searchInputRef} data-tour="search-bar" sx={{ mb: 2 }}>
+          <SearchAutocomplete
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onSelect={(value) => {
+              setSearchQuery(value);
+              toast.info(`Searching for "${value}"`);
+            }}
+            episodes={allEpisodes}
+          />
+        </Box>
 
-        {/* Category Filters */}
-        <Box sx={{ mb: 2 }} data-tour="category-filters">
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5 }}>
-            Category
-          </Typography>
-          <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
-            <Chip
-              label="All Categories"
-              onClick={() => setSelectedCategory(null)}
-              size="small"
-              sx={{ 
-                fontWeight: selectedCategory === null ? 500 : 400,
-                backgroundColor: selectedCategory === null ? "#00684A" : "#EDF2F7",
-                color: selectedCategory === null ? "#FFFFFF" : "#001E2B",
-                fontSize: "0.75rem",
-                height: "24px",
-                "&:hover": {
-                  backgroundColor: selectedCategory === null ? "#004D37" : "#CBD5E0",
-                },
+        {/* Show All Episodes Toggle */}
+        <Box sx={{ mb: 2, display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1.5, borderBottom: "1px solid #E2E8F0" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <input
+              type="checkbox"
+              id="showAllEpisodes"
+              checked={showAllEpisodes}
+              onChange={(e) => {
+                setShowAllEpisodes(e.target.checked);
+                setSelectedCategory(null);
+                setSelectedDifficulty(null);
+                setSearchQuery("");
+                toast.info(e.target.checked ? "Showing all episodes" : "Showing published episodes only");
+              }}
+              style={{
+                width: "18px",
+                height: "18px",
+                cursor: "pointer",
+                accentColor: "#00684A",
               }}
             />
-            {availableCategories.map((category) => (
+            <label
+              htmlFor="showAllEpisodes"
+              style={{
+                fontSize: "0.875rem",
+                color: "#001E2B",
+                cursor: "pointer",
+                fontWeight: 500,
+                userSelect: "none",
+              }}
+            >
+              Show all episodes (including unpublished)
+            </label>
+          </Box>
+          {showAllEpisodes && (
+            <Chip
+              label="All Episodes"
+              size="small"
+              sx={{
+                backgroundColor: "#00ED64",
+                color: "#001E2B",
+                fontSize: "0.7rem",
+                height: "22px",
+                fontWeight: 600,
+              }}
+            />
+          )}
+        </Box>
+
+        {/* Category and Difficulty Filters - Inline */}
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mb: 0 }}>
+          {/* Category Filters */}
+          <Box sx={{ flex: 1 }} data-tour="category-filters">
+            <Typography variant="caption" sx={{ fontWeight: 600, mb: 0.5, display: "block", fontSize: "0.7rem", color: "#5F6C76" }}>
+              Category
+            </Typography>
+            <Stack direction="row" spacing={0.5} sx={{ flexWrap: "wrap", gap: 0.5 }}>
               <Chip
-                key={category}
-                label={category}
-                onClick={() =>
-                  setSelectedCategory(selectedCategory === category ? null : category)
-                }
+                label="All"
+                onClick={() => setSelectedCategory(null)}
                 size="small"
                 sx={{ 
-                  fontWeight: selectedCategory === category ? 500 : 400,
-                  backgroundColor: selectedCategory === category ? "#00684A" : "#EDF2F7",
-                  color: selectedCategory === category ? "#FFFFFF" : "#001E2B",
-                  fontSize: "0.75rem",
-                  height: "24px",
+                  fontWeight: selectedCategory === null ? 500 : 400,
+                  backgroundColor: selectedCategory === null ? "#00684A" : "#EDF2F7",
+                  color: selectedCategory === null ? "#FFFFFF" : "#001E2B",
+                  fontSize: "0.7rem",
+                  height: "22px",
                   "&:hover": {
-                    backgroundColor: selectedCategory === category ? "#004D37" : "#CBD5E0",
+                    backgroundColor: selectedCategory === null ? "#004D37" : "#CBD5E0",
                   },
                 }}
               />
-            ))}
-          </Stack>
-        </Box>
+              {availableCategories.map((category) => (
+                <Chip
+                  key={category}
+                  label={category}
+                  onClick={() =>
+                    setSelectedCategory(selectedCategory === category ? null : category)
+                  }
+                  size="small"
+                  sx={{ 
+                    fontWeight: selectedCategory === category ? 500 : 400,
+                    backgroundColor: selectedCategory === category ? "#00684A" : "#EDF2F7",
+                    color: selectedCategory === category ? "#FFFFFF" : "#001E2B",
+                    fontSize: "0.7rem",
+                    height: "22px",
+                    "&:hover": {
+                      backgroundColor: selectedCategory === category ? "#004D37" : "#CBD5E0",
+                    },
+                  }}
+                />
+              ))}
+            </Stack>
+          </Box>
 
-        {/* Difficulty Filters */}
-        <Box data-tour="difficulty-filters">
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5 }}>
-            Difficulty
-          </Typography>
-          <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
-            <Chip
-              label="All Levels"
-              onClick={() => setSelectedDifficulty(null)}
-              size="small"
-              sx={{ 
-                fontWeight: selectedDifficulty === null ? 500 : 400,
-                backgroundColor: selectedDifficulty === null ? "#00684A" : "#EDF2F7",
-                color: selectedDifficulty === null ? "#FFFFFF" : "#001E2B",
-                fontSize: "0.75rem",
-                height: "24px",
-                "&:hover": {
-                  backgroundColor: selectedDifficulty === null ? "#004D37" : "#CBD5E0",
-                },
-              }}
-            />
-            {availableDifficulties.map((difficulty) => (
+          {/* Difficulty Filters */}
+          <Box sx={{ flex: 1 }} data-tour="difficulty-filters">
+            <Typography variant="caption" sx={{ fontWeight: 600, mb: 0.5, display: "block", fontSize: "0.7rem", color: "#5F6C76" }}>
+              Difficulty
+            </Typography>
+            <Stack direction="row" spacing={0.5} sx={{ flexWrap: "wrap", gap: 0.5 }}>
               <Chip
-                key={difficulty}
-                label={difficulty}
-                onClick={() =>
-                  setSelectedDifficulty(selectedDifficulty === difficulty ? null : difficulty)
-                }
+                label="All"
+                onClick={() => setSelectedDifficulty(null)}
                 size="small"
                 sx={{ 
-                  fontWeight: selectedDifficulty === difficulty ? 500 : 400,
-                  backgroundColor: selectedDifficulty === difficulty ? "#00684A" : "#EDF2F7",
-                  color: selectedDifficulty === difficulty ? "#FFFFFF" : "#001E2B",
-                  fontSize: "0.75rem",
-                  height: "24px",
+                  fontWeight: selectedDifficulty === null ? 500 : 400,
+                  backgroundColor: selectedDifficulty === null ? "#00684A" : "#EDF2F7",
+                  color: selectedDifficulty === null ? "#FFFFFF" : "#001E2B",
+                  fontSize: "0.7rem",
+                  height: "22px",
                   "&:hover": {
-                    backgroundColor: selectedDifficulty === difficulty ? "#004D37" : "#CBD5E0",
+                    backgroundColor: selectedDifficulty === null ? "#004D37" : "#CBD5E0",
                   },
                 }}
               />
-            ))}
-          </Stack>
-        </Box>
+              {availableDifficulties.map((difficulty) => (
+                <Chip
+                  key={difficulty}
+                  label={difficulty}
+                  onClick={() =>
+                    setSelectedDifficulty(selectedDifficulty === difficulty ? null : difficulty)
+                  }
+                  size="small"
+                  sx={{ 
+                    fontWeight: selectedDifficulty === difficulty ? 500 : 400,
+                    backgroundColor: selectedDifficulty === difficulty ? "#00684A" : "#EDF2F7",
+                    color: selectedDifficulty === difficulty ? "#FFFFFF" : "#001E2B",
+                    fontSize: "0.7rem",
+                    height: "22px",
+                    "&:hover": {
+                      backgroundColor: selectedDifficulty === difficulty ? "#004D37" : "#CBD5E0",
+                    },
+                  }}
+                />
+              ))}
+            </Stack>
+          </Box>
+        </Stack>
       </Paper>
 
       {/* Results Section */}
@@ -305,16 +515,26 @@ export default function HomePage() {
             color: "#001E2B",
           }}
         >
-          Episodes {filteredEpisodes.length > 0 && `(${filteredEpisodes.length})`}
+          Episodes {filteredEpisodes.length > 0 && `(${filteredEpisodes.length}${allFilteredEpisodes.length > filteredEpisodes.length ? ` of ${allFilteredEpisodes.length}` : ''})`}
         </Typography>
-        {(searchQuery || selectedCategory || selectedDifficulty) && (
-          <Typography variant="body2" sx={{ mb: 4, color: "#5F6C76", fontSize: "0.875rem" }}>
+        {allEpisodes.length > 0 && allFilteredEpisodes.length === filteredEpisodes.length && allFilteredEpisodes.length < 10 && (
+          <Typography variant="caption" sx={{ color: "#5F6C76", fontSize: "0.75rem", display: "block", mb: 1 }}>
+            Showing all published episodes. {allEpisodes.length < 10 ? "Publish more episodes to see infinite scroll in action!" : ""}
+          </Typography>
+        )}
+        {(debouncedSearchQuery || selectedCategory || selectedDifficulty) && (
+          <Typography variant="body2" sx={{ mb: 4, color: "#5F6C76", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: 1 }}>
             Showing filtered results
+            {searchQuery && searchQuery !== debouncedSearchQuery && (
+              <CircularProgress size={12} sx={{ color: "#00684A" }} />
+            )}
           </Typography>
         )}
       </Box>
 
-      {filteredEpisodes.length > 0 ? (
+      {loading ? (
+        renderSkeletons()
+      ) : filteredEpisodes.length > 0 ? (
         <Box
           sx={{
             display: "grid",
@@ -328,35 +548,150 @@ export default function HomePage() {
           }}
         >
           {filteredEpisodes.map((ep, index) => (
-            <Box
+            <Zoom
+              in={true}
               key={ep._id}
-              {...(index === 0 ? { "data-tour": "episode-card" } : {})}
+              timeout={300 + index * 50}
+              style={{ transitionDelay: `${index * 50}ms` }}
             >
-              <EpisodeCard episode={ep} />
-            </Box>
+              <Box
+                {...(index === 0 ? { "data-tour": "episode-card" } : {})}
+                sx={{
+                  opacity: 0,
+                  animation: "fadeIn 0.3s ease-in forwards",
+                  "@keyframes fadeIn": {
+                    to: { opacity: 1 },
+                  },
+                }}
+              >
+                <EpisodeCard episode={ep} searchQuery={debouncedSearchQuery} />
+              </Box>
+            </Zoom>
           ))}
+
+          {/* Infinite Scroll Trigger */}
+          {(() => {
+            const shouldShow = hasMore && allFilteredEpisodes.length > episodes.length;
+            console.log("Render trigger check:", {
+              shouldShow,
+              hasMore,
+              allFilteredEpisodesLength: allFilteredEpisodes.length,
+              episodesLength: episodes.length
+            });
+            
+            if (!shouldShow) {
+              // Show debug info even when trigger shouldn't show
+              if (allFilteredEpisodes.length > 0) {
+                return (
+                  <Box
+                    sx={{
+                      gridColumn: "1 / -1",
+                      textAlign: "center",
+                      py: 2,
+                      color: "#5F6C76",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    Showing all {allFilteredEpisodes.length} episodes
+                  </Box>
+                );
+              }
+              return null;
+            }
+            
+            return (
+              <Box
+                ref={observerTarget}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  py: 4,
+                  gridColumn: "1 / -1",
+                  minHeight: "100px",
+                  backgroundColor: "rgba(0, 104, 74, 0.02)",
+                  borderRadius: 2,
+                  border: "1px dashed rgba(0, 104, 74, 0.2)",
+                }}
+              >
+                {loadingMore ? (
+                  <CircularProgress size={32} sx={{ color: "#00684A" }} />
+                ) : (
+                  <Typography variant="body2" sx={{ color: "#5F6C76", fontWeight: 500 }}>
+                    Scroll for more episodes... ({episodes.length} of {allFilteredEpisodes.length})
+                  </Typography>
+                )}
+              </Box>
+            );
+          })()}
+
+          {/* End of Results */}
+          {!hasMore && filteredEpisodes.length > pageSize && (
+            <Box
+              sx={{
+                gridColumn: "1 / -1",
+                textAlign: "center",
+                py: 4,
+              }}
+            >
+              <Typography variant="body2" sx={{ color: "#5F6C76" }}>
+                You've reached the end! Showing all {filteredEpisodes.length} episodes.
+              </Typography>
+            </Box>
+          )}
         </Box>
       ) : (
-        <Box
-          sx={{
-            textAlign: "center",
-            py: 8,
-            px: 2,
-            borderRadius: 3,
-            backgroundColor: "background.paper",
-            border: "2px dashed",
-            borderColor: "divider",
-          }}
-        >
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            No episodes found
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {searchQuery || selectedCategory || selectedDifficulty
-              ? "Try adjusting your search or filters"
-              : "Check back soon for new MongoDB tips!"}
-          </Typography>
-        </Box>
+        <Fade in={true} timeout={500}>
+          <Box
+            sx={{
+              textAlign: "center",
+              py: 8,
+              px: 2,
+              borderRadius: 8,
+              backgroundColor: "#FFFFFF",
+              border: "2px dashed #CBD5E0",
+            }}
+          >
+            <Box
+              sx={{
+                fontSize: 64,
+                mb: 2,
+                opacity: 0.3,
+              }}
+            >
+              🔍
+            </Box>
+            <Typography variant="h6" sx={{ color: "#001E2B", fontWeight: 600, mb: 1 }}>
+              No episodes found
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#5F6C76", maxWidth: 400, mx: "auto" }}>
+              {debouncedSearchQuery || selectedCategory || selectedDifficulty ? (
+                <>
+                  Try adjusting your search or filters to find what you're looking for.
+                  <br />
+                  <Button
+                    variant="text"
+                    size="small"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSelectedCategory(null);
+                      setSelectedDifficulty(null);
+                    }}
+                    sx={{
+                      mt: 2,
+                      color: "#00684A",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Clear all filters
+                  </Button>
+                </>
+              ) : (
+                "Check back soon for new MongoDB tips!"
+              )}
+            </Typography>
+          </Box>
+        </Fade>
       )}
 
       {/* Onboarding Tour */}

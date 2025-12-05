@@ -43,7 +43,7 @@ const STAGE_LABELS = {
 
 const STAGE_COLORS = {
   draft: "#5F6C76",
-  "tech-review": "#0077B5",
+  "tech-review": "#00ED64",
   approved: "#00684A",
 };
 
@@ -324,7 +324,7 @@ export default function WorkflowStatus({ episode, onWorkflowUpdate }) {
                                 getActionColor(entry.action) === "warning" ? "#ED640015" :
                                 getActionColor(entry.action) === "info" ? "#0066CC15" : "#5F6C7615",
                         color: getActionColor(entry.action) === "success" ? "#00684A" :
-                               getActionColor(entry.action) === "primary" ? "#0077B5" :
+                               getActionColor(entry.action) === "primary" ? "#00ED64" :
                                getActionColor(entry.action) === "warning" ? "#ED6400" :
                                getActionColor(entry.action) === "info" ? "#0066CC" : "#5F6C76",
                       }}

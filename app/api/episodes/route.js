@@ -2,9 +2,14 @@ import { NextResponse } from "next/server";
 import { listEpisodes, createEpisode, initializeWorkflow } from "@/lib/episodes";
 import { getSession } from "@/lib/auth";
 
-export async function GET() {
-  const episodes = await listEpisodes({ publishedOnly: false });
-  return NextResponse.json(episodes);
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const page = parseInt(searchParams.get("page")) || 1;
+  const limit = parseInt(searchParams.get("limit")) || null;
+  const publishedOnly = searchParams.get("publishedOnly") === "true";
+
+  const result = await listEpisodes({ publishedOnly, page, limit });
+  return NextResponse.json(result);
 }
 
 export async function POST(req) {

@@ -30,6 +30,7 @@ export async function GET(request, { params }) {
     const status = {
       youtube: null,
       tiktok: null,
+      linkedin: null,
     };
 
     // Check for YouTube post
@@ -51,6 +52,17 @@ export async function GET(request, { params }) {
         postUrl: tiktokPost.postUrl,
         status: tiktokPost.status,
         publishedAt: tiktokPost.publishedAt,
+      };
+    }
+
+    // Check for LinkedIn post
+    const linkedinPost = posts.find((p) => p.platform === "linkedin");
+    if (linkedinPost) {
+      status.linkedin = {
+        postId: linkedinPost.postId,
+        postUrl: linkedinPost.postUrl,
+        status: linkedinPost.status,
+        publishedAt: linkedinPost.publishedAt,
       };
     }
 

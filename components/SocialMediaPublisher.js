@@ -27,17 +27,20 @@ import {
   Publish as PublishIcon,
   LinkOff as LinkOffIcon,
   VideoLibrary as TikTokIcon,
+  LinkedIn as LinkedInIcon,
 } from "@mui/icons-material";
 
 export default function SocialMediaPublisher({ episode }) {
   const [youtubeConnected, setYoutubeConnected] = useState(false);
   const [tiktokConnected, setTiktokConnected] = useState(false);
+  const [linkedinConnected, setLinkedinConnected] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [publishing, setPublishing] = useState({ youtube: false, tiktok: false });
+  const [publishing, setPublishing] = useState({ youtube: false, tiktok: false, linkedin: false });
   const [publishStatus, setPublishStatus] = useState(null);
   const [youtubePost, setYoutubePost] = useState(null);
   const [tiktokPost, setTiktokPost] = useState(null);
-  const [publishDialog, setPublishDialog] = useState(null); // null, 'youtube', or 'tiktok'
+  const [linkedinPost, setLinkedinPost] = useState(null);
+  const [publishDialog, setPublishDialog] = useState(null); // null, 'youtube', 'tiktok', or 'linkedin'
   const [privacyStatus, setPrivacyStatus] = useState("unlisted");
 
   // Check connection status on mount
@@ -53,6 +56,7 @@ export default function SocialMediaPublisher({ episode }) {
         const data = await res.json();
         setYoutubeConnected(data.youtube?.connected || false);
         setTiktokConnected(data.tiktok?.connected || false);
+        setLinkedinConnected(data.linkedin?.connected || false);
       }
     } catch (error) {
       console.error("Failed to check connections:", error);
@@ -68,6 +72,7 @@ export default function SocialMediaPublisher({ episode }) {
         const data = await res.json();
         setYoutubePost(data.youtube);
         setTiktokPost(data.tiktok);
+        setLinkedinPost(data.linkedin);
       }
     } catch (error) {
       console.error("Failed to check publish status:", error);
@@ -226,6 +231,81 @@ export default function SocialMediaPublisher({ episode }) {
     }
   }
 
+  // LinkedIn functions
+  async function connectLinkedIn() {
+    window.location.href = "/api/social/linkedin/connect";
+  }
+
+  async function disconnectLinkedIn() {
+    if (!confirm("Are you sure you want to disconnect your LinkedIn account?")) {
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/social/linkedin/disconnect", {
+        method: "POST",
+      });
+
+      if (res.ok) {
+        setLinkedinConnected(false);
+        setPublishStatus({ type: "success", message: "LinkedIn disconnected" });
+      }
+    } catch (error) {
+      setPublishStatus({ type: "error", message: "Failed to disconnect LinkedIn" });
+    }
+  }
+
+  async function publishToLinkedIn() {
+    if (!episode.videoUrl) {
+      setPublishStatus({
+        type: "error",
+        message: "No video URL found for this episode",
+      });
+      return;
+    }
+
+    setPublishing(prev => ({ ...prev, linkedin: true }));
+    setPublishStatus(null);
+    setPublishDialog(null);
+
+    try {
+      const res = await fetch("/api/social/linkedin/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          episodeId: episode._id,
+          videoUrl: episode.videoUrl,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setPublishStatus({
+          type: "success",
+          message: "Published to LinkedIn!",
+        });
+        setLinkedinPost({
+          postId: data.postId,
+          postUrl: data.postUrl,
+          status: "published",
+        });
+      } else {
+        setPublishStatus({
+          type: "error",
+          message: data.error || "Failed to publish to LinkedIn",
+        });
+      }
+    } catch (error) {
+      setPublishStatus({
+        type: "error",
+        message: "Failed to publish to LinkedIn",
+      });
+    } finally {
+      setPublishing(prev => ({ ...prev, linkedin: false }));
+    }
+  }
+
   if (loading) {
     return (
       <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
@@ -311,6 +391,90 @@ export default function SocialMediaPublisher({ episode }) {
                   variant="outlined"
                   startIcon={<LinkOffIcon />}
                   onClick={disconnectYouTube}
+                  sx={{ borderColor: "#E63946", color: "#E63946" }}
+                >
+                  Disconnect
+                </Button>
+              </Stack>
+            )}
+
+            {!episode.videoUrl && (
+              <Alert severity="warning">
+                No video URL found. Please add a video URL to this episode before
+                publishing.
+              </Alert>
+            )}
+          </Stack>
+        )}
+      </Box>
+
+      <Divider sx={{ my: 3 }} />
+
+      {/* LinkedIn Section */}
+      <Box sx={{ mb: 3 }}>
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+          <LinkedInIcon sx={{ fontSize: 32, color: "#0A66C2" }} />
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            LinkedIn
+          </Typography>
+          {linkedinConnected && (
+            <Chip
+              icon={<CheckCircleIcon />}
+              label="Connected"
+              color="success"
+              size="small"
+            />
+          )}
+        </Stack>
+
+        {!linkedinConnected ? (
+          <Button
+            variant="contained"
+            startIcon={<LinkIcon />}
+            onClick={connectLinkedIn}
+            sx={{
+              backgroundColor: "#0A66C2",
+              "&:hover": { backgroundColor: "#004182" },
+            }}
+          >
+            Connect LinkedIn
+          </Button>
+        ) : (
+          <Stack spacing={2}>
+            {linkedinPost ? (
+              <Alert severity="success" icon={<CheckCircleIcon />}>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                  Published to LinkedIn
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 0.5 }}>
+                  <a
+                    href={linkedinPost.postUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#00684A" }}
+                  >
+                    View on LinkedIn →
+                  </a>
+                </Typography>
+              </Alert>
+            ) : (
+              <Stack direction="row" spacing={2}>
+                <Button
+                  variant="contained"
+                  startIcon={<PublishIcon />}
+                  onClick={() => setPublishDialog('linkedin')}
+                  disabled={publishing.linkedin || !episode.videoUrl}
+                  sx={{
+                    backgroundColor: "#00684A",
+                    "&:hover": { backgroundColor: "#004D37" },
+                  }}
+                >
+                  {publishing.linkedin ? "Publishing..." : "Publish to LinkedIn"}
+                </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<LinkOffIcon />}
+                  onClick={disconnectLinkedIn}
                   sx={{ borderColor: "#E63946", color: "#E63946" }}
                 >
                   Disconnect
@@ -446,6 +610,32 @@ export default function SocialMediaPublisher({ episode }) {
           <Button
             variant="contained"
             onClick={publishToYouTube}
+            sx={{
+              backgroundColor: "#00684A",
+              "&:hover": { backgroundColor: "#004D37" },
+            }}
+          >
+            Publish
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* LinkedIn Publish Dialog */}
+      <Dialog open={publishDialog === 'linkedin'} onClose={() => setPublishDialog(null)}>
+        <DialogTitle>Publish to LinkedIn</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            This will publish your video to your LinkedIn feed with a public visibility.
+          </Typography>
+          <Typography variant="caption" sx={{ display: "block", color: "text.secondary" }}>
+            The video will be shared with your LinkedIn network and include the episode title, description, and relevant hashtags.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPublishDialog(null)}>Cancel</Button>
+          <Button
+            variant="contained"
+            onClick={publishToLinkedIn}
             sx={{
               backgroundColor: "#00684A",
               "&:hover": { backgroundColor: "#004D37" },

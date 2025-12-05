@@ -1,6 +1,7 @@
 "use client";
 
 import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
+import ToastProvider from "@/components/Toast";
 import { AppBar, Toolbar, Typography, Container, Box, Button, IconButton, useMediaQuery, Drawer, List, ListItem, ListItemText, Divider } from "@mui/material";
 import { Menu as MenuIcon, Close as CloseIcon, HelpOutline as HelpIcon } from "@mui/icons-material";
 import Link from "next/link";
@@ -105,9 +106,17 @@ const theme = createTheme({
           fontWeight: 500,
           textTransform: "none",
           boxShadow: "none",
-          transition: "all 0.2s ease",
+          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
           "&:hover": {
             boxShadow: "none",
+            transform: "translateY(-1px)",
+          },
+          "&:active": {
+            transform: "translateY(0)",
+          },
+          "&:focus-visible": {
+            outline: "2px solid #00684A",
+            outlineOffset: "2px",
           },
         },
         contained: {
@@ -401,6 +410,7 @@ export default function RootLayout({ children }) {
       <body suppressHydrationWarning>
         <ThemeProvider theme={theme}>
           <CssBaseline />
+          <ToastProvider />
           <Navigation />
           <Box sx={{ minHeight: "calc(100vh - 64px)", backgroundColor: "#F7FAFC", display: "flex", flexDirection: "column" }}>
             <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 }, px: { xs: 2, md: 3 }, flex: 1 }}>

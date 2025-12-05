@@ -78,7 +78,7 @@ export default function AdminDashboard() {
         >
           Admin Dashboard
         </Typography>
-        <Typography variant="h6" color="text.primary" sx={{ fontWeight: 400 }}>
+        <Typography variant="h6" sx={{ fontWeight: 400, color: "#5F6C76" }}>
           Manage your MongoDB Minute episodes
         </Typography>
       </Box>
@@ -126,9 +126,9 @@ export default function AdminDashboard() {
               sx={{
                 fontWeight: 600,
                 px: 4,
-                background: "linear-gradient(135deg, #0077B5 0%, #005A8C 100%)",
+                background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
                 "&:hover": {
-                  background: "linear-gradient(135deg, #0096C7 0%, #0077B5 100%)",
+                  background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
                 },
                 position: "relative",
                 "&::after": {
@@ -311,13 +311,13 @@ export default function AdminDashboard() {
                 p: 3,
                 textAlign: "center",
                 borderRadius: 3,
-                background: "linear-gradient(135deg, rgba(0, 119, 181, 0.1) 0%, rgba(0, 119, 181, 0.05) 100%)",
+                background: "linear-gradient(135deg, rgba(0, 237, 100, 0.1) 0%, rgba(0, 237, 100, 0.05) 100%)",
                 border: "2px solid",
-                borderColor: stats.workflowReview > 0 ? "#0077B5" : "divider",
+                borderColor: stats.workflowReview > 0 ? "#00ED64" : "divider",
                 position: "relative",
               }}
             >
-              <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: "#0077B5" }}>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: "#00ED64" }}>
                 {stats.workflowReview}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
@@ -374,9 +374,8 @@ export default function AdminDashboard() {
             </Typography>
             <Chip
               label={`${stats.workflowReview} pending`}
-              color="primary"
               sx={{
-                backgroundColor: "#0077B5",
+                backgroundColor: "#00684A",
                 color: "#FFFFFF",
                 fontWeight: 600,
               }}
@@ -453,9 +452,9 @@ export default function AdminDashboard() {
                         }}
                         sx={{
                           fontWeight: 600,
-                          background: "linear-gradient(135deg, #0077B5 0%, #005A8C 100%)",
+                          background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
                           "&:hover": {
-                            background: "linear-gradient(135deg, #0096C7 0%, #0077B5 100%)",
+                            background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
                           },
                         }}
                       >

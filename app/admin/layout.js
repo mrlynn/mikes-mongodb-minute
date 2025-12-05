@@ -50,41 +50,59 @@ export default function AdminLayout({ children }) {
       >
         <Toolbar>
           <VideoLibraryIcon sx={{ mr: 2, fontSize: 32, color: "#FFFFFF" }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 700, color: "#FFFFFF" }}>
+          <Typography 
+            variant="h6" 
+            component="div" 
+            sx={{ 
+              flexGrow: 1, 
+              fontWeight: 700, 
+              color: "#FFFFFF",
+              fontSize: "1.125rem",
+            }}
+          >
             MongoDB Minute - Admin
           </Typography>
 
           <Button
-            color="inherit"
             component={Link}
             href="/admin/episodes"
             sx={{
               mr: 2,
+              color: "#FFFFFF",
               fontWeight: pathname === "/admin/episodes" ? 700 : 400,
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+              },
             }}
           >
             Episodes
           </Button>
 
           <Button
-            color="inherit"
             component={Link}
             href="/admin/recorder"
             sx={{
               mr: 2,
+              color: "#FFFFFF",
               fontWeight: pathname === "/admin/recorder" ? 700 : 400,
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+              },
             }}
           >
             Recorder
           </Button>
 
           <Button
-            color="inherit"
             component={Link}
             href="/admin/settings"
             sx={{
               mr: 2,
+              color: "#FFFFFF",
               fontWeight: pathname === "/admin/settings" ? 700 : 400,
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+              },
             }}
           >
             Settings
@@ -96,7 +114,12 @@ export default function AdminLayout({ children }) {
             aria-controls="menu-appbar"
             aria-haspopup="true"
             onClick={handleMenu}
-            color="inherit"
+            sx={{
+              color: "#FFFFFF",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+              },
+            }}
           >
             <AccountCircleIcon />
           </IconButton>

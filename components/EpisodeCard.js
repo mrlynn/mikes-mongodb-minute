@@ -18,6 +18,7 @@ import {
 } from "@mui/icons-material";
 import Link from "next/link";
 import Image from "next/image";
+import HighlightText from "./HighlightText";
 
 const difficultyColors = {
   Beginner: { bg: "#E8F5E9", color: "#2E7D32" },
@@ -82,7 +83,7 @@ const categoryConfig = {
   },
 };
 
-export default function EpisodeCard({ episode }) {
+export default function EpisodeCard({ episode, searchQuery = "" }) {
   const categoryData = categoryConfig[episode.category] || categoryConfig["Data Modeling"];
   const CategoryIcon = categoryData.icon;
   const difficultyColor = difficultyColors[episode.difficulty] || difficultyColors.Beginner;
@@ -101,6 +102,7 @@ export default function EpisodeCard({ episode }) {
           boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.08), 0px 1px 3px rgba(0, 0, 0, 0.04)",
           transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           background: "#FFFFFF",
+          cursor: "pointer",
           "&:hover": {
             transform: "translateY(-4px)",
             boxShadow: "0px 12px 24px rgba(0, 104, 74, 0.15), 0px 4px 8px rgba(0, 0, 0, 0.08)",
@@ -116,6 +118,13 @@ export default function EpisodeCard({ episode }) {
             "& .accent-line": {
               width: "100%",
             },
+          },
+          "&:active": {
+            transform: "translateY(-2px)",
+          },
+          "&:focus-visible": {
+            outline: "2px solid #00684A",
+            outlineOffset: "4px",
           },
         }}
       >
@@ -212,7 +221,7 @@ export default function EpisodeCard({ episode }) {
                     episode.workflow.currentStage === "draft"
                       ? "#5F6C76"
                       : episode.workflow.currentStage === "tech-review"
-                      ? "#0077B5"
+                      ? "#00ED64"
                       : "#00684A",
                   fontWeight: 600,
                   fontSize: "0.6875rem",
@@ -221,7 +230,7 @@ export default function EpisodeCard({ episode }) {
                     episode.workflow.currentStage === "draft"
                       ? "1px solid #5F6C7630"
                       : episode.workflow.currentStage === "tech-review"
-                      ? "1px solid #0077B530"
+                      ? "1px solid #00ED6430"
                       : "1px solid #00684A30",
                 }}
               />
@@ -259,7 +268,7 @@ export default function EpisodeCard({ episode }) {
               color: "#001E2B",
             }}
           >
-            {episode.title}
+            <HighlightText text={episode.title} query={searchQuery} />
           </Typography>
         </Box>
 
@@ -279,7 +288,7 @@ export default function EpisodeCard({ episode }) {
               fontSize: "0.875rem",
             }}
           >
-            {episode.hook}
+            <HighlightText text={episode.hook} query={searchQuery} />
           </Typography>
         </Box>
 
@@ -390,7 +399,7 @@ export default function EpisodeCard({ episode }) {
                       color: "#0077B5",
                       transition: "all 0.2s ease",
                       "&:hover": {
-                        backgroundColor: "#0077B5",
+                        backgroundColor: "#00ED64",
                         color: "#FFFFFF",
                         transform: "scale(1.1)",
                       },
