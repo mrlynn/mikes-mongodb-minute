@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import EpisodeForm from "@/components/EpisodeForm";
 import WorkflowStatus from "@/components/WorkflowStatus";
+import SocialMediaPublisher from "@/components/SocialMediaPublisher";
 
 export default function EditEpisodePage({ params }) {
   const resolvedParams = use(params);
@@ -126,6 +127,9 @@ export default function EditEpisodePage({ params }) {
         <EpisodeForm initialData={episode} onSubmit={handleSubmit} submitLabel="Update Episode" />
         <Box sx={{ mt: 3 }}>
           <WorkflowStatus episode={episode} onWorkflowUpdate={handleWorkflowUpdate} />
+        </Box>
+        <Box sx={{ mt: 3 }}>
+          <SocialMediaPublisher episode={episode} />
         </Box>
       </Box>
     </Box>

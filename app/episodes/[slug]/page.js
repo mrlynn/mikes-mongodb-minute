@@ -1,4 +1,5 @@
 import { getEpisodeBySlug, listEpisodes } from "@/lib/episodes";
+import { getSession } from "@/lib/auth";
 import {
   Typography,
   Box,
@@ -29,8 +30,10 @@ import {
   NavigateNext as NavigateNextIcon,
   ArrowBack as ArrowBackIcon,
   ArrowForward as ArrowForwardIcon,
+  Edit as EditIcon,
 } from "@mui/icons-material";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 const categoryConfig = {
   "Data Modeling": {
@@ -114,6 +117,10 @@ export default async function EpisodeDetailPage({ params }) {
   if (!episode) {
     notFound();
   }
+
+  // Check if user is authenticated
+  const session = await getSession();
+  const isAuthenticated = !!session;
 
   // Get all episodes to find previous/next
   const allEpisodes = await listEpisodes();
@@ -356,18 +363,44 @@ export default async function EpisodeDetailPage({ params }) {
             }}
           />
 
-          <Typography
-            variant="h1"
-            sx={{
-              fontWeight: 600,
-              fontSize: { xs: "1.75rem", md: "2.25rem" },
-              lineHeight: 1.3,
-              color: "#001E2B",
-              mb: 2,
-            }}
-          >
-            {episode.title}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+            <Typography
+              variant="h1"
+              sx={{
+                fontWeight: 600,
+                fontSize: { xs: "1.75rem", md: "2.25rem" },
+                lineHeight: 1.3,
+                color: "#001E2B",
+                flex: 1,
+              }}
+            >
+              {episode.title}
+            </Typography>
+            {isAuthenticated && (
+              <Link href={`/admin/episodes/${episode._id}`} style={{ textDecoration: "none" }}>
+                <Button
+                  variant="contained"
+                  startIcon={<EditIcon />}
+                  sx={{
+                    background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
+                    color: "#FFFFFF",
+                    fontWeight: 600,
+                    px: 3,
+                    py: 1,
+                    textTransform: "none",
+                    fontSize: "0.95rem",
+                    boxShadow: "0 2px 8px rgba(0, 104, 74, 0.3)",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
+                      boxShadow: "0 4px 12px rgba(0, 104, 74, 0.4)",
+                    },
+                  }}
+                >
+                  Edit Episode
+                </Button>
+              </Link>
+            )}
+          </Box>
 
           <Typography
             variant="body1"
