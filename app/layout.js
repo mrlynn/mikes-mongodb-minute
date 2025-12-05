@@ -1,7 +1,7 @@
 "use client";
 
 import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
-import { AppBar, Toolbar, Typography, Container, Box, Button, IconButton, useMediaQuery, Drawer, List, ListItem, ListItemText } from "@mui/material";
+import { AppBar, Toolbar, Typography, Container, Box, Button, IconButton, useMediaQuery, Drawer, List, ListItem, ListItemText, Divider } from "@mui/material";
 import { Menu as MenuIcon, Close as CloseIcon, HelpOutline as HelpIcon } from "@mui/icons-material";
 import Link from "next/link";
 import Image from "next/image";
@@ -334,6 +334,31 @@ function Navigation() {
               <ListItemText primary={item.label} />
             </ListItem>
           ))}
+          <Divider sx={{ my: 1 }} />
+          <ListItem
+            component={Link}
+            href="/legal/terms"
+            onClick={handleDrawerToggle}
+            sx={{ textDecoration: "none", color: "inherit" }}
+          >
+            <ListItemText primary="Terms of Service" />
+          </ListItem>
+          <ListItem
+            component={Link}
+            href="/legal/privacy"
+            onClick={handleDrawerToggle}
+            sx={{ textDecoration: "none", color: "inherit" }}
+          >
+            <ListItemText primary="Privacy Policy" />
+          </ListItem>
+          <ListItem
+            component={Link}
+            href="/legal/cookies"
+            onClick={handleDrawerToggle}
+            sx={{ textDecoration: "none", color: "inherit" }}
+          >
+            <ListItemText primary="Cookie Policy" />
+          </ListItem>
           <ListItem
             component="a"
             href="https://docs.mongodbminute.com"
@@ -377,10 +402,99 @@ export default function RootLayout({ children }) {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Navigation />
-          <Box sx={{ minHeight: "calc(100vh - 64px)", backgroundColor: "#F7FAFC" }}>
-            <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 }, px: { xs: 2, md: 3 } }}>
+          <Box sx={{ minHeight: "calc(100vh - 64px)", backgroundColor: "#F7FAFC", display: "flex", flexDirection: "column" }}>
+            <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 }, px: { xs: 2, md: 3 }, flex: 1 }}>
               {children}
             </Container>
+            <Box
+              component="footer"
+              sx={{
+                mt: "auto",
+                py: 4,
+                px: { xs: 2, md: 3 },
+                borderTop: "1px solid #E2E8F0",
+                backgroundColor: "#FFFFFF",
+              }}
+            >
+              <Container maxWidth="lg">
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                    justifyContent: "space-between",
+                    alignItems: { xs: "flex-start", md: "center" },
+                    gap: 3,
+                  }}
+                >
+                  <Box>
+                    <Typography variant="body2" sx={{ color: "#5F6C76", fontSize: "0.875rem", mb: 1 }}>
+                      © {new Date().getFullYear()} MongoDB Minute. All rights reserved.
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: "#A0AEC0", fontSize: "0.75rem" }}>
+                      Educational MongoDB tips and tutorials
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: { xs: "column", sm: "row" },
+                      flexWrap: "wrap",
+                      gap: { xs: 1.5, md: 3 },
+                      alignItems: { xs: "flex-start", sm: "center" },
+                    }}
+                  >
+                    <Box
+                      component={Link}
+                      href="/legal/terms"
+                      sx={{
+                        color: "#5F6C76",
+                        textDecoration: "none",
+                        fontSize: "0.875rem",
+                        fontWeight: 500,
+                        transition: "color 0.2s ease",
+                        "&:hover": {
+                          color: "#00684A",
+                        },
+                      }}
+                    >
+                      Terms of Service
+                    </Box>
+                    <Box
+                      component={Link}
+                      href="/legal/privacy"
+                      sx={{
+                        color: "#5F6C76",
+                        textDecoration: "none",
+                        fontSize: "0.875rem",
+                        fontWeight: 500,
+                        transition: "color 0.2s ease",
+                        "&:hover": {
+                          color: "#00684A",
+                        },
+                      }}
+                    >
+                      Privacy Policy
+                    </Box>
+                    <Box
+                      component={Link}
+                      href="/legal/cookies"
+                      sx={{
+                        color: "#5F6C76",
+                        textDecoration: "none",
+                        fontSize: "0.875rem",
+                        fontWeight: 500,
+                        transition: "color 0.2s ease",
+                        "&:hover": {
+                          color: "#00684A",
+                        },
+                      }}
+                    >
+                      Cookie Policy
+                    </Box>
+                  </Box>
+                </Box>
+              </Container>
+            </Box>
           </Box>
         </ThemeProvider>
       </body>

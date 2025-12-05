@@ -29,6 +29,7 @@ export async function GET(request, { params }) {
     // Format response
     const status = {
       youtube: null,
+      tiktok: null,
     };
 
     // Check for YouTube post
@@ -39,6 +40,17 @@ export async function GET(request, { params }) {
         postUrl: youtubePost.postUrl,
         status: youtubePost.status,
         publishedAt: youtubePost.publishedAt,
+      };
+    }
+
+    // Check for TikTok post
+    const tiktokPost = posts.find((p) => p.platform === "tiktok");
+    if (tiktokPost) {
+      status.tiktok = {
+        postId: tiktokPost.postId,
+        postUrl: tiktokPost.postUrl,
+        status: tiktokPost.status,
+        publishedAt: tiktokPost.publishedAt,
       };
     }
 

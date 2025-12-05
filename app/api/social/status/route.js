@@ -24,6 +24,11 @@ export async function GET() {
         channelId: null,
         channelTitle: null,
       },
+      tiktok: {
+        connected: false,
+        userId: null,
+        displayName: null,
+      },
     };
 
     // Check for YouTube connection
@@ -33,6 +38,16 @@ export async function GET() {
         connected: true,
         channelId: youtubeConnection.platformUserId,
         channelTitle: youtubeConnection.platformUsername,
+      };
+    }
+
+    // Check for TikTok connection
+    const tiktokConnection = connections.find((c) => c.platform === "tiktok");
+    if (tiktokConnection) {
+      status.tiktok = {
+        connected: true,
+        userId: tiktokConnection.platformUserId,
+        displayName: tiktokConnection.platformUsername,
       };
     }
 
