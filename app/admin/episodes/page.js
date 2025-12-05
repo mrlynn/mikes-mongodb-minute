@@ -19,19 +19,34 @@ import {
   DialogContent,
   DialogActions,
   DialogContentText,
+  TextField,
+  InputAdornment,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Stack,
 } from "@mui/material";
 import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
+  ContentCopy as DuplicateIcon,
+  FilterList as FilterIcon,
+  Search as SearchIcon,
 } from "@mui/icons-material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function AdminEpisodesPage() {
   const [episodes, setEpisodes] = useState([]);
+  const [filteredEpisodes, setFilteredEpisodes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteDialog, setDeleteDialog] = useState({ open: false, episode: null });
+  const [duplicateDialog, setDuplicateDialog] = useState({ open: false, episode: null });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const router = useRouter();
 
   useEffect(() => {
@@ -42,7 +57,61 @@ export default function AdminEpisodesPage() {
     const res = await fetch("/api/episodes");
     const data = await res.json();
     setEpisodes(data);
+    setFilteredEpisodes(data);
     setLoading(false);
+  }
+
+  // Filter episodes based on search and filters
+  useEffect(() => {
+    let filtered = [...episodes];
+
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (ep) =>
+          ep.title?.toLowerCase().includes(query) ||
+          ep.hook?.toLowerCase().includes(query) ||
+          ep.category?.toLowerCase().includes(query)
+      );
+    }
+
+    // Status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((ep) => ep.status === statusFilter);
+    }
+
+    // Category filter
+    if (categoryFilter !== "all") {
+      filtered = filtered.filter((ep) => ep.category === categoryFilter);
+    }
+
+    setFilteredEpisodes(filtered);
+  }, [episodes, searchQuery, statusFilter, categoryFilter]);
+
+  async function handleDuplicate(episode) {
+    try {
+      const res = await fetch("/api/episodes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...episode,
+          title: `${episode.title} (Copy)`,
+          episodeNumber: null, // Let them set a new number
+          status: "draft",
+          slug: "", // Auto-generate new slug
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setDuplicateDialog({ open: false, episode: null });
+        fetchEpisodes();
+        router.push(`/admin/episodes/${data._id}`);
+      }
+    } catch (error) {
+      console.error("Error duplicating episode:", error);
+    }
   }
 
   function handleDeleteClick(episode) {
@@ -117,9 +186,71 @@ export default function AdminEpisodesPage() {
         </Link>
       </Box>
 
+      {/* Filters and Search */}
+      <Paper
+        sx={{
+          p: 2,
+          mb: 3,
+          borderRadius: 2,
+          border: "1px solid #E2E8F0",
+        }}
+      >
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Search episodes..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ flex: 2 }}
+          />
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              label="Status"
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <MenuItem value="all">All Statuses</MenuItem>
+              <MenuItem value="draft">Draft</MenuItem>
+              <MenuItem value="ready-to-record">Ready to Record</MenuItem>
+              <MenuItem value="recorded">Recorded</MenuItem>
+              <MenuItem value="published">Published</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel>Category</InputLabel>
+            <Select
+              value={categoryFilter}
+              label="Category"
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              <MenuItem value="all">All Categories</MenuItem>
+              {Array.from(new Set(episodes.map((e) => e.category))).map((cat) => (
+                <MenuItem key={cat} value={cat}>
+                  {cat}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
+      </Paper>
+
+      {/* Results Count */}
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        Showing {filteredEpisodes.length} of {episodes.length} episodes
+      </Typography>
+
       {/* Mobile Card View */}
       <Box sx={{ display: { xs: "block", md: "none" } }}>
-        {episodes.map((episode) => (
+        {filteredEpisodes.map((episode) => (
           <Paper
             key={episode._id}
             sx={{
@@ -172,6 +303,14 @@ export default function AdminEpisodesPage() {
               </Link>
               <Button
                 variant="outlined"
+                startIcon={<DuplicateIcon />}
+                onClick={() => setDuplicateDialog({ open: true, episode })}
+                sx={{ fontWeight: 500 }}
+              >
+                Duplicate
+              </Button>
+              <Button
+                variant="outlined"
                 color="error"
                 startIcon={<DeleteIcon />}
                 onClick={() => handleDeleteClick(episode)}
@@ -205,7 +344,7 @@ export default function AdminEpisodesPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {episodes.map((episode, index) => (
+            {filteredEpisodes.map((episode, index) => (
               <TableRow
                 key={episode._id}
                 hover
@@ -254,6 +393,18 @@ export default function AdminEpisodesPage() {
                     </IconButton>
                   </Link>
                   <IconButton
+                    onClick={() => setDuplicateDialog({ open: true, episode })}
+                    size="small"
+                    color="primary"
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "rgba(0, 104, 74, 0.1)",
+                      },
+                    }}
+                  >
+                    <DuplicateIcon />
+                  </IconButton>
+                  <IconButton
                     onClick={() => handleDeleteClick(episode)}
                     size="small"
                     color="error"
@@ -285,6 +436,22 @@ export default function AdminEpisodesPage() {
           <Button onClick={handleDeleteClose}>Cancel</Button>
           <Button onClick={handleDeleteConfirm} color="error" variant="contained">
             Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Duplicate Confirmation Dialog */}
+      <Dialog open={duplicateDialog.open} onClose={() => setDuplicateDialog({ open: false, episode: null })}>
+        <DialogTitle>Duplicate Episode?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Create a copy of &quot;{duplicateDialog.episode?.title}&quot;? The new episode will be created as a draft with &quot;(Copy)&quot; appended to the title.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDuplicateDialog({ open: false, episode: null })}>Cancel</Button>
+          <Button onClick={() => handleDuplicate(duplicateDialog.episode)} variant="contained">
+            Duplicate
           </Button>
         </DialogActions>
       </Dialog>

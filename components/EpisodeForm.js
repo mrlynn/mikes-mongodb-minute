@@ -26,6 +26,8 @@ import {
   Download as DownloadIcon,
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
+import ContentQualityChecker from "./ContentQualityChecker";
+import AIContentImprover from "./AIContentImprover";
 
 const CATEGORIES = [
   "Data Modeling",
@@ -476,9 +478,16 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                     Problem / Context
                   </Typography>
                 </Stack>
-                <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: "block" }}>
-                  Why this matters - set up the problem or context
-                </Typography>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                  <Typography variant="caption" color="text.secondary">
+                    Why this matters - set up the problem or context
+                  </Typography>
+                  <Chip
+                    label={`${(formData.problem || "").trim().split(/\s+/).filter(w => w.length > 0).length} words • ~${Math.ceil((formData.problem || "").trim().split(/\s+/).filter(w => w.length > 0).length / 2.5)}s`}
+                    size="small"
+                    sx={{ fontSize: "0.65rem", height: "20px", fontWeight: 600 }}
+                  />
+                </Stack>
                 <TextField
                   fullWidth
                   required
@@ -519,9 +528,16 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                     Tip / Solution
                   </Typography>
                 </Stack>
-                <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: "block" }}>
-                  Core educational content - the main learning point
-                </Typography>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                  <Typography variant="caption" color="text.secondary">
+                    Core educational content - the main learning point
+                  </Typography>
+                  <Chip
+                    label={`${(formData.tip || "").trim().split(/\s+/).filter(w => w.length > 0).length} words • ~${Math.ceil((formData.tip || "").trim().split(/\s+/).filter(w => w.length > 0).length / 2.5)}s`}
+                    size="small"
+                    sx={{ fontSize: "0.65rem", height: "20px", fontWeight: 600 }}
+                  />
+                </Stack>
                 <TextField
                   fullWidth
                   required
@@ -562,9 +578,16 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                     Quick Win / Proof
                   </Typography>
                 </Stack>
-                <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: "block" }}>
-                  Show the result or benefit - demonstrate the value
-                </Typography>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                  <Typography variant="caption" color="text.secondary">
+                    Show the result or benefit - demonstrate the value
+                  </Typography>
+                  <Chip
+                    label={`${(formData.quickWin || "").trim().split(/\s+/).filter(w => w.length > 0).length} words • ~${Math.ceil((formData.quickWin || "").trim().split(/\s+/).filter(w => w.length > 0).length / 2.5)}s`}
+                    size="small"
+                    sx={{ fontSize: "0.65rem", height: "20px", fontWeight: 600 }}
+                  />
+                </Stack>
                 <TextField
                   fullWidth
                   required
@@ -605,9 +628,16 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                     CTA + Tease
                   </Typography>
                 </Stack>
-                <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: "block" }}>
-                  Engagement driver - call to action and tease next episode
-                </Typography>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                  <Typography variant="caption" color="text.secondary">
+                    Engagement driver - call to action and tease next episode
+                  </Typography>
+                  <Chip
+                    label={`${(formData.cta || "").trim().split(/\s+/).filter(w => w.length > 0).length} words • ~${Math.ceil((formData.cta || "").trim().split(/\s+/).filter(w => w.length > 0).length / 2.5)}s`}
+                    size="small"
+                    sx={{ fontSize: "0.65rem", height: "20px", fontWeight: 600 }}
+                  />
+                </Stack>
                 <TextField
                   fullWidth
                   required
@@ -653,6 +683,19 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                 variant="outlined"
               />
             </Paper>
+
+            {/* Content Quality Checker */}
+            <ContentQualityChecker formData={formData} />
+
+            {/* AI Content Improver */}
+            <AIContentImprover
+              formData={formData}
+              onImprove={(data) => {
+                if (data.field && data.improvedContent) {
+                  handleChange(data.field, data.improvedContent);
+                }
+              }}
+            />
 
             {/* Video & Social Links - Collapsible */}
             <Accordion

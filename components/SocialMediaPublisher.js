@@ -315,268 +315,303 @@ export default function SocialMediaPublisher({ episode }) {
   }
 
   return (
-    <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-      <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, color: "#00684A" }}>
+    <Paper elevation={3} sx={{ p: 2, borderRadius: 3 }}>
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: "#00684A", fontSize: "1.1rem" }}>
         Social Media Publishing
       </Typography>
 
       {publishStatus && (
-        <Alert severity={publishStatus.type} sx={{ mb: 3 }}>
+        <Alert severity={publishStatus.type} sx={{ mb: 2 }}>
           {publishStatus.message}
         </Alert>
       )}
 
-      {/* YouTube Section */}
-      <Box sx={{ mb: 3 }}>
-        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
-          <YouTubeIcon sx={{ fontSize: 32, color: "#FF0000" }} />
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            YouTube
-          </Typography>
-          {youtubeConnected && (
-            <Chip
-              icon={<CheckCircleIcon />}
-              label="Connected"
-              color="success"
-              size="small"
-            />
-          )}
-        </Stack>
-
-        {!youtubeConnected ? (
-          <Button
-            variant="contained"
-            startIcon={<LinkIcon />}
-            onClick={connectYouTube}
-            sx={{
-              backgroundColor: "#FF0000",
-              "&:hover": { backgroundColor: "#CC0000" },
-            }}
-          >
-            Connect YouTube
-          </Button>
-        ) : (
-          <Stack spacing={2}>
-            {youtubePost ? (
-              <Alert severity="success" icon={<CheckCircleIcon />}>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  Published to YouTube
-                </Typography>
-                <Typography variant="body2" sx={{ mt: 0.5 }}>
-                  <a
-                    href={youtubePost.postUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: "#00684A" }}
-                  >
-                    View on YouTube →
-                  </a>
-                </Typography>
-              </Alert>
-            ) : (
-              <Stack direction="row" spacing={2}>
-                <Button
-                  variant="contained"
-                  startIcon={<PublishIcon />}
-                  onClick={() => setPublishDialog('youtube')}
-                  disabled={publishing.youtube || !episode.videoUrl}
-                  sx={{
-                    backgroundColor: "#00684A",
-                    "&:hover": { backgroundColor: "#004D37" },
-                  }}
-                >
-                  {publishing.youtube ? "Publishing..." : "Publish to YouTube"}
-                </Button>
-                <Button
-                  variant="outlined"
-                  startIcon={<LinkOffIcon />}
-                  onClick={disconnectYouTube}
-                  sx={{ borderColor: "#E63946", color: "#E63946" }}
-                >
-                  Disconnect
-                </Button>
-              </Stack>
-            )}
-
-            {!episode.videoUrl && (
-              <Alert severity="warning">
-                No video URL found. Please add a video URL to this episode before
-                publishing.
-              </Alert>
+      {/* Horizontal Layout for Platforms */}
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: "flex-start" }}>
+        {/* YouTube Section */}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 1.5 }}>
+            <YouTubeIcon sx={{ fontSize: 24, color: "#FF0000" }} />
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: "0.95rem" }}>
+              YouTube
+            </Typography>
+            {youtubeConnected && (
+              <Chip
+                icon={<CheckCircleIcon />}
+                label="Connected"
+                color="success"
+                size="small"
+                sx={{ height: "20px", fontSize: "0.7rem" }}
+              />
             )}
           </Stack>
-        )}
-      </Box>
 
-      <Divider sx={{ my: 3 }} />
-
-      {/* LinkedIn Section */}
-      <Box sx={{ mb: 3 }}>
-        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
-          <LinkedInIcon sx={{ fontSize: 32, color: "#0A66C2" }} />
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            LinkedIn
-          </Typography>
-          {linkedinConnected && (
-            <Chip
-              icon={<CheckCircleIcon />}
-              label="Connected"
-              color="success"
+          {!youtubeConnected ? (
+            <Button
+              variant="contained"
+              startIcon={<LinkIcon />}
+              onClick={connectYouTube}
               size="small"
-            />
-          )}
-        </Stack>
-
-        {!linkedinConnected ? (
-          <Button
-            variant="contained"
-            startIcon={<LinkIcon />}
-            onClick={connectLinkedIn}
-            sx={{
-              backgroundColor: "#0A66C2",
-              "&:hover": { backgroundColor: "#004182" },
-            }}
-          >
-            Connect LinkedIn
-          </Button>
-        ) : (
-          <Stack spacing={2}>
-            {linkedinPost ? (
-              <Alert severity="success" icon={<CheckCircleIcon />}>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  Published to LinkedIn
-                </Typography>
-                <Typography variant="body2" sx={{ mt: 0.5 }}>
-                  <a
-                    href={linkedinPost.postUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: "#00684A" }}
-                  >
-                    View on LinkedIn →
-                  </a>
-                </Typography>
-              </Alert>
-            ) : (
-              <Stack direction="row" spacing={2}>
-                <Button
-                  variant="contained"
-                  startIcon={<PublishIcon />}
-                  onClick={() => setPublishDialog('linkedin')}
-                  disabled={publishing.linkedin || !episode.videoUrl}
-                  sx={{
-                    backgroundColor: "#00684A",
-                    "&:hover": { backgroundColor: "#004D37" },
-                  }}
-                >
-                  {publishing.linkedin ? "Publishing..." : "Publish to LinkedIn"}
-                </Button>
-                <Button
-                  variant="outlined"
-                  startIcon={<LinkOffIcon />}
-                  onClick={disconnectLinkedIn}
-                  sx={{ borderColor: "#E63946", color: "#E63946" }}
-                >
-                  Disconnect
-                </Button>
-              </Stack>
-            )}
-
-            {!episode.videoUrl && (
-              <Alert severity="warning">
-                No video URL found. Please add a video URL to this episode before
-                publishing.
-              </Alert>
-            )}
-          </Stack>
-        )}
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* TikTok Section */}
-      <Box sx={{ mb: 3 }}>
-        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
-          <TikTokIcon sx={{ fontSize: 32, color: "#000000" }} />
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            TikTok
-          </Typography>
-          {tiktokConnected && (
-            <Chip
-              icon={<CheckCircleIcon />}
-              label="Connected"
-              color="success"
-              size="small"
-            />
-          )}
-        </Stack>
-
-        {!tiktokConnected ? (
-          <Button
-            variant="contained"
-            startIcon={<LinkIcon />}
-            onClick={connectTikTok}
-            sx={{
-              backgroundColor: "#000000",
-              "&:hover": { backgroundColor: "#333333" },
-            }}
-          >
-            Connect TikTok
-          </Button>
-        ) : (
-          <Stack spacing={2}>
-            {tiktokPost ? (
-              <Alert severity="success" icon={<CheckCircleIcon />}>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  Published to TikTok {tiktokPost.status === "processing" && "(Processing)"}
-                </Typography>
-                {tiktokPost.postUrl && (
-                  <Typography variant="body2" sx={{ mt: 0.5 }}>
+              fullWidth
+              sx={{
+                backgroundColor: "#FF0000",
+                "&:hover": { backgroundColor: "#CC0000" },
+                fontSize: "0.875rem",
+                py: 0.75,
+              }}
+            >
+              Connect
+            </Button>
+          ) : (
+            <Stack spacing={1}>
+              {youtubePost ? (
+                <Alert severity="success" icon={<CheckCircleIcon />} sx={{ py: 0.5 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600, fontSize: "0.8rem" }}>
+                    Published
+                  </Typography>
+                  <Typography variant="caption" sx={{ mt: 0.25, display: "block", fontSize: "0.75rem" }}>
                     <a
-                      href={tiktokPost.postUrl}
+                      href={youtubePost.postUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ color: "#00684A" }}
                     >
-                      View on TikTok →
+                      View →
                     </a>
                   </Typography>
-                )}
-              </Alert>
-            ) : (
-              <Stack direction="row" spacing={2}>
-                <Button
-                  variant="contained"
-                  startIcon={<PublishIcon />}
-                  onClick={() => setPublishDialog('tiktok')}
-                  disabled={publishing.tiktok || !episode.videoUrl}
-                  sx={{
-                    backgroundColor: "#00684A",
-                    "&:hover": { backgroundColor: "#004D37" },
-                  }}
-                >
-                  {publishing.tiktok ? "Publishing..." : "Publish to TikTok"}
-                </Button>
-                <Button
-                  variant="outlined"
-                  startIcon={<LinkOffIcon />}
-                  onClick={disconnectTikTok}
-                  sx={{ borderColor: "#E63946", color: "#E63946" }}
-                >
-                  Disconnect
-                </Button>
-              </Stack>
-            )}
+                </Alert>
+              ) : (
+                <Stack direction="column" spacing={1}>
+                  <Button
+                    variant="contained"
+                    startIcon={<PublishIcon />}
+                    onClick={() => setPublishDialog('youtube')}
+                    disabled={publishing.youtube || !episode.videoUrl}
+                    size="small"
+                    fullWidth
+                    sx={{
+                      backgroundColor: "#00684A",
+                      "&:hover": { backgroundColor: "#004D37" },
+                      fontSize: "0.875rem",
+                      py: 0.75,
+                    }}
+                  >
+                    {publishing.youtube ? "Publishing..." : "Publish"}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    startIcon={<LinkOffIcon />}
+                    onClick={disconnectYouTube}
+                    size="small"
+                    fullWidth
+                    sx={{ borderColor: "#E63946", color: "#E63946", fontSize: "0.875rem", py: 0.75 }}
+                  >
+                    Disconnect
+                  </Button>
+                </Stack>
+              )}
 
-            {!episode.videoUrl && (
-              <Alert severity="warning">
-                No video URL found. Please add a video URL to this episode before
-                publishing.
-              </Alert>
+              {!episode.videoUrl && (
+                <Alert severity="warning" sx={{ py: 0.5, fontSize: "0.75rem" }}>
+                  <Typography variant="caption">No video URL</Typography>
+                </Alert>
+              )}
+            </Stack>
+          )}
+        </Box>
+
+        {/* Vertical Divider */}
+        <Divider orientation="vertical" flexItem sx={{ display: { xs: "none", sm: "block" } }} />
+
+        {/* LinkedIn Section */}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 1.5 }}>
+            <LinkedInIcon sx={{ fontSize: 24, color: "#0A66C2" }} />
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: "0.95rem" }}>
+              LinkedIn
+            </Typography>
+            {linkedinConnected && (
+              <Chip
+                icon={<CheckCircleIcon />}
+                label="Connected"
+                color="success"
+                size="small"
+                sx={{ height: "20px", fontSize: "0.7rem" }}
+              />
             )}
           </Stack>
-        )}
-      </Box>
+
+          {!linkedinConnected ? (
+            <Button
+              variant="contained"
+              startIcon={<LinkIcon />}
+              onClick={connectLinkedIn}
+              size="small"
+              fullWidth
+              sx={{
+                backgroundColor: "#0A66C2",
+                "&:hover": { backgroundColor: "#004182" },
+                fontSize: "0.875rem",
+                py: 0.75,
+              }}
+            >
+              Connect
+            </Button>
+          ) : (
+            <Stack spacing={1}>
+              {linkedinPost ? (
+                <Alert severity="success" icon={<CheckCircleIcon />} sx={{ py: 0.5 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600, fontSize: "0.8rem" }}>
+                    Published
+                  </Typography>
+                  <Typography variant="caption" sx={{ mt: 0.25, display: "block", fontSize: "0.75rem" }}>
+                    <a
+                      href={linkedinPost.postUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "#00684A" }}
+                    >
+                      View →
+                    </a>
+                  </Typography>
+                </Alert>
+              ) : (
+                <Stack direction="column" spacing={1}>
+                  <Button
+                    variant="contained"
+                    startIcon={<PublishIcon />}
+                    onClick={() => setPublishDialog('linkedin')}
+                    disabled={publishing.linkedin || !episode.videoUrl}
+                    size="small"
+                    fullWidth
+                    sx={{
+                      backgroundColor: "#00684A",
+                      "&:hover": { backgroundColor: "#004D37" },
+                      fontSize: "0.875rem",
+                      py: 0.75,
+                    }}
+                  >
+                    {publishing.linkedin ? "Publishing..." : "Publish"}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    startIcon={<LinkOffIcon />}
+                    onClick={disconnectLinkedIn}
+                    size="small"
+                    fullWidth
+                    sx={{ borderColor: "#E63946", color: "#E63946", fontSize: "0.875rem", py: 0.75 }}
+                  >
+                    Disconnect
+                  </Button>
+                </Stack>
+              )}
+
+              {!episode.videoUrl && (
+                <Alert severity="warning" sx={{ py: 0.5, fontSize: "0.75rem" }}>
+                  <Typography variant="caption">No video URL</Typography>
+                </Alert>
+              )}
+            </Stack>
+          )}
+        </Box>
+
+        {/* Vertical Divider */}
+        <Divider orientation="vertical" flexItem sx={{ display: { xs: "none", sm: "block" } }} />
+
+        {/* TikTok Section */}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 1.5 }}>
+            <TikTokIcon sx={{ fontSize: 24, color: "#000000" }} />
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: "0.95rem" }}>
+              TikTok
+            </Typography>
+            {tiktokConnected && (
+              <Chip
+                icon={<CheckCircleIcon />}
+                label="Connected"
+                color="success"
+                size="small"
+                sx={{ height: "20px", fontSize: "0.7rem" }}
+              />
+            )}
+          </Stack>
+
+          {!tiktokConnected ? (
+            <Button
+              variant="contained"
+              startIcon={<LinkIcon />}
+              onClick={connectTikTok}
+              size="small"
+              fullWidth
+              sx={{
+                backgroundColor: "#000000",
+                "&:hover": { backgroundColor: "#333333" },
+                fontSize: "0.875rem",
+                py: 0.75,
+              }}
+            >
+              Connect
+            </Button>
+          ) : (
+            <Stack spacing={1}>
+              {tiktokPost ? (
+                <Alert severity="success" icon={<CheckCircleIcon />} sx={{ py: 0.5 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600, fontSize: "0.8rem" }}>
+                    Published {tiktokPost.status === "processing" && "(Processing)"}
+                  </Typography>
+                  {tiktokPost.postUrl && (
+                    <Typography variant="caption" sx={{ mt: 0.25, display: "block", fontSize: "0.75rem" }}>
+                      <a
+                        href={tiktokPost.postUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "#00684A" }}
+                      >
+                        View →
+                      </a>
+                    </Typography>
+                  )}
+                </Alert>
+              ) : (
+                <Stack direction="column" spacing={1}>
+                  <Button
+                    variant="contained"
+                    startIcon={<PublishIcon />}
+                    onClick={() => setPublishDialog('tiktok')}
+                    disabled={publishing.tiktok || !episode.videoUrl}
+                    size="small"
+                    fullWidth
+                    sx={{
+                      backgroundColor: "#00684A",
+                      "&:hover": { backgroundColor: "#004D37" },
+                      fontSize: "0.875rem",
+                      py: 0.75,
+                    }}
+                  >
+                    {publishing.tiktok ? "Publishing..." : "Publish"}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    startIcon={<LinkOffIcon />}
+                    onClick={disconnectTikTok}
+                    size="small"
+                    fullWidth
+                    sx={{ borderColor: "#E63946", color: "#E63946", fontSize: "0.875rem", py: 0.75 }}
+                  >
+                    Disconnect
+                  </Button>
+                </Stack>
+              )}
+
+              {!episode.videoUrl && (
+                <Alert severity="warning" sx={{ py: 0.5, fontSize: "0.75rem" }}>
+                  <Typography variant="caption">No video URL</Typography>
+                </Alert>
+              )}
+            </Stack>
+          )}
+        </Box>
+      </Stack>
 
       {/* YouTube Publish Dialog */}
       <Dialog open={publishDialog === 'youtube'} onClose={() => setPublishDialog(null)}>
