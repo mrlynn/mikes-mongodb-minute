@@ -47,21 +47,24 @@ const DIFFICULTIES = ["Beginner", "Intermediate", "Advanced"];
 const STATUSES = ["draft", "ready-to-record", "recorded", "published"];
 
 export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = "Save" }) {
+  // Ensure initialData is always an object, never null or undefined
+  const safeInitialData = initialData || {};
+  
   const [formData, setFormData] = useState({
-    episodeNumber: initialData.episodeNumber || "",
-    title: initialData.title || "",
-    slug: initialData.slug || "",
-    category: initialData.category || "",
-    difficulty: initialData.difficulty || "",
-    status: initialData.status || "draft",
-    hook: initialData.hook || "",
-    problem: initialData.problem || "",
-    tip: initialData.tip || "",
-    quickWin: initialData.quickWin || "",
-    cta: initialData.cta || "",
-    visualSuggestion: initialData.visualSuggestion || "",
-    videoUrl: initialData.videoUrl || "",
-    socialLinks: initialData.socialLinks || {
+    episodeNumber: safeInitialData.episodeNumber || "",
+    title: safeInitialData.title || "",
+    slug: safeInitialData.slug || "",
+    category: safeInitialData.category || "",
+    difficulty: safeInitialData.difficulty || "",
+    status: safeInitialData.status || "draft",
+    hook: safeInitialData.hook || "",
+    problem: safeInitialData.problem || "",
+    tip: safeInitialData.tip || "",
+    quickWin: safeInitialData.quickWin || "",
+    cta: safeInitialData.cta || "",
+    visualSuggestion: safeInitialData.visualSuggestion || "",
+    videoUrl: safeInitialData.videoUrl || "",
+    socialLinks: safeInitialData.socialLinks || {
       youtube: "",
       tiktok: "",
       linkedin: "",
@@ -70,19 +73,59 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
     },
   });
 
+  // Update form when initialData changes (e.g., when template is selected)
+  useEffect(() => {
+    // Ensure initialData is always an object
+    const safeInitialData = initialData || {};
+    
+    // Only update if initialData has meaningful content (not just empty object)
+    const hasContent = safeInitialData && Object.keys(safeInitialData).length > 0 && (
+      safeInitialData.hook || 
+      safeInitialData.problem || 
+      safeInitialData.tip || 
+      safeInitialData.quickWin || 
+      safeInitialData.cta ||
+      safeInitialData.category ||
+      safeInitialData.difficulty
+    );
+    
+    if (hasContent) {
+      setFormData((prev) => ({
+        ...prev,
+        // Only update fields that are provided in initialData
+        category: safeInitialData.category || prev.category,
+        difficulty: safeInitialData.difficulty || prev.difficulty,
+        hook: safeInitialData.hook || prev.hook,
+        problem: safeInitialData.problem || prev.problem,
+        tip: safeInitialData.tip || prev.tip,
+        quickWin: safeInitialData.quickWin || prev.quickWin,
+        cta: safeInitialData.cta || prev.cta,
+        visualSuggestion: safeInitialData.visualSuggestion || prev.visualSuggestion,
+        // Preserve other fields
+        episodeNumber: safeInitialData.episodeNumber !== undefined ? safeInitialData.episodeNumber : prev.episodeNumber,
+        title: safeInitialData.title || prev.title,
+        slug: safeInitialData.slug || prev.slug,
+        status: safeInitialData.status || prev.status,
+        videoUrl: safeInitialData.videoUrl || prev.videoUrl,
+        socialLinks: safeInitialData.socialLinks || prev.socialLinks,
+      }));
+    }
+  }, [initialData]);
+
   const [saving, setSaving] = useState(false);
   const [qrCode, setQrCode] = useState(null);
   const [loadingQR, setLoadingQR] = useState(false);
 
   // Fetch QR code when component mounts (if editing existing episode)
   useEffect(() => {
-    if (initialData._id) {
+    const safeInitialData = initialData || {};
+    if (safeInitialData._id) {
       fetchQRCode();
     }
-  }, [initialData._id]);
+  }, [initialData]);
 
   async function fetchQRCode() {
-    if (!initialData._id) return;
+    if (!initialData?._id) return;
 
     setLoadingQR(true);
     try {
@@ -103,7 +146,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
 
     const link = document.createElement("a");
     link.href = qrCode;
-    link.download = `mongodb-minute-${initialData.slug || initialData._id}-qr.png`;
+    link.download = `mongodb-minute-${initialData?.slug || initialData?._id || 'episode'}-qr.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -291,7 +334,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   </Box>
 
                   {/* QR Code Section - Only show for existing episodes */}
-                  {initialData._id && (
+                  {initialData?._id && (
                     <>
                       <Divider sx={{ my: 1 }} />
                       <Box>

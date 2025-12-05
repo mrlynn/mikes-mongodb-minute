@@ -183,7 +183,7 @@ export default function AdminDashboard() {
 
       {/* Stats Grid */}
       <Grid container spacing={3} data-tour="statistics">
-        <Grid item xs={6} sm={4} md={2.4}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <Paper 
             sx={{ 
               p: 3, 
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
             </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={6} sm={4} md={2.4}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <Paper 
             sx={{ 
               p: 3, 
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
             </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={6} sm={4} md={2.4}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <Paper 
             sx={{ 
               p: 3, 
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
             </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={6} sm={4} md={2.4}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <Paper 
             sx={{ 
               p: 3, 
@@ -259,7 +259,7 @@ export default function AdminDashboard() {
             </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={6} sm={4} md={2.4}>
+        <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
           <Paper 
             sx={{ 
               p: 3, 
@@ -285,8 +285,8 @@ export default function AdminDashboard() {
         <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
           Workflow Status
         </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={4}>
+      <Grid container spacing={3}>
+        <Grid size={{ xs: 12, sm: 4 }}>
             <Paper
               sx={{
                 p: 3,
