@@ -14,7 +14,8 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { episodeId } = params;
+    // Next.js 15+ requires params to be awaited
+    const { episodeId } = await params;
 
     if (!episodeId) {
       return NextResponse.json(

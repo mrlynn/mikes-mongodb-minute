@@ -25,24 +25,7 @@ import {
 } from "@mui/icons-material";
 import { useTheme } from "@/contexts/ThemeContext";
 
-const LAYOUTS = [
-  { value: "face-left", label: "Face Left" },
-  { value: "face-right", label: "Face Right" },
-  { value: "centered", label: "Centered Face" },
-];
-
-const THEMES = [
-  { value: "dark", label: "Dark" },
-  { value: "light", label: "Light" },
-];
-
-const BACKGROUNDS = [
-  { value: "default", label: "Dark Gradient" },
-  { value: "tech-grid", label: "Tech Grid" },
-  { value: "brutalist", label: "Brutalist Blocks" },
-  { value: "leaf-pattern", label: "Leaf Pattern" },
-  { value: "geometric", label: "Geometric Lines" },
-];
+// Removed layout, theme, and background options - new system uses fixed template
 
 export default function ThumbnailEditor({ episodeId, episode, onThumbnailSaved }) {
   const { darkMode } = useTheme();
@@ -53,16 +36,10 @@ export default function ThumbnailEditor({ episodeId, episode, onThumbnailSaved }
 
   const [thumbnailConfig, setThumbnailConfig] = useState({
     titleText: episode?.title || "",
-    layout: episode?.thumbnail?.layout || "face-right",
-    theme: episode?.thumbnail?.theme || "dark",
-    backgroundType: episode?.thumbnail?.backgroundType || "template",
-    backgroundId: episode?.thumbnail?.backgroundId || "default",
     faceAssetUrl: episode?.thumbnail?.faceAssetUrl || null,
     faceSource: episode?.thumbnail?.faceSource || "upload",
     category: episode?.category || "",
-    showCategoryBadge: episode?.thumbnail?.showCategoryBadge !== false, // Default to true, but allow disabling
-    showBranding: episode?.thumbnail?.showBranding !== false, // Default to true, but allow disabling
-    showTopicGraphic: episode?.thumbnail?.showTopicGraphic || false, // Default to false (off by default)
+    showBranding: episode?.thumbnail?.showBranding !== false, // Default to true
   });
 
   const [previewUrl, setPreviewUrl] = useState(episode?.thumbnail?.mainUrl || null);
@@ -342,6 +319,7 @@ export default function ThumbnailEditor({ episodeId, episode, onThumbnailSaved }
                   onChange={handleFileUpload}
                 />
               </Button>
+
             </Paper>
 
             {/* Title */}
@@ -423,7 +401,7 @@ export default function ThumbnailEditor({ episodeId, episode, onThumbnailSaved }
               )}
             </Paper>
 
-            {/* Style Presets */}
+            {/* Options */}
             <Paper
               sx={{
                 p: 3,
@@ -433,94 +411,10 @@ export default function ThumbnailEditor({ episodeId, episode, onThumbnailSaved }
               }}
             >
               <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit" }}>
-                Style Presets
+                Options
               </Typography>
 
               <Stack spacing={2}>
-                <TextField
-                  fullWidth
-                  select
-                  label="Layout"
-                  value={thumbnailConfig.layout}
-                  onChange={(e) => handleConfigChange("layout", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                  sx={getTextFieldSx()}
-                >
-                  {LAYOUTS.map((layout) => (
-                    <MenuItem key={layout.value} value={layout.value}>
-                      {layout.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-
-                <TextField
-                  fullWidth
-                  select
-                  label="Theme"
-                  value={thumbnailConfig.theme}
-                  onChange={(e) => handleConfigChange("theme", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                  sx={getTextFieldSx()}
-                >
-                  {THEMES.map((theme) => (
-                    <MenuItem key={theme.value} value={theme.value}>
-                      {theme.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-
-                <TextField
-                  fullWidth
-                  select
-                  label="Background"
-                  value={thumbnailConfig.backgroundId}
-                  onChange={(e) => handleConfigChange("backgroundId", e.target.value)}
-                  variant="outlined"
-                  size="small"
-                  sx={getTextFieldSx()}
-                >
-                  {BACKGROUNDS.map((bg) => (
-                    <MenuItem key={bg.value} value={bg.value}>
-                      {bg.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-
-                {/* Category Badge Toggle */}
-                {thumbnailConfig.category && (
-                  <Box>
-                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: "block" }}>
-                      Show Category Badge
-                    </Typography>
-                    <Button
-                      variant={thumbnailConfig.showCategoryBadge ? "contained" : "outlined"}
-                      size="small"
-                      onClick={() => handleConfigChange("showCategoryBadge", !thumbnailConfig.showCategoryBadge)}
-                      fullWidth
-                      sx={{
-                        ...(thumbnailConfig.showCategoryBadge
-                          ? {
-                              background: darkMode
-                                ? "linear-gradient(135deg, #00ED64 0%, #00684A 100%)"
-                                : undefined,
-                              color: darkMode ? "#001E2B" : undefined,
-                            }
-                          : {
-                              borderColor: darkMode ? "#2D3748" : "#E2E8F0",
-                              color: darkMode ? "#A0AEC0" : "inherit",
-                            }),
-                      }}
-                    >
-                      {thumbnailConfig.showCategoryBadge ? "Visible" : "Hidden"}
-                    </Button>
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block", fontSize: "0.7rem" }}>
-                      Category badge appears in top-left corner
-                    </Typography>
-                  </Box>
-                )}
-
                 {/* Branding Toggle */}
                 <Box>
                   <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: "block" }}>
@@ -551,39 +445,6 @@ export default function ThumbnailEditor({ episodeId, episode, onThumbnailSaved }
                     MongoDB Minute branding appears in bottom-right corner
                   </Typography>
                 </Box>
-
-                {/* Topic Graphic Toggle */}
-                {thumbnailConfig.category && (
-                  <Box>
-                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: "block" }}>
-                      Show Topic Icon
-                    </Typography>
-                    <Button
-                      variant={thumbnailConfig.showTopicGraphic ? "contained" : "outlined"}
-                      size="small"
-                      onClick={() => handleConfigChange("showTopicGraphic", !thumbnailConfig.showTopicGraphic)}
-                      fullWidth
-                      sx={{
-                        ...(thumbnailConfig.showTopicGraphic
-                          ? {
-                              background: darkMode
-                                ? "linear-gradient(135deg, #00ED64 0%, #00684A 100%)"
-                                : undefined,
-                              color: darkMode ? "#001E2B" : undefined,
-                            }
-                          : {
-                              borderColor: darkMode ? "#2D3748" : "#E2E8F0",
-                              color: darkMode ? "#A0AEC0" : "inherit",
-                            }),
-                      }}
-                    >
-                      {thumbnailConfig.showTopicGraphic ? "Visible" : "Hidden"}
-                    </Button>
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block", fontSize: "0.7rem" }}>
-                      Small icon on right side (optional)
-                    </Typography>
-                  </Box>
-                )}
               </Stack>
             </Paper>
 

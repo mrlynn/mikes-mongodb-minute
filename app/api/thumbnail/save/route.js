@@ -1,23 +1,16 @@
 import { NextResponse } from "next/server";
-import { generateThumbnail, saveThumbnail } from "@/lib/thumbnail";
+import { generateThumbnail, saveThumbnail } from "@/lib/thumbnail/generateThumbnail";
 import { updateEpisode } from "@/lib/episodes";
-import { put } from "@vercel/blob";
 
 export async function POST(req) {
   try {
     const {
       episodeId,
-      layout = "face-right",
-      theme = "dark",
-      backgroundType = "template",
-      backgroundId = "default",
       faceAssetUrl,
       titleText,
       category,
       faceSource = "upload",
-      showCategoryBadge = true,
       showBranding = true,
-      showTopicGraphic = false,
     } = await req.json();
 
     if (!episodeId || !titleText) {
@@ -31,19 +24,13 @@ export async function POST(req) {
     // The generateThumbnail function will handle fetching it
     const faceImageUrl = faceAssetUrl || null;
 
-    // Generate thumbnail (optimized for YouTube best practices)
+    // Generate thumbnail using new system
     const thumbnailBuffers = await generateThumbnail({
       episodeId,
       titleText,
       faceImageUrl,
-      layout,
-      theme,
-      backgroundType,
-      backgroundId,
       category,
-      showCategoryBadge,
       showBranding,
-      showTopicGraphic,
     });
 
     // Validate file size meets YouTube's 2MB requirement
@@ -60,16 +47,10 @@ export async function POST(req) {
       status: "ready",
       mainUrl: urls.mainUrl,
       smallUrl: urls.smallUrl,
-      layout,
-      theme,
-      backgroundType,
-      backgroundId,
       faceSource,
       faceAssetUrl: faceAssetUrl || null,
       titleText,
-      showCategoryBadge,
       showBranding,
-      showTopicGraphic,
       generatedAt: new Date(),
       lastUpdatedAt: new Date(),
     };
