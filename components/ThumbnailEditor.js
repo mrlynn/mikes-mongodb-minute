@@ -37,8 +37,11 @@ const THEMES = [
 ];
 
 const BACKGROUNDS = [
-  { value: "default", label: "Default" },
-  { value: "atlas-grid", label: "Atlas Grid" },
+  { value: "default", label: "Dark Gradient" },
+  { value: "tech-grid", label: "Tech Grid" },
+  { value: "brutalist", label: "Brutalist Blocks" },
+  { value: "leaf-pattern", label: "Leaf Pattern" },
+  { value: "geometric", label: "Geometric Lines" },
 ];
 
 export default function ThumbnailEditor({ episodeId, episode, onThumbnailSaved }) {
@@ -59,6 +62,7 @@ export default function ThumbnailEditor({ episodeId, episode, onThumbnailSaved }
     category: episode?.category || "",
     showCategoryBadge: episode?.thumbnail?.showCategoryBadge !== false, // Default to true, but allow disabling
     showBranding: episode?.thumbnail?.showBranding !== false, // Default to true, but allow disabling
+    showTopicGraphic: episode?.thumbnail?.showTopicGraphic || false, // Default to false (off by default)
   });
 
   const [previewUrl, setPreviewUrl] = useState(episode?.thumbnail?.mainUrl || null);
@@ -544,9 +548,42 @@ export default function ThumbnailEditor({ episodeId, episode, onThumbnailSaved }
                     {thumbnailConfig.showBranding ? "Visible" : "Hidden"}
                   </Button>
                   <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block", fontSize: "0.7rem" }}>
-                    MongoDB Minute branding appears in bottom-left corner
+                    MongoDB Minute branding appears in bottom-right corner
                   </Typography>
                 </Box>
+
+                {/* Topic Graphic Toggle */}
+                {thumbnailConfig.category && (
+                  <Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: "block" }}>
+                      Show Topic Icon
+                    </Typography>
+                    <Button
+                      variant={thumbnailConfig.showTopicGraphic ? "contained" : "outlined"}
+                      size="small"
+                      onClick={() => handleConfigChange("showTopicGraphic", !thumbnailConfig.showTopicGraphic)}
+                      fullWidth
+                      sx={{
+                        ...(thumbnailConfig.showTopicGraphic
+                          ? {
+                              background: darkMode
+                                ? "linear-gradient(135deg, #00ED64 0%, #00684A 100%)"
+                                : undefined,
+                              color: darkMode ? "#001E2B" : undefined,
+                            }
+                          : {
+                              borderColor: darkMode ? "#2D3748" : "#E2E8F0",
+                              color: darkMode ? "#A0AEC0" : "inherit",
+                            }),
+                      }}
+                    >
+                      {thumbnailConfig.showTopicGraphic ? "Visible" : "Hidden"}
+                    </Button>
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block", fontSize: "0.7rem" }}>
+                      Small icon on right side (optional)
+                    </Typography>
+                  </Box>
+                )}
               </Stack>
             </Paper>
 

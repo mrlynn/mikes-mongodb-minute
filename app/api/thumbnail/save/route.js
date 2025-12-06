@@ -17,6 +17,7 @@ export async function POST(req) {
       faceSource = "upload",
       showCategoryBadge = true,
       showBranding = true,
+      showTopicGraphic = false,
     } = await req.json();
 
     if (!episodeId || !titleText) {
@@ -42,6 +43,7 @@ export async function POST(req) {
       category,
       showCategoryBadge,
       showBranding,
+      showTopicGraphic,
     });
 
     // Validate file size meets YouTube's 2MB requirement
@@ -67,6 +69,7 @@ export async function POST(req) {
       titleText,
       showCategoryBadge,
       showBranding,
+      showTopicGraphic,
       generatedAt: new Date(),
       lastUpdatedAt: new Date(),
     };

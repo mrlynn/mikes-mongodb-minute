@@ -16,6 +16,7 @@ export async function POST(req) {
       category,
       showCategoryBadge = true,
       showBranding = true,
+      showTopicGraphic = false,
     } = await req.json();
 
     if (!episodeId || !titleText) {
@@ -25,28 +26,14 @@ export async function POST(req) {
       );
     }
 
-    // Resolve face image path
-    let faceImagePath = null;
-    if (faceAssetUrl) {
-      // If it's a URL, try to resolve to local path
-      if (faceAssetUrl.startsWith("/uploads/")) {
-        const localPath = join(process.cwd(), "public", faceAssetUrl);
-        if (existsSync(localPath)) {
-          faceImagePath = localPath;
-        }
-      } else if (faceAssetUrl.startsWith("/")) {
-        const localPath = join(process.cwd(), "public", faceAssetUrl);
-        if (existsSync(localPath)) {
-          faceImagePath = localPath;
-        }
-      }
-    }
+    // Pass face URL directly - generateThumbnail will handle fetching from Blob or local path
+    const faceImageUrl = faceAssetUrl || null;
 
     // Generate thumbnail
     const thumbnailBuffers = await generateThumbnail({
       episodeId,
       titleText,
-      faceImagePath,
+      faceImageUrl,
       layout,
       theme,
       backgroundType,
@@ -54,6 +41,7 @@ export async function POST(req) {
       category,
       showCategoryBadge,
       showBranding,
+      showTopicGraphic,
     });
 
     // Save as preview (temporary)
