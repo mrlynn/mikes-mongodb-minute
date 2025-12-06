@@ -21,6 +21,7 @@ import {
   Lightbulb as LightbulbIcon,
   AutoAwesome as AIIcon,
 } from "@mui/icons-material";
+import { useTheme } from "@/contexts/ThemeContext";
 import CoverageChart from "@/components/analytics/CoverageChart";
 import TopicGapAnalysis from "@/components/analytics/TopicGapAnalysis";
 import CategoryDistribution from "@/components/analytics/CategoryDistribution";
@@ -28,6 +29,7 @@ import DifficultyBreakdown from "@/components/analytics/DifficultyBreakdown";
 import StatusOverview from "@/components/analytics/StatusOverview";
 
 export default function AnalyticsPage() {
+  const { darkMode } = useTheme();
   const [episodes, setEpisodes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
@@ -98,6 +100,7 @@ export default function AnalyticsPage() {
             fontWeight: 700,
             mb: 1,
             fontSize: { xs: "1.75rem", sm: "2rem", md: "2.75rem" },
+            color: darkMode ? "#E2E8F0" : "inherit",
           }}
         >
           Content Analytics
@@ -115,11 +118,14 @@ export default function AnalyticsPage() {
               p: 2,
               textAlign: "center",
               borderRadius: 2,
-              background: "linear-gradient(135deg, rgba(0, 104, 74, 0.1) 0%, rgba(0, 104, 74, 0.05) 100%)",
-              border: "1px solid #E2E8F0",
+              background: darkMode
+                ? "linear-gradient(135deg, rgba(0, 237, 100, 0.15) 0%, rgba(0, 237, 100, 0.08) 100%)"
+                : "linear-gradient(135deg, rgba(0, 104, 74, 0.1) 0%, rgba(0, 104, 74, 0.05) 100%)",
+              border: darkMode ? "1px solid #2D4A3F" : "1px solid #E2E8F0",
+              backgroundColor: darkMode ? "#13181D" : "background.paper",
             }}
           >
-            <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: "#00684A" }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: darkMode ? "#00ED64" : "#00684A" }}>
               {stats?.total || 0}
             </Typography>
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
@@ -133,8 +139,11 @@ export default function AnalyticsPage() {
               p: 2,
               textAlign: "center",
               borderRadius: 2,
-              background: "linear-gradient(135deg, rgba(0, 237, 100, 0.1) 0%, rgba(0, 237, 100, 0.05) 100%)",
-              border: "1px solid #E2E8F0",
+              background: darkMode
+                ? "linear-gradient(135deg, rgba(0, 237, 100, 0.15) 0%, rgba(0, 237, 100, 0.08) 100%)"
+                : "linear-gradient(135deg, rgba(0, 237, 100, 0.1) 0%, rgba(0, 237, 100, 0.05) 100%)",
+              border: darkMode ? "1px solid #2D4A3F" : "1px solid #E2E8F0",
+              backgroundColor: darkMode ? "#13181D" : "background.paper",
             }}
           >
             <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: "#00ED64" }}>
@@ -151,11 +160,11 @@ export default function AnalyticsPage() {
               p: 2,
               textAlign: "center",
               borderRadius: 2,
-              backgroundColor: "warning.light",
-              border: "1px solid #E2E8F0",
+              backgroundColor: darkMode ? "#1A1F24" : "warning.light",
+              border: darkMode ? "1px solid #3D3020" : "1px solid #E2E8F0",
             }}
           >
-            <Typography variant="h4" color="warning.dark" sx={{ fontWeight: 700, mb: 0.5 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: darkMode ? "#FFA726" : "warning.dark" }}>
               {stats?.draft || 0}
             </Typography>
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
@@ -169,11 +178,14 @@ export default function AnalyticsPage() {
               p: 2,
               textAlign: "center",
               borderRadius: 2,
-              background: "linear-gradient(135deg, rgba(95, 108, 118, 0.1) 0%, rgba(95, 108, 118, 0.05) 100%)",
-              border: "1px solid #E2E8F0",
+              background: darkMode
+                ? "linear-gradient(135deg, rgba(95, 108, 118, 0.15) 0%, rgba(95, 108, 118, 0.08) 100%)"
+                : "linear-gradient(135deg, rgba(95, 108, 118, 0.1) 0%, rgba(95, 108, 118, 0.05) 100%)",
+              border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+              backgroundColor: darkMode ? "#13181D" : "background.paper",
             }}
           >
-            <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: "#5F6C76" }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: darkMode ? "#A0AEC0" : "#5F6C76" }}>
               {Object.keys(stats?.categoryCount || {}).length}
             </Typography>
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>

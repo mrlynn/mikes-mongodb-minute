@@ -9,6 +9,7 @@ import {
   Chip,
 } from "@mui/material";
 import { TrendingUp as TrendingUpIcon } from "@mui/icons-material";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const DIFFICULTY_COLORS = {
   Beginner: "#00ED64",
@@ -23,6 +24,7 @@ const DIFFICULTY_ICONS = {
 };
 
 export default function DifficultyBreakdown({ episodes, stats }) {
+  const { darkMode } = useTheme();
   const breakdown = useMemo(() => {
     if (!stats?.difficultyCount) return [];
 
@@ -51,13 +53,14 @@ export default function DifficultyBreakdown({ episodes, stats }) {
       sx={{
         p: { xs: 2, md: 3 },
         borderRadius: { xs: 2, md: 3 },
-        border: "1px solid #E2E8F0",
+        border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+        backgroundColor: darkMode ? "#13181D" : "background.paper",
         height: "100%",
       }}
     >
       <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 3 }}>
-        <TrendingUpIcon sx={{ color: "#00684A", fontSize: 24 }} />
-        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1rem", md: "1.25rem" } }}>
+        <TrendingUpIcon sx={{ color: darkMode ? "#00ED64" : "#00684A", fontSize: 24 }} />
+        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1rem", md: "1.25rem" }, color: darkMode ? "#E2E8F0" : "inherit" }}>
           Difficulty Breakdown
         </Typography>
       </Stack>
@@ -83,6 +86,7 @@ export default function DifficultyBreakdown({ episodes, stats }) {
                     sx={{
                       fontWeight: 600,
                       fontSize: { xs: "0.9375rem", md: "1rem" },
+                      color: darkMode ? "#E2E8F0" : "inherit",
                     }}
                   >
                     {item.difficulty}
@@ -93,7 +97,7 @@ export default function DifficultyBreakdown({ episodes, stats }) {
                     variant="body2"
                     sx={{
                       fontWeight: 600,
-                      color: "#001E2B",
+                      color: darkMode ? "#E2E8F0" : "#001E2B",
                       fontSize: { xs: "0.875rem", md: "0.9375rem" },
                     }}
                   >
@@ -117,9 +121,9 @@ export default function DifficultyBreakdown({ episodes, stats }) {
                 sx={{
                   position: "relative",
                   height: 32,
-                  backgroundColor: "#F7FAFC",
+                  backgroundColor: darkMode ? "#1A2328" : "#F7FAFC",
                   borderRadius: 2,
-                  border: "1px solid #E2E8F0",
+                  border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
                   overflow: "hidden",
                 }}
               >
@@ -142,7 +146,7 @@ export default function DifficultyBreakdown({ episodes, stats }) {
                     top: 0,
                     height: "100%",
                     width: "2px",
-                    backgroundColor: "#001E2B",
+                    backgroundColor: darkMode ? "#E2E8F0" : "#001E2B",
                     opacity: 0.3,
                   }}
                 />
@@ -161,7 +165,7 @@ export default function DifficultyBreakdown({ episodes, stats }) {
                     variant="caption"
                     sx={{
                       fontWeight: 600,
-                      color: item.percentage > 5 ? "#FFFFFF" : "#001E2B",
+                      color: item.percentage > 5 ? "#FFFFFF" : (darkMode ? "#E2E8F0" : "#001E2B"),
                       fontSize: { xs: "0.7rem", md: "0.75rem" },
                     }}
                   >
@@ -171,7 +175,7 @@ export default function DifficultyBreakdown({ episodes, stats }) {
                     variant="caption"
                     sx={{
                       fontWeight: 500,
-                      color: "#5F6C76",
+                      color: darkMode ? "#A0AEC0" : "#5F6C76",
                       fontSize: { xs: "0.7rem", md: "0.75rem" },
                     }}
                   >

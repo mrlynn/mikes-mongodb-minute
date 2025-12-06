@@ -7,9 +7,11 @@ import { useRouter } from "next/navigation";
 import { Add as AddIcon, List as ListIcon, AutoAwesome as AIIcon, RateReview as ReviewIcon, CheckCircle as CheckCircleIcon } from "@mui/icons-material";
 import AIGenerateDialog from "@/components/AIGenerateDialog";
 import AdminTour from "@/components/AdminTour";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const { darkMode } = useTheme();
   const [stats, setStats] = useState({
     total: 0,
     draft: 0,
@@ -68,17 +70,18 @@ export default function AdminDashboard() {
   return (
     <Box>
       <Box sx={{ mb: 5 }}>
-        <Typography 
-          variant="h3" 
-          sx={{ 
-            fontWeight: 700, 
+        <Typography
+          variant="h3"
+          sx={{
+            fontWeight: 700,
             mb: 1,
             fontSize: { xs: "2rem", md: "2.75rem" },
+            color: darkMode ? "#E2E8F0" : "inherit",
           }}
         >
           Admin Dashboard
         </Typography>
-        <Typography variant="h6" sx={{ fontWeight: 400, color: "#5F6C76" }}>
+        <Typography variant="h6" sx={{ fontWeight: 400, color: darkMode ? "#A0AEC0" : "#5F6C76" }}>
           Manage your MongoDB Minute episodes
         </Typography>
       </Box>
@@ -89,13 +92,13 @@ export default function AdminDashboard() {
           mb: 5,
           p: 3,
           borderRadius: 3,
-          backgroundColor: "background.paper",
+          backgroundColor: darkMode ? "#13181D" : "background.paper",
           border: "1px solid",
-          borderColor: "divider",
+          borderColor: darkMode ? "#2D3748" : "divider",
         }}
         data-tour="quick-actions"
       >
-        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: darkMode ? "#E2E8F0" : "inherit" }}>
           Quick Actions
         </Typography>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2} flexWrap="wrap">
@@ -107,9 +110,13 @@ export default function AdminDashboard() {
             sx={{
               fontWeight: 600,
               px: 4,
-              background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
+              background: darkMode
+                ? "linear-gradient(135deg, #00ED64 0%, #00684A 100%)"
+                : "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
+              color: darkMode ? "#001E2B" : "#FFFFFF",
               "&:hover": {
                 background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
+                color: "#001E2B",
               },
             }}
           >
@@ -126,9 +133,13 @@ export default function AdminDashboard() {
               sx={{
                 fontWeight: 600,
                 px: 4,
-                background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
+                background: darkMode
+                  ? "linear-gradient(135deg, #00ED64 0%, #00684A 100%)"
+                  : "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
+                color: darkMode ? "#001E2B" : "#FFFFFF",
                 "&:hover": {
                   background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
+                  color: "#001E2B",
                 },
                 position: "relative",
                 "&::after": {
@@ -160,6 +171,12 @@ export default function AdminDashboard() {
               sx={{
                 fontWeight: 600,
                 px: 4,
+                borderColor: darkMode ? "#00ED64" : "primary.main",
+                color: darkMode ? "#00ED64" : "primary.main",
+                "&:hover": {
+                  borderColor: darkMode ? "#00ED64" : "primary.dark",
+                  backgroundColor: darkMode ? "rgba(0, 237, 100, 0.08)" : "rgba(0, 104, 74, 0.04)",
+                },
               }}
             >
               Create Manually
@@ -173,6 +190,12 @@ export default function AdminDashboard() {
               sx={{
                 fontWeight: 600,
                 px: 4,
+                borderColor: darkMode ? "#00ED64" : "primary.main",
+                color: darkMode ? "#00ED64" : "primary.main",
+                "&:hover": {
+                  borderColor: darkMode ? "#00ED64" : "primary.dark",
+                  backgroundColor: darkMode ? "rgba(0, 237, 100, 0.08)" : "rgba(0, 104, 74, 0.04)",
+                },
               }}
             >
               View All Episodes
@@ -184,17 +207,20 @@ export default function AdminDashboard() {
       {/* Stats Grid */}
       <Grid container spacing={3} data-tour="statistics">
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <Paper 
-            sx={{ 
-              p: 3, 
+          <Paper
+            sx={{
+              p: 3,
               textAlign: "center",
               borderRadius: 3,
-              background: "linear-gradient(135deg, rgba(0, 104, 74, 0.1) 0%, rgba(0, 104, 74, 0.05) 100%)",
+              background: darkMode
+                ? "linear-gradient(135deg, rgba(0, 237, 100, 0.15) 0%, rgba(0, 237, 100, 0.08) 100%)"
+                : "linear-gradient(135deg, rgba(0, 104, 74, 0.1) 0%, rgba(0, 104, 74, 0.05) 100%)",
               border: "1px solid",
-              borderColor: "divider",
+              borderColor: darkMode ? "#2D4A3F" : "divider",
+              backgroundColor: darkMode ? "#13181D" : "background.paper",
             }}
           >
-            <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: "#00684A" }}>
+            <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: darkMode ? "#00ED64" : "#00684A" }}>
               {stats.total}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
@@ -203,17 +229,17 @@ export default function AdminDashboard() {
           </Paper>
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <Paper 
-            sx={{ 
-              p: 3, 
+          <Paper
+            sx={{
+              p: 3,
               textAlign: "center",
               borderRadius: 3,
-              backgroundColor: "warning.light",
+              backgroundColor: darkMode ? "#1A1F24" : "warning.light",
               border: "1px solid",
-              borderColor: "divider",
+              borderColor: darkMode ? "#3D3020" : "divider",
             }}
           >
-            <Typography variant="h3" color="warning.dark" sx={{ fontWeight: 700, mb: 1 }}>
+            <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: darkMode ? "#FFA726" : "warning.dark" }}>
               {stats.draft}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
@@ -222,17 +248,17 @@ export default function AdminDashboard() {
           </Paper>
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <Paper 
-            sx={{ 
-              p: 3, 
+          <Paper
+            sx={{
+              p: 3,
               textAlign: "center",
               borderRadius: 3,
-              backgroundColor: "info.light",
+              backgroundColor: darkMode ? "#141B24" : "info.light",
               border: "1px solid",
-              borderColor: "divider",
+              borderColor: darkMode ? "#1E3A5F" : "divider",
             }}
           >
-            <Typography variant="h3" color="info.dark" sx={{ fontWeight: 700, mb: 1 }}>
+            <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: darkMode ? "#42A5F5" : "info.dark" }}>
               {stats.readyToRecord}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
@@ -241,14 +267,14 @@ export default function AdminDashboard() {
           </Paper>
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <Paper 
-            sx={{ 
-              p: 3, 
+          <Paper
+            sx={{
+              p: 3,
               textAlign: "center",
               borderRadius: 3,
-              backgroundColor: "grey.200",
+              backgroundColor: darkMode ? "#1A1D20" : "grey.200",
               border: "1px solid",
-              borderColor: "divider",
+              borderColor: darkMode ? "#2D3748" : "divider",
             }}
           >
             <Typography variant="h3" color="text.secondary" sx={{ fontWeight: 700, mb: 1 }}>
@@ -260,14 +286,17 @@ export default function AdminDashboard() {
           </Paper>
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2.4 }}>
-          <Paper 
-            sx={{ 
-              p: 3, 
+          <Paper
+            sx={{
+              p: 3,
               textAlign: "center",
               borderRadius: 3,
-              background: "linear-gradient(135deg, rgba(0, 237, 100, 0.1) 0%, rgba(0, 237, 100, 0.05) 100%)",
+              background: darkMode
+                ? "linear-gradient(135deg, rgba(0, 237, 100, 0.15) 0%, rgba(0, 237, 100, 0.08) 100%)"
+                : "linear-gradient(135deg, rgba(0, 237, 100, 0.1) 0%, rgba(0, 237, 100, 0.05) 100%)",
               border: "1px solid",
-              borderColor: "divider",
+              borderColor: darkMode ? "#2D4A3F" : "divider",
+              backgroundColor: darkMode ? "#13181D" : "background.paper",
             }}
           >
             <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, color: "#00ED64" }}>
@@ -282,7 +311,7 @@ export default function AdminDashboard() {
 
       {/* Workflow Stats */}
       <Box sx={{ mt: 5 }} data-tour="workflow-stats">
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: 600, mb: 3, color: darkMode ? "#E2E8F0" : "inherit" }}>
           Workflow Status
         </Typography>
       <Grid container spacing={3}>
@@ -311,9 +340,12 @@ export default function AdminDashboard() {
                 p: 3,
                 textAlign: "center",
                 borderRadius: 3,
-                background: "linear-gradient(135deg, rgba(0, 237, 100, 0.1) 0%, rgba(0, 237, 100, 0.05) 100%)",
+                background: darkMode
+                  ? "linear-gradient(135deg, rgba(0, 237, 100, 0.15) 0%, rgba(0, 237, 100, 0.08) 100%)"
+                  : "linear-gradient(135deg, rgba(0, 237, 100, 0.1) 0%, rgba(0, 237, 100, 0.05) 100%)",
+                backgroundColor: darkMode ? "#13181D" : "background.paper",
                 border: "2px solid",
-                borderColor: stats.workflowReview > 0 ? "#00ED64" : "divider",
+                borderColor: stats.workflowReview > 0 ? "#00ED64" : (darkMode ? "#2D3748" : "divider"),
                 position: "relative",
               }}
             >
@@ -369,14 +401,14 @@ export default function AdminDashboard() {
       {reviewQueue.length > 0 && (
         <Box id="review-queue" sx={{ mt: 5 }} data-tour="review-queue">
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+            <Typography variant="h5" sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit" }}>
               Review Queue
             </Typography>
             <Chip
               label={`${stats.workflowReview} pending`}
               sx={{
-                backgroundColor: "#00684A",
-                color: "#FFFFFF",
+                backgroundColor: darkMode ? "#00ED64" : "#00684A",
+                color: darkMode ? "#001E2B" : "#FFFFFF",
                 fontWeight: 600,
               }}
             />
@@ -386,17 +418,18 @@ export default function AdminDashboard() {
             sx={{
               borderRadius: 3,
               border: "1px solid",
-              borderColor: "divider",
+              borderColor: darkMode ? "#2D3748" : "divider",
+              backgroundColor: darkMode ? "#13181D" : "background.paper",
             }}
           >
             <Table>
               <TableHead>
-                <TableRow sx={{ backgroundColor: "#F7FAFC" }}>
-                  <TableCell sx={{ fontWeight: 600 }}>Episode</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Submitted By</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Submitted At</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>Actions</TableCell>
+                <TableRow sx={{ backgroundColor: darkMode ? "#1A2328" : "#F7FAFC" }}>
+                  <TableCell sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>Episode</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>Category</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>Submitted By</TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>Submitted At</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -407,12 +440,15 @@ export default function AdminDashboard() {
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
                       cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: darkMode ? "#1A2F2A" : "action.hover",
+                      },
                     }}
                     onClick={() => router.push(`/admin/episodes/${episode._id}`)}
                   >
-                    <TableCell>
+                    <TableCell sx={{ borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
                       <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit" }}>
                           {episode.episodeNumber && `#${episode.episodeNumber} - `}{episode.title}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
@@ -420,28 +456,30 @@ export default function AdminDashboard() {
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
                       <Chip
                         label={episode.category}
                         size="small"
                         sx={{
                           fontWeight: 600,
                           fontSize: "0.6875rem",
+                          backgroundColor: darkMode ? "#1A3A2F" : undefined,
+                          color: darkMode ? "#00ED64" : undefined,
                         }}
                       />
                     </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
+                    <TableCell sx={{ borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
+                      <Typography variant="body2" sx={{ color: darkMode ? "#E2E8F0" : "inherit" }}>
                         {episode.workflow?.submittedForReview?.name || "Unknown"}
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
                       <Typography variant="body2" color="text.secondary">
                         {episode.workflow?.submittedForReview?.timestamp &&
                           new Date(episode.workflow.submittedForReview.timestamp).toLocaleDateString()}
                       </Typography>
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell align="right" sx={{ borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
                       <Button
                         variant="contained"
                         size="small"
@@ -452,9 +490,13 @@ export default function AdminDashboard() {
                         }}
                         sx={{
                           fontWeight: 600,
-                          background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
+                          background: darkMode
+                            ? "linear-gradient(135deg, #00ED64 0%, #00684A 100%)"
+                            : "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
+                          color: darkMode ? "#001E2B" : "#FFFFFF",
                           "&:hover": {
                             background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
+                            color: "#001E2B",
                           },
                         }}
                       >

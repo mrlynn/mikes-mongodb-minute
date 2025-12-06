@@ -1,34 +1,36 @@
 "use client";
 
-import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
+import { createTheme, ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
 import ToastProvider from "@/components/Toast";
 import { AppBar, Toolbar, Typography, Container, Box, Button, IconButton, useMediaQuery, Drawer, List, ListItem, ListItemText, Divider } from "@mui/material";
-import { Menu as MenuIcon, Close as CloseIcon, HelpOutline as HelpIcon } from "@mui/icons-material";
+import { Menu as MenuIcon, Close as CloseIcon, HelpOutline as HelpIcon, DarkMode as DarkModeIcon, LightMode as LightModeIcon } from "@mui/icons-material";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 
-const theme = createTheme({
+const getTheme = (darkMode) => createTheme({
   palette: {
-    primary: { 
+    mode: darkMode ? "dark" : "light",
+    primary: {
       main: "#00684A", // MongoDB official brand green
       light: "#00ED64", // MongoDB UI green
       dark: "#004D37",
       contrastText: "#FFFFFF"
     },
-    secondary: { 
-      main: "#001E2B", // MongoDB dark teal
+    secondary: {
+      main: darkMode ? "#00ED64" : "#001E2B",
       light: "#003D52",
       dark: "#000F15",
       contrastText: "#FFFFFF"
     },
     background: {
-      default: "#FFFFFF",
-      paper: "#FFFFFF",
+      default: darkMode ? "#0A0F14" : "#FFFFFF",
+      paper: darkMode ? "#13181D" : "#FFFFFF",
     },
     text: {
-      primary: "#001E2B",
-      secondary: "#5F6C76",
+      primary: darkMode ? "#E2E8F0" : "#001E2B",
+      secondary: darkMode ? "#A0AEC0" : "#5F6C76",
     },
     grey: {
       50: "#F7FAFC",
@@ -199,6 +201,7 @@ const theme = createTheme({
 function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width:900px)");
+  const { darkMode, toggleDarkMode } = useTheme();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -210,13 +213,13 @@ function Navigation() {
 
   return (
     <>
-      <AppBar 
-        position="sticky" 
+      <AppBar
+        position="sticky"
         elevation={0}
-        sx={{ 
-          background: "#FFFFFF",
-          borderBottom: "1px solid #E2E8F0",
-          color: "#001E2B",
+        sx={{
+          background: darkMode ? "#13181D" : "#FFFFFF",
+          borderBottom: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+          color: darkMode ? "#E2E8F0" : "#001E2B",
         }}
       >
         <Toolbar sx={{ py: { xs: 1, md: 1.5 }, px: { xs: 2, md: 3 } }}>
@@ -241,7 +244,7 @@ function Navigation() {
             <Typography
               variant="h6"
               sx={{
-                color: "#001E2B",
+                color: darkMode ? "#E2E8F0" : "#001E2B",
                 fontWeight: 600,
                 fontSize: { xs: "1rem", md: "1.125rem" },
                 letterSpacing: "-0.01em",
@@ -276,6 +279,22 @@ function Navigation() {
             </Box>
           )}
 
+          {/* Dark Mode Toggle */}
+          <IconButton
+            onClick={toggleDarkMode}
+            aria-label="toggle dark mode"
+            sx={{
+              color: darkMode ? "#00ED64" : "#5F6C76",
+              mr: 1,
+              "&:hover": {
+                backgroundColor: darkMode ? "rgba(0, 237, 100, 0.08)" : "rgba(0, 104, 74, 0.08)",
+                color: darkMode ? "#00ED64" : "#00684A",
+              },
+            }}
+          >
+            {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
+
           {/* Help/Documentation Button */}
           <IconButton
             component="a"
@@ -285,11 +304,11 @@ function Navigation() {
             aria-label="documentation"
             data-tour="help-button"
             sx={{
-              color: "#5F6C76",
+              color: darkMode ? "#A0AEC0" : "#5F6C76",
               mr: isMobile ? 1 : 0,
               "&:hover": {
-                backgroundColor: "rgba(0, 104, 74, 0.08)",
-                color: "#00684A",
+                backgroundColor: darkMode ? "rgba(0, 237, 100, 0.08)" : "rgba(0, 104, 74, 0.08)",
+                color: darkMode ? "#00ED64" : "#00684A",
               },
             }}
           >
@@ -397,35 +416,37 @@ function Navigation() {
   );
 }
 
-export default function RootLayout({ children }) {
+function AppContent({ children }) {
+  const { darkMode } = useTheme();
+  const theme = useMemo(() => getTheme(darkMode), [darkMode]);
+
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-      </head>
-      <body suppressHydrationWarning>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <ToastProvider />
-          <Navigation />
-          <Box sx={{ minHeight: "calc(100vh - 64px)", backgroundColor: "#F7FAFC", display: "flex", flexDirection: "column" }}>
-            <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 }, px: { xs: 2, md: 3 }, flex: 1 }}>
-              {children}
-            </Container>
-            <Box
-              component="footer"
-              sx={{
-                mt: "auto",
-                py: 4,
-                px: { xs: 2, md: 3 },
-                borderTop: "1px solid #E2E8F0",
-                backgroundColor: "#FFFFFF",
-              }}
-            >
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      <ToastProvider />
+      <Navigation />
+      <Box sx={{
+        minHeight: "calc(100vh - 64px)",
+        background: darkMode
+          ? "linear-gradient(180deg, #0A0F14 0%, #13181D 100%)"
+          : "linear-gradient(180deg, #F7FAFC 0%, #FFFFFF 100%)",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+      }}>
+        <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 }, px: { xs: 2, md: 3 }, flex: 1, position: "relative", zIndex: 1 }}>
+          {children}
+        </Container>
+        <Box
+          component="footer"
+          sx={{
+            mt: "auto",
+            py: 4,
+            px: { xs: 2, md: 3 },
+            borderTop: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+            backgroundColor: darkMode ? "#13181D" : "#FFFFFF",
+          }}
+        >
               <Container maxWidth="lg">
                 <Box
                   sx={{
@@ -437,10 +458,10 @@ export default function RootLayout({ children }) {
                   }}
                 >
                   <Box>
-                    <Typography variant="body2" sx={{ color: "#5F6C76", fontSize: "0.875rem", mb: 1 }}>
+                    <Typography variant="body2" sx={{ color: darkMode ? "#A0AEC0" : "#5F6C76", fontSize: "0.875rem", mb: 1 }}>
                       © {new Date().getFullYear()} MongoDB Minute. All rights reserved.
                     </Typography>
-                    <Typography variant="caption" sx={{ color: "#A0AEC0", fontSize: "0.75rem" }}>
+                    <Typography variant="caption" sx={{ color: darkMode ? "#718096" : "#A0AEC0", fontSize: "0.75rem" }}>
                       Educational MongoDB tips and tutorials
                     </Typography>
                   </Box>
@@ -457,13 +478,13 @@ export default function RootLayout({ children }) {
                       component={Link}
                       href="/legal/terms"
                       sx={{
-                        color: "#5F6C76",
+                        color: darkMode ? "#A0AEC0" : "#5F6C76",
                         textDecoration: "none",
                         fontSize: "0.875rem",
                         fontWeight: 500,
                         transition: "color 0.2s ease",
                         "&:hover": {
-                          color: "#00684A",
+                          color: darkMode ? "#00ED64" : "#00684A",
                         },
                       }}
                     >
@@ -473,13 +494,13 @@ export default function RootLayout({ children }) {
                       component={Link}
                       href="/legal/privacy"
                       sx={{
-                        color: "#5F6C76",
+                        color: darkMode ? "#A0AEC0" : "#5F6C76",
                         textDecoration: "none",
                         fontSize: "0.875rem",
                         fontWeight: 500,
                         transition: "color 0.2s ease",
                         "&:hover": {
-                          color: "#00684A",
+                          color: darkMode ? "#00ED64" : "#00684A",
                         },
                       }}
                     >
@@ -489,13 +510,13 @@ export default function RootLayout({ children }) {
                       component={Link}
                       href="/legal/cookies"
                       sx={{
-                        color: "#5F6C76",
+                        color: darkMode ? "#A0AEC0" : "#5F6C76",
                         textDecoration: "none",
                         fontSize: "0.875rem",
                         fontWeight: 500,
                         transition: "color 0.2s ease",
                         "&:hover": {
-                          color: "#00684A",
+                          color: darkMode ? "#00ED64" : "#00684A",
                         },
                       }}
                     >
@@ -506,6 +527,23 @@ export default function RootLayout({ children }) {
               </Container>
             </Box>
           </Box>
+        </MuiThemeProvider>
+      );
+    }
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
+      <body suppressHydrationWarning>
+        <ThemeProvider>
+          <AppContent>{children}</AppContent>
         </ThemeProvider>
       </body>
     </html>

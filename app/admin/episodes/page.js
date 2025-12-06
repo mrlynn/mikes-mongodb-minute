@@ -37,8 +37,10 @@ import {
 } from "@mui/icons-material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function AdminEpisodesPage() {
+  const { darkMode } = useTheme();
   const [episodes, setEpisodes] = useState([]);
   const [filteredEpisodes, setFilteredEpisodes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -160,12 +162,13 @@ export default function AdminEpisodesPage() {
         }}
       >
         <Box>
-          <Typography 
+          <Typography
             variant="h3"
-            sx={{ 
+            sx={{
               fontWeight: 700,
               fontSize: { xs: "2rem", md: "2.75rem" },
               mb: 0.5,
+              color: darkMode ? "#E2E8F0" : "inherit",
             }}
           >
             All Episodes
@@ -179,7 +182,18 @@ export default function AdminEpisodesPage() {
             variant="contained"
             startIcon={<AddIcon />}
             size="large"
-            sx={{ fontWeight: 600, px: 4 }}
+            sx={{
+              fontWeight: 600,
+              px: 4,
+              background: darkMode
+                ? "linear-gradient(135deg, #00ED64 0%, #00684A 100%)"
+                : undefined,
+              color: darkMode ? "#001E2B" : undefined,
+              "&:hover": darkMode ? {
+                background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
+                filter: "brightness(1.1)",
+              } : undefined,
+            }}
           >
             Create New
           </Button>
@@ -192,7 +206,8 @@ export default function AdminEpisodesPage() {
           p: 2,
           mb: 3,
           borderRadius: 2,
-          border: "1px solid #E2E8F0",
+          border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+          backgroundColor: darkMode ? "#13181D" : "background.paper",
         }}
       >
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
@@ -257,11 +272,12 @@ export default function AdminEpisodesPage() {
               p: 3,
               mb: 2,
               borderRadius: 3,
-              border: "1px solid #E2E8F0",
+              border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+              backgroundColor: darkMode ? "#13181D" : "background.paper",
             }}
           >
             <Box sx={{ mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, fontSize: "1.125rem" }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, fontSize: "1.125rem", color: darkMode ? "#E2E8F0" : "inherit" }}>
                 {episode.title}
               </Typography>
               <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
@@ -330,17 +346,19 @@ export default function AdminEpisodesPage() {
           borderRadius: 3,
           overflow: "hidden",
           display: { xs: "none", md: "block" },
+          border: darkMode ? "1px solid #2D3748" : undefined,
+          backgroundColor: darkMode ? "#13181D" : "background.paper",
         }}
       >
         <Table>
           <TableHead>
-            <TableRow sx={{ backgroundColor: "grey.50" }}>
-              <TableCell sx={{ fontWeight: 600 }}>#</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Difficulty</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 600 }}>Actions</TableCell>
+            <TableRow sx={{ backgroundColor: darkMode ? "#1A2328" : "grey.50" }}>
+              <TableCell sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>#</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>Title</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>Category</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>Difficulty</TableCell>
+              <TableCell sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>Status</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -350,27 +368,34 @@ export default function AdminEpisodesPage() {
                 hover
                 sx={{
                   "&:nth-of-type(even)": {
-                    backgroundColor: "grey.50",
+                    backgroundColor: darkMode ? "#1A2328" : "grey.50",
+                  },
+                  "&:hover": {
+                    backgroundColor: darkMode ? "#1A2F2A" : "action.hover",
                   },
                 }}
               >
-                <TableCell>{episode.episodeNumber || "-"}</TableCell>
-                <TableCell>
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                <TableCell sx={{ color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>{episode.episodeNumber || "-"}</TableCell>
+                <TableCell sx={{ borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
+                  <Typography variant="body2" sx={{ fontWeight: 500, color: darkMode ? "#E2E8F0" : "inherit" }}>
                     {episode.title}
                   </Typography>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
                   <Chip
                     label={episode.category}
                     size="small"
-                    sx={{ fontWeight: 500 }}
+                    sx={{
+                      fontWeight: 500,
+                      backgroundColor: darkMode ? "#1A3A2F" : undefined,
+                      color: darkMode ? "#00ED64" : undefined,
+                    }}
                   />
                 </TableCell>
-                <TableCell>
-                  <Typography variant="body2">{episode.difficulty}</Typography>
+                <TableCell sx={{ borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
+                  <Typography variant="body2" sx={{ color: darkMode ? "#E2E8F0" : "inherit" }}>{episode.difficulty}</Typography>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
                   <Chip
                     label={episode.status}
                     size="small"
@@ -378,14 +403,14 @@ export default function AdminEpisodesPage() {
                     sx={{ fontWeight: 500 }}
                   />
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="right" sx={{ borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
                   <Link href={`/admin/episodes/${episode._id}`} style={{ textDecoration: 'none' }}>
                     <IconButton
                       size="small"
-                      color="primary"
                       sx={{
+                        color: darkMode ? "#00ED64" : "primary.main",
                         "&:hover": {
-                          backgroundColor: "rgba(0, 104, 74, 0.1)",
+                          backgroundColor: darkMode ? "rgba(0, 237, 100, 0.1)" : "rgba(0, 104, 74, 0.1)",
                         },
                       }}
                     >
@@ -395,10 +420,10 @@ export default function AdminEpisodesPage() {
                   <IconButton
                     onClick={() => setDuplicateDialog({ open: true, episode })}
                     size="small"
-                    color="primary"
                     sx={{
+                      color: darkMode ? "#00ED64" : "primary.main",
                       "&:hover": {
-                        backgroundColor: "rgba(0, 104, 74, 0.1)",
+                        backgroundColor: darkMode ? "rgba(0, 237, 100, 0.1)" : "rgba(0, 104, 74, 0.1)",
                       },
                     }}
                   >
@@ -424,16 +449,25 @@ export default function AdminEpisodesPage() {
       </TableContainer>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialog.open} onClose={handleDeleteClose}>
-        <DialogTitle>Delete Episode?</DialogTitle>
+      <Dialog
+        open={deleteDialog.open}
+        onClose={handleDeleteClose}
+        PaperProps={{
+          sx: {
+            backgroundColor: darkMode ? "#13181D" : "background.paper",
+            border: darkMode ? "1px solid #2D3748" : undefined,
+          },
+        }}
+      >
+        <DialogTitle sx={{ color: darkMode ? "#E2E8F0" : "inherit" }}>Delete Episode?</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText sx={{ color: darkMode ? "#A0AEC0" : "text.secondary" }}>
             Are you sure you want to delete &quot;{deleteDialog.episode?.title}&quot;? This action
             cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDeleteClose}>Cancel</Button>
+          <Button onClick={handleDeleteClose} sx={{ color: darkMode ? "#A0AEC0" : undefined }}>Cancel</Button>
           <Button onClick={handleDeleteConfirm} color="error" variant="contained">
             Delete
           </Button>
@@ -441,16 +475,32 @@ export default function AdminEpisodesPage() {
       </Dialog>
 
       {/* Duplicate Confirmation Dialog */}
-      <Dialog open={duplicateDialog.open} onClose={() => setDuplicateDialog({ open: false, episode: null })}>
-        <DialogTitle>Duplicate Episode?</DialogTitle>
+      <Dialog
+        open={duplicateDialog.open}
+        onClose={() => setDuplicateDialog({ open: false, episode: null })}
+        PaperProps={{
+          sx: {
+            backgroundColor: darkMode ? "#13181D" : "background.paper",
+            border: darkMode ? "1px solid #2D3748" : undefined,
+          },
+        }}
+      >
+        <DialogTitle sx={{ color: darkMode ? "#E2E8F0" : "inherit" }}>Duplicate Episode?</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText sx={{ color: darkMode ? "#A0AEC0" : "text.secondary" }}>
             Create a copy of &quot;{duplicateDialog.episode?.title}&quot;? The new episode will be created as a draft with &quot;(Copy)&quot; appended to the title.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDuplicateDialog({ open: false, episode: null })}>Cancel</Button>
-          <Button onClick={() => handleDuplicate(duplicateDialog.episode)} variant="contained">
+          <Button onClick={() => setDuplicateDialog({ open: false, episode: null })} sx={{ color: darkMode ? "#A0AEC0" : undefined }}>Cancel</Button>
+          <Button
+            onClick={() => handleDuplicate(duplicateDialog.episode)}
+            variant="contained"
+            sx={darkMode ? {
+              background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
+              color: "#001E2B",
+            } : undefined}
+          >
             Duplicate
           </Button>
         </DialogActions>

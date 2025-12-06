@@ -1,5 +1,6 @@
 import { getEpisodeBySlug, listEpisodes } from "@/lib/episodes";
 import { getSession } from "@/lib/auth";
+import { renderMarkdown } from "@/lib/markdown";
 import {
   Typography,
   Box,
@@ -34,6 +35,16 @@ import {
 } from "@mui/icons-material";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import DeepDiveSection from "@/components/episode/DeepDiveSection";
+import CodeSnippets from "@/components/episode/CodeSnippets";
+import SchemaExplorer from "@/components/episode/SchemaExplorer";
+import DownloadableResources from "@/components/episode/DownloadableResources";
+import RelatedEpisodes from "@/components/episode/RelatedEpisodes";
+import NotesFromMike from "@/components/episode/NotesFromMike";
+import TranscriptViewer from "@/components/episode/TranscriptViewer";
+import EpisodeAnalyticsWrapper from "@/components/episode/EpisodeAnalyticsWrapper";
+import EpisodeFeedback from "@/components/episode/EpisodeFeedback";
+import { useEpisodeAnalytics, trackEvent } from "@/components/episode/EpisodeAnalytics";
 
 const categoryConfig = {
   "Data Modeling": {
@@ -131,6 +142,16 @@ export default async function EpisodeDetailPage({ params }) {
   const currentIndex = sortedEpisodes.findIndex(ep => ep._id === episode._id);
   const previousEpisode = currentIndex > 0 ? sortedEpisodes[currentIndex - 1] : null;
   const nextEpisode = currentIndex < sortedEpisodes.length - 1 ? sortedEpisodes[currentIndex + 1] : null;
+
+  // Find related episodes (same category, different episode, limit 3)
+  const relatedEpisodes = allEpisodes
+    .filter(ep => 
+      ep._id !== episode._id && 
+      ep.status === "published" &&
+      (ep.category === episode.category || 
+       (episode.tags && ep.tags && episode.tags.some(tag => ep.tags?.includes(tag))))
+    )
+    .slice(0, 3);
 
   const categoryData = categoryConfig[episode.category] || categoryConfig["Data Modeling"];
   const CategoryIcon = categoryData.icon;
@@ -402,16 +423,41 @@ export default async function EpisodeDetailPage({ params }) {
             )}
           </Box>
 
-          <Typography
-            variant="body1"
-            sx={{
-              fontSize: "1.125rem",
-              lineHeight: 1.7,
-              color: "#5F6C76",
-            }}
-          >
-            {episode.hook}
-          </Typography>
+          {episode.summary ? (
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: "1.125rem",
+                lineHeight: 1.7,
+                color: "#5F6C76",
+                fontWeight: 500,
+              }}
+            >
+              {episode.summary}
+            </Typography>
+          ) : (
+            <Typography
+              sx={{
+                "& p": {
+                  fontSize: "1.125rem",
+                  lineHeight: 1.7,
+                  color: "#5F6C76",
+                  mb: 1,
+                  "&:last-child": { mb: 0 },
+                },
+                "& code": {
+                  backgroundColor: "#F7FAFC",
+                  padding: "2px 6px",
+                  borderRadius: "4px",
+                  fontSize: "0.9375rem",
+                  fontFamily: "monospace",
+                  color: categoryData.color,
+                },
+              }}
+              component="div"
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(episode.hook) }}
+            />
+          )}
         </Box>
       </Box>
 
@@ -488,17 +534,44 @@ export default async function EpisodeDetailPage({ params }) {
                 The Challenge
               </Typography>
             </Stack>
-            <Typography
-              variant="body1"
+            <Box
               sx={{
-                fontSize: "1.0625rem",
-                lineHeight: 1.8,
-                color: "#001E2B",
                 pl: 3,
+                "& p": {
+                  fontSize: "1.0625rem",
+                  lineHeight: 1.8,
+                  color: "#001E2B",
+                  mb: 2,
+                  "&:last-child": { mb: 0 },
+                },
+                "& code": {
+                  backgroundColor: "#F7FAFC",
+                  padding: "2px 6px",
+                  borderRadius: "4px",
+                  fontSize: "0.9375rem",
+                  fontFamily: "monospace",
+                  color: categoryData.color,
+                  border: `1px solid ${categoryData.color}30`,
+                },
+                "& pre": {
+                  backgroundColor: "#1E1E1E",
+                  padding: 2,
+                  borderRadius: 2,
+                  overflow: "auto",
+                  border: `1px solid ${categoryData.color}30`,
+                  mb: 2,
+                  "& code": {
+                    backgroundColor: "transparent",
+                    padding: 0,
+                    border: "none",
+                    color: "#D4D4D4",
+                    fontSize: "0.875rem",
+                    fontFamily: "'Fira Code', 'Consolas', 'Monaco', monospace",
+                  },
+                },
               }}
-            >
-              {episode.problem}
-            </Typography>
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(episode.problem) }}
+            />
           </Box>
         )}
 
@@ -525,18 +598,44 @@ export default async function EpisodeDetailPage({ params }) {
                 The Solution
               </Typography>
             </Stack>
-            <Typography
-              variant="body1"
+            <Box
               sx={{
-                fontSize: "1.0625rem",
-                lineHeight: 1.8,
-                color: "#001E2B",
-                whiteSpace: "pre-wrap",
                 pl: 3,
+                "& p": {
+                  fontSize: "1.0625rem",
+                  lineHeight: 1.8,
+                  color: "#001E2B",
+                  mb: 2,
+                  "&:last-child": { mb: 0 },
+                },
+                "& code": {
+                  backgroundColor: "#F7FAFC",
+                  padding: "2px 6px",
+                  borderRadius: "4px",
+                  fontSize: "0.9375rem",
+                  fontFamily: "monospace",
+                  color: categoryData.color,
+                  border: `1px solid ${categoryData.color}30`,
+                },
+                "& pre": {
+                  backgroundColor: "#1E1E1E",
+                  padding: 2,
+                  borderRadius: 2,
+                  overflow: "auto",
+                  border: `1px solid ${categoryData.color}30`,
+                  mb: 2,
+                  "& code": {
+                    backgroundColor: "transparent",
+                    padding: 0,
+                    border: "none",
+                    color: "#D4D4D4",
+                    fontSize: "0.875rem",
+                    fontFamily: "'Fira Code', 'Consolas', 'Monaco', monospace",
+                  },
+                },
               }}
-            >
-              {episode.tip}
-            </Typography>
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(episode.tip) }}
+            />
           </Box>
         )}
 
@@ -580,19 +679,29 @@ export default async function EpisodeDetailPage({ params }) {
                 Key Takeaway
               </Typography>
             </Stack>
-            <Typography
-              variant="body1"
+            <Box
               sx={{
-                fontSize: "1.0625rem",
-                lineHeight: 1.8,
-                color: "#001E2B",
-                fontWeight: 500,
                 position: "relative",
                 zIndex: 1,
+                "& p": {
+                  fontSize: "1.0625rem",
+                  lineHeight: 1.8,
+                  color: "#001E2B",
+                  fontWeight: 500,
+                  mb: 1,
+                  "&:last-child": { mb: 0 },
+                },
+                "& code": {
+                  backgroundColor: "#F7FAFC",
+                  padding: "2px 6px",
+                  borderRadius: "4px",
+                  fontSize: "0.9375rem",
+                  fontFamily: "monospace",
+                  color: categoryData.color,
+                },
               }}
-            >
-              {episode.quickWin}
-            </Typography>
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(episode.quickWin) }}
+            />
           </Box>
         )}
       </Paper>
@@ -660,19 +769,29 @@ export default async function EpisodeDetailPage({ params }) {
             </Typography>
           </Stack>
 
-          <Typography
-            variant="body1"
+          <Box
             sx={{
-              fontSize: "1.125rem",
-              lineHeight: 1.8,
-              color: "#FFFFFF",
               mb: 3,
               position: "relative",
               zIndex: 1,
+              "& p": {
+                fontSize: "1.125rem",
+                lineHeight: 1.8,
+                color: "#FFFFFF",
+                mb: 1,
+                "&:last-child": { mb: 0 },
+              },
+              "& code": {
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                padding: "2px 6px",
+                borderRadius: "4px",
+                fontSize: "0.9375rem",
+                fontFamily: "monospace",
+                color: "#FFFFFF",
+              },
             }}
-          >
-            {episode.cta}
-          </Typography>
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(episode.cta) }}
+          />
 
           <Button
             href="/"
@@ -845,6 +964,55 @@ export default async function EpisodeDetailPage({ params }) {
           </Stack>
         </Paper>
       )}
+
+      {/* Episode Feedback */}
+      <EpisodeFeedback episodeId={episode._id} />
+
+      {/* Analytics Wrapper */}
+      <EpisodeAnalyticsWrapper episodeId={episode._id} />
+
+      {/* Deep Dive Section */}
+      <DeepDiveSection
+        deepDive={episode.deepDive}
+        categoryData={categoryData}
+        keyConcepts={episode.keyConcepts}
+      />
+
+      {/* Code Snippets */}
+      <CodeSnippets
+        resources={episode.resources}
+        githubRepo={episode.githubRepo}
+        categoryData={categoryData}
+        versionTags={episode.versionTags}
+        episodeId={episode._id}
+      />
+
+      {/* Transcript Viewer */}
+      <TranscriptViewer
+        transcript={episode.transcript}
+        categoryData={categoryData}
+        episodeId={episode._id}
+      />
+
+      {/* Schema Explorer */}
+      <SchemaExplorer
+        schema={episode.schema}
+        categoryData={categoryData}
+        episodeId={episode._id}
+      />
+
+      {/* Downloadable Resources */}
+      <DownloadableResources
+        resources={episode.resources}
+        categoryData={categoryData}
+        episodeId={episode._id}
+      />
+
+      {/* Related Episodes */}
+      <RelatedEpisodes relatedEpisodes={relatedEpisodes} categoryData={categoryData} />
+
+      {/* Notes From Mike */}
+      <NotesFromMike notes={episode.notesFromMike} categoryData={categoryData} />
 
       {/* Episode Navigation - Enhanced with Previous/Next */}
       <Paper

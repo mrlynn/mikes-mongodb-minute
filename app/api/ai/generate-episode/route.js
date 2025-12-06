@@ -69,7 +69,8 @@ Style guidelines:
 - Practical over theoretical - always answer "what can I DO with this?"
 - Use MongoDB-specific examples and code snippets where relevant
 - Include humor/personality where natural
-- Keep it concise and punchy - every word counts`;
+- Keep it concise and punchy - every word counts
+- Write in direct, active voice - avoid starting sentences with "By..." - use direct statements instead`;
 
     const userPrompt = `Create a MongoDB Minute episode about: "${topic}"
 
@@ -85,6 +86,8 @@ Generate a complete episode following the 60-second structure. Provide:
 5. Quick Win/Proof (45-52s) - 1-2 sentences with metrics if possible
 6. CTA + Tease (52-60s) - 1-2 sentences
 7. Visual Suggestion - What to show on screen
+
+Important: Write in direct, active voice. Avoid starting sentences with "By..." - use direct statements instead. For example, instead of "By using indexes, you can improve performance", write "Use indexes to improve performance" or "Indexes improve query performance".
 
 Format as JSON with these exact keys: title, hook, problem, tip, quickWin, cta, visualSuggestion`;
 

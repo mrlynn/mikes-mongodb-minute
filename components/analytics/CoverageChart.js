@@ -15,6 +15,7 @@ import {
   Chip,
 } from "@mui/material";
 import { BarChart as BarChartIcon } from "@mui/icons-material";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const CATEGORIES = [
   "Data Modeling",
@@ -32,6 +33,7 @@ const CATEGORIES = [
 const DIFFICULTIES = ["Beginner", "Intermediate", "Advanced"];
 
 export default function CoverageChart({ episodes, stats }) {
+  const { darkMode } = useTheme();
   const matrix = useMemo(() => {
     const matrixData = {};
 
@@ -49,17 +51,17 @@ export default function CoverageChart({ episodes, stats }) {
     return matrixData;
   }, [stats]);
 
-  const getCellColor = (count) => {
-    if (count === 0) return "#F7FAFC";
-    if (count <= 2) return "#E6F7F0";
-    if (count <= 5) return "#B8E6D1";
-    return "#00684A";
+  const getCellColor = (count, darkMode) => {
+    if (count === 0) return darkMode ? "#1A2328" : "#F7FAFC";
+    if (count <= 2) return darkMode ? "#1A3A2F" : "#E6F7F0";
+    if (count <= 5) return darkMode ? "#00684A" : "#B8E6D1";
+    return darkMode ? "#00ED64" : "#00684A";
   };
 
-  const getCellTextColor = (count) => {
-    if (count === 0) return "#CBD5E0";
-    if (count <= 2) return "#001E2B";
-    return "#FFFFFF";
+  const getCellTextColor = (count, darkMode) => {
+    if (count === 0) return darkMode ? "#5F6C76" : "#CBD5E0";
+    if (count <= 2) return darkMode ? "#00ED64" : "#001E2B";
+    return darkMode ? "#001E2B" : "#FFFFFF";
   };
 
   return (
@@ -67,13 +69,14 @@ export default function CoverageChart({ episodes, stats }) {
       sx={{
         p: { xs: 2, md: 3 },
         borderRadius: { xs: 2, md: 3 },
-        border: "1px solid #E2E8F0",
+        border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+        backgroundColor: darkMode ? "#13181D" : "background.paper",
         overflow: "auto",
       }}
     >
       <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 3 }}>
-        <BarChartIcon sx={{ color: "#00684A", fontSize: 24 }} />
-        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1rem", md: "1.25rem" } }}>
+        <BarChartIcon sx={{ color: darkMode ? "#00ED64" : "#00684A", fontSize: 24 }} />
+        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1rem", md: "1.25rem" }, color: darkMode ? "#E2E8F0" : "inherit" }}>
           Coverage Matrix
         </Typography>
       </Stack>
@@ -90,19 +93,19 @@ export default function CoverageChart({ episodes, stats }) {
         <Table size="small" sx={{ minWidth: 600 }}>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 600, position: "sticky", left: 0, backgroundColor: "#FFFFFF", zIndex: 10 }}>
+              <TableCell sx={{ fontWeight: 600, position: "sticky", left: 0, backgroundColor: darkMode ? "#13181D" : "#FFFFFF", color: darkMode ? "#E2E8F0" : "inherit", zIndex: 10, borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
                 Category
               </TableCell>
               {DIFFICULTIES.map((difficulty) => (
                 <TableCell
                   key={difficulty}
                   align="center"
-                  sx={{ fontWeight: 600, fontSize: { xs: "0.75rem", md: "0.875rem" } }}
+                  sx={{ fontWeight: 600, fontSize: { xs: "0.75rem", md: "0.875rem" }, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}
                 >
                   {difficulty}
                 </TableCell>
               ))}
-              <TableCell align="center" sx={{ fontWeight: 600, fontSize: { xs: "0.75rem", md: "0.875rem" } }}>
+              <TableCell align="center" sx={{ fontWeight: 600, fontSize: { xs: "0.75rem", md: "0.875rem" }, color: darkMode ? "#E2E8F0" : "inherit", borderBottom: darkMode ? "1px solid #2D3748" : undefined }}>
                 Total
               </TableCell>
             </TableRow>
@@ -121,9 +124,11 @@ export default function CoverageChart({ episodes, stats }) {
                       fontWeight: 500,
                       position: "sticky",
                       left: 0,
-                      backgroundColor: "#FFFFFF",
+                      backgroundColor: darkMode ? "#13181D" : "#FFFFFF",
+                      color: darkMode ? "#E2E8F0" : "inherit",
                       zIndex: 10,
                       fontSize: { xs: "0.8125rem", md: "0.875rem" },
+                      borderBottom: darkMode ? "1px solid #2D3748" : undefined,
                     }}
                   >
                     {category}
@@ -137,11 +142,12 @@ export default function CoverageChart({ episodes, stats }) {
                         key={difficulty}
                         align="center"
                         sx={{
-                          backgroundColor: getCellColor(count),
-                          color: getCellTextColor(count),
+                          backgroundColor: getCellColor(count, darkMode),
+                          color: getCellTextColor(count, darkMode),
                           fontWeight: 600,
                           fontSize: { xs: "0.8125rem", md: "0.875rem" },
                           minWidth: 80,
+                          borderBottom: darkMode ? "1px solid #2D3748" : undefined,
                         }}
                       >
                         {count}
@@ -152,8 +158,10 @@ export default function CoverageChart({ episodes, stats }) {
                     align="center"
                     sx={{
                       fontWeight: 600,
-                      backgroundColor: categoryTotal > 0 ? "#E6F7F0" : "#F7FAFC",
+                      backgroundColor: categoryTotal > 0 ? (darkMode ? "#1A3A2F" : "#E6F7F0") : (darkMode ? "#1A2328" : "#F7FAFC"),
+                      color: darkMode ? "#E2E8F0" : "inherit",
                       fontSize: { xs: "0.8125rem", md: "0.875rem" },
+                      borderBottom: darkMode ? "1px solid #2D3748" : undefined,
                     }}
                   >
                     {categoryTotal}
@@ -165,8 +173,8 @@ export default function CoverageChart({ episodes, stats }) {
         </Table>
       </TableContainer>
 
-      <Box sx={{ mt: 2, p: 2, backgroundColor: "#F7FAFC", borderRadius: 2 }}>
-        <Typography variant="caption" sx={{ fontWeight: 600, display: "block", mb: 1, fontSize: { xs: "0.75rem", md: "0.8125rem" } }}>
+      <Box sx={{ mt: 2, p: 2, backgroundColor: darkMode ? "#1A2328" : "#F7FAFC", border: darkMode ? "1px solid #2D3748" : undefined, borderRadius: 2 }}>
+        <Typography variant="caption" sx={{ fontWeight: 600, display: "block", mb: 1, fontSize: { xs: "0.75rem", md: "0.8125rem" }, color: darkMode ? "#E2E8F0" : "inherit" }}>
           Legend:
         </Typography>
         <Stack direction="row" spacing={2} flexWrap="wrap">

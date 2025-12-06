@@ -22,6 +22,7 @@ import {
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
 } from "@mui/icons-material";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const MONGODB_PRODUCT_AREAS = [
   {
@@ -134,6 +135,7 @@ const MONGODB_PRODUCT_AREAS = [
 ];
 
 export default function TopicGapAnalysis({ episodes }) {
+  const { darkMode } = useTheme();
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [error, setError] = useState(null);
@@ -177,12 +179,13 @@ export default function TopicGapAnalysis({ episodes }) {
       sx={{
         p: { xs: 2, md: 3 },
         borderRadius: { xs: 2, md: 3 },
-        border: "1px solid #E2E8F0",
+        border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+        backgroundColor: darkMode ? "#13181D" : "background.paper",
       }}
     >
       <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
-        <AIIcon sx={{ color: "#00684A", fontSize: 24 }} />
-        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1rem", md: "1.25rem" } }}>
+        <AIIcon sx={{ color: darkMode ? "#00ED64" : "#00684A", fontSize: 24 }} />
+        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1rem", md: "1.25rem" }, color: darkMode ? "#E2E8F0" : "inherit" }}>
           AI-Powered Gap Analysis
         </Typography>
       </Stack>
@@ -208,8 +211,16 @@ export default function TopicGapAnalysis({ episodes }) {
           onClick={runGapAnalysis}
           disabled={loading || episodes.length === 0}
           sx={{
-            backgroundColor: "#00684A",
-            "&:hover": { backgroundColor: "#004D37" },
+            background: darkMode
+              ? "linear-gradient(135deg, #00ED64 0%, #00684A 100%)"
+              : "#00684A",
+            color: darkMode ? "#001E2B" : "#FFFFFF",
+            "&:hover": {
+              background: darkMode
+                ? "linear-gradient(135deg, #00ED64 0%, #00684A 100%)"
+                : "#004D37",
+              filter: darkMode ? "brightness(1.1)" : "none",
+            },
             fontWeight: 600,
           }}
         >
@@ -220,7 +231,7 @@ export default function TopicGapAnalysis({ episodes }) {
       {analysis && (
         <Box>
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: { xs: "0.9375rem", md: "1rem" } }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: { xs: "0.9375rem", md: "1rem" }, color: darkMode ? "#E2E8F0" : "inherit" }}>
               Analysis Results
             </Typography>
             <Button
@@ -240,11 +251,11 @@ export default function TopicGapAnalysis({ episodes }) {
               p: 2,
               mb: 3,
               borderRadius: 2,
-              backgroundColor: "#F7FAFC",
-              border: "1px solid #E2E8F0",
+              backgroundColor: darkMode ? "#1A2328" : "#F7FAFC",
+              border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
             }}
           >
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, fontSize: { xs: "0.875rem", md: "0.9375rem" } }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5, fontSize: { xs: "0.875rem", md: "0.9375rem" }, color: darkMode ? "#E2E8F0" : "inherit" }}>
               Overall Coverage
             </Typography>
             <Stack direction="row" spacing={3} flexWrap="wrap">

@@ -7,13 +7,13 @@ export const runtime = "nodejs";
 
 const IMPROVEMENT_PROMPTS = {
   "polish-hook": {
-    system: "You are a content expert specializing in creating attention-grabbing hooks for educational videos. Your hooks are provocative, surprising, and stop the scroll.",
-    user: (content) => `Improve this hook to make it more engaging and attention-grabbing. Keep it concise (1-2 sentences, 10-25 words). Make it provocative or surprising:\n\n"${content.hook}"\n\nReturn only the improved hook text, nothing else.`,
+    system: "You are a content expert specializing in creating attention-grabbing hooks for educational videos. Your hooks are provocative, surprising, and stop the scroll. Avoid starting sentences with 'By...' - use direct, active language instead.",
+    user: (content) => `Improve this hook to make it more engaging and attention-grabbing. Keep it concise (1-2 sentences, 10-25 words). Make it provocative or surprising. Avoid starting sentences with 'By...' - use direct, active language:\n\n"${content.hook}"\n\nReturn only the improved hook text, nothing else.`,
     field: "hook",
   },
   "expand-tip": {
-    system: "You are a MongoDB developer advocate creating detailed, actionable educational content. Your tips are specific, practical, and include concrete examples.",
-    user: (content) => `Expand and improve this tip section. Add more detail, examples, and make it more actionable. Target 75-125 words:\n\n"${content.tip}"\n\nReturn only the improved tip text, nothing else.`,
+    system: "You are a MongoDB developer advocate creating detailed, actionable educational content. Your tips are specific, practical, and include concrete examples. Write in a direct, conversational style. Avoid starting sentences with 'By...' - use active voice and direct statements instead.",
+    user: (content) => `Expand and improve this tip section. Add more detail, examples, and make it more actionable. Target 75-125 words. Write in a direct, conversational style. Avoid starting sentences with 'By...' - use active voice:\n\n"${content.tip}"\n\nReturn only the improved tip text, nothing else.`,
     field: "tip",
   },
   "improve-title": {
@@ -22,18 +22,18 @@ const IMPROVEMENT_PROMPTS = {
     field: "title",
   },
   "strengthen-cta": {
-    system: "You are an expert at creating compelling calls-to-action that drive engagement. Your CTAs are clear, action-oriented, and create urgency.",
-    user: (content) => `Strengthen this CTA to be more compelling and engaging. Keep it 1-2 sentences, 20-35 words:\n\n"${content.cta}"\n\nReturn only the improved CTA text, nothing else.`,
+    system: "You are an expert at creating compelling calls-to-action that drive engagement. Your CTAs are clear, action-oriented, and create urgency. Use direct, active language. Avoid starting sentences with 'By...'.",
+    user: (content) => `Strengthen this CTA to be more compelling and engaging. Keep it 1-2 sentences, 20-35 words. Use direct, active language. Avoid starting sentences with 'By...':\n\n"${content.cta}"\n\nReturn only the improved CTA text, nothing else.`,
     field: "cta",
   },
   "add-context": {
-    system: "You are a technical writer specializing in setting up problems and context for educational content. Your context sections clearly explain why something matters.",
-    user: (content) => `Enhance this problem/context section with more detail and context. Target 30-50 words:\n\n"${content.problem}"\n\nReturn only the improved problem/context text, nothing else.`,
+    system: "You are a technical writer specializing in setting up problems and context for educational content. Your context sections clearly explain why something matters. Write in a direct, conversational style. Avoid starting sentences with 'By...' - use active voice instead.",
+    user: (content) => `Enhance this problem/context section with more detail and context. Target 30-50 words. Write in a direct, conversational style. Avoid starting sentences with 'By...':\n\n"${content.problem}"\n\nReturn only the improved problem/context text, nothing else.`,
     field: "problem",
   },
   "enhance-quick-win": {
-    system: "You are an expert at demonstrating value and impact. Your quick wins include specific metrics, benefits, and quantifiable results.",
-    user: (content) => `Enhance this quick win section to be more impactful. Add metrics or quantifiable benefits if possible. Target 20-35 words:\n\n"${content.quickWin}"\n\nReturn only the improved quick win text, nothing else.`,
+    system: "You are an expert at demonstrating value and impact. Your quick wins include specific metrics, benefits, and quantifiable results. Use direct, active language. Avoid starting sentences with 'By...'.",
+    user: (content) => `Enhance this quick win section to be more impactful. Add metrics or quantifiable benefits if possible. Target 20-35 words. Use direct, active language. Avoid starting sentences with 'By...':\n\n"${content.quickWin}"\n\nReturn only the improved quick win text, nothing else.`,
     field: "quickWin",
   },
 };

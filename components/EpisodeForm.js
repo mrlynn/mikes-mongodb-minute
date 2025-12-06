@@ -25,9 +25,13 @@ import {
   QrCode as QrCodeIcon,
   Download as DownloadIcon,
   Refresh as RefreshIcon,
+  Preview as PreviewIcon,
 } from "@mui/icons-material";
 import ContentQualityChecker from "./ContentQualityChecker";
 import AIContentImprover from "./AIContentImprover";
+import AIEnhancedContentHelper from "./AIEnhancedContentHelper";
+import EpisodePreview from "./EpisodePreview";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const CATEGORIES = [
   "Data Modeling",
@@ -47,9 +51,40 @@ const DIFFICULTIES = ["Beginner", "Intermediate", "Advanced"];
 const STATUSES = ["draft", "ready-to-record", "recorded", "published"];
 
 export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = "Save" }) {
+  const { darkMode } = useTheme();
   // Ensure initialData is always an object, never null or undefined
   const safeInitialData = initialData || {};
-  
+
+  // Helper function for TextField dark mode styling
+  const getTextFieldSx = (customSx = {}) => ({
+    "& .MuiOutlinedInput-root": {
+      color: darkMode ? "#E2E8F0" : "inherit",
+      "& fieldset": {
+        borderColor: darkMode ? "#2D3748" : "rgba(0, 0, 0, 0.23)",
+      },
+      "&:hover fieldset": {
+        borderColor: darkMode ? "#00ED64" : "rgba(0, 0, 0, 0.87)",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: darkMode ? "#00ED64" : "#00684A",
+      },
+      backgroundColor: darkMode ? "#0F1419" : "transparent",
+    },
+    "& .MuiInputLabel-root": {
+      color: darkMode ? "#A0AEC0" : "rgba(0, 0, 0, 0.6)",
+      "&.Mui-focused": {
+        color: darkMode ? "#00ED64" : "#00684A",
+      },
+    },
+    "& .MuiInputBase-input": {
+      color: darkMode ? "#E2E8F0" : "inherit",
+    },
+    "& .MuiSelect-icon": {
+      color: darkMode ? "#A0AEC0" : "inherit",
+    },
+    ...customSx,
+  });
+
   const [formData, setFormData] = useState({
     episodeNumber: safeInitialData.episodeNumber || "",
     title: safeInitialData.title || "",
@@ -71,6 +106,16 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
       instagram: "",
       x: "",
     },
+    githubRepo: safeInitialData.githubRepo || "",
+    deepDive: safeInitialData.deepDive || "",
+    transcript: safeInitialData.transcript || "",
+    tags: safeInitialData.tags || [],
+    notesFromMike: safeInitialData.notesFromMike || "",
+    resources: safeInitialData.resources || [],
+    schema: safeInitialData.schema || { documents: null, indexes: null },
+    summary: safeInitialData.summary || "", // One-sentence summary for hero section
+    versionTags: safeInitialData.versionTags || { driverVersion: "", atlasFeatures: [] }, // Version info
+    keyConcepts: safeInitialData.keyConcepts || { pitfalls: "", whenToUse: "", whenNotToUse: "" }, // Deep dive callouts
   });
 
   // Update form when initialData changes (e.g., when template is selected)
@@ -108,6 +153,17 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
         status: safeInitialData.status || prev.status,
         videoUrl: safeInitialData.videoUrl || prev.videoUrl,
         socialLinks: safeInitialData.socialLinks || prev.socialLinks,
+        // Enhanced content fields
+        githubRepo: safeInitialData.githubRepo !== undefined ? safeInitialData.githubRepo : prev.githubRepo,
+        deepDive: safeInitialData.deepDive !== undefined ? safeInitialData.deepDive : prev.deepDive,
+        transcript: safeInitialData.transcript !== undefined ? safeInitialData.transcript : prev.transcript,
+        tags: safeInitialData.tags !== undefined ? safeInitialData.tags : prev.tags,
+        notesFromMike: safeInitialData.notesFromMike !== undefined ? safeInitialData.notesFromMike : prev.notesFromMike,
+        resources: safeInitialData.resources !== undefined ? safeInitialData.resources : prev.resources,
+        schema: safeInitialData.schema !== undefined ? safeInitialData.schema : prev.schema,
+        summary: safeInitialData.summary !== undefined ? safeInitialData.summary : prev.summary,
+        versionTags: safeInitialData.versionTags !== undefined ? safeInitialData.versionTags : prev.versionTags,
+        keyConcepts: safeInitialData.keyConcepts !== undefined ? safeInitialData.keyConcepts : prev.keyConcepts,
       }));
     }
   }, [initialData]);
@@ -115,6 +171,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
   const [saving, setSaving] = useState(false);
   const [qrCode, setQrCode] = useState(null);
   const [loadingQR, setLoadingQR] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   // Fetch QR code when component mounts (if editing existing episode)
   useEffect(() => {
@@ -175,6 +232,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ px: { xs: 0, sm: 0 } }}>
+      {/* Episode Preview Dialog */}
+      <EpisodePreview
+        formData={formData}
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+      />
       <Grid container spacing={{ xs: 2, md: 4 }}>
         {/* Left Sidebar - Metadata */}
         <Grid size={{ xs: 12, md: 5 }}>
@@ -189,25 +252,51 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
             <Paper
               sx={{
                 borderRadius: { xs: 2, md: 8 },
-                border: "1px solid #E2E8F0",
+                border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
                 overflow: "hidden",
-                boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.08), 0px 1px 2px rgba(0, 0, 0, 0.04)",
+                boxShadow: darkMode
+                  ? "0px 2px 8px rgba(0, 237, 100, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2)"
+                  : "0px 1px 3px rgba(0, 0, 0, 0.08), 0px 1px 2px rgba(0, 0, 0, 0.04)",
+                backgroundColor: darkMode ? "#13181D" : "background.paper",
               }}
             >
               {/* Header Section */}
               <Box
                 sx={{
-                  background: "#F7FAFC",
+                  background: darkMode ? "#1A2328" : "#F7FAFC",
                   p: { xs: 2, md: 2.5 },
-                  borderBottom: "1px solid #E2E8F0",
+                  borderBottom: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 600, color: "#001E2B", fontSize: "1rem" }}>
-                  Episode Details
-                </Typography>
-                <Typography variant="caption" sx={{ mt: 0.5, display: "block", color: "#5F6C76", fontSize: "0.75rem" }}>
-                  Basic information and metadata
-                </Typography>
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "#001E2B", fontSize: "1rem" }}>
+                    Episode Details
+                  </Typography>
+                  <Typography variant="caption" sx={{ mt: 0.5, display: "block", color: darkMode ? "#A0AEC0" : "#5F6C76", fontSize: "0.75rem" }}>
+                    Basic information and metadata
+                  </Typography>
+                </Box>
+                <Button
+                  variant="outlined"
+                  startIcon={<PreviewIcon />}
+                  onClick={() => setPreviewOpen(true)}
+                  size="small"
+                  sx={{
+                    borderColor: "#00684A",
+                    color: "#00684A",
+                    fontWeight: 600,
+                    fontSize: { xs: "0.75rem", md: "0.8125rem" },
+                    "&:hover": {
+                      borderColor: "#004D37",
+                      backgroundColor: "#E6F7F0",
+                    },
+                  }}
+                >
+                  Preview
+                </Button>
               </Box>
 
               {/* Form Fields Section */}
@@ -222,12 +311,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                       value={formData.title}
                       onChange={(e) => handleChange("title", e.target.value)}
                       variant="outlined"
-                      sx={{
+                      sx={getTextFieldSx({
                         "& .MuiInputBase-root": {
                           fontSize: "1.1rem",
                           fontWeight: 500,
                         },
-                      }}
+                      })}
                     />
                   </Box>
 
@@ -241,6 +330,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                       onChange={(e) => handleChange("episodeNumber", parseInt(e.target.value) || "")}
                       variant="outlined"
                       size="small"
+                      sx={getTextFieldSx()}
                     />
                   </Box>
 
@@ -262,9 +352,10 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                         onChange={(e) => handleChange("category", e.target.value)}
                         variant="outlined"
                         size="small"
+                        sx={getTextFieldSx()}
                       >
                         {CATEGORIES.map((cat) => (
-                          <MenuItem key={cat} value={cat}>
+                          <MenuItem key={cat} value={cat} sx={{ color: darkMode ? "#E2E8F0" : "inherit", backgroundColor: darkMode ? "#13181D" : "inherit", "&:hover": { backgroundColor: darkMode ? "#1A2F2A" : "rgba(0, 0, 0, 0.04)" } }}>
                             {cat}
                           </MenuItem>
                         ))}
@@ -280,9 +371,10 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                         onChange={(e) => handleChange("difficulty", e.target.value)}
                         variant="outlined"
                         size="small"
+                        sx={getTextFieldSx()}
                       >
                         {DIFFICULTIES.map((diff) => (
-                          <MenuItem key={diff} value={diff}>
+                          <MenuItem key={diff} value={diff} sx={{ color: darkMode ? "#E2E8F0" : "inherit", backgroundColor: darkMode ? "#13181D" : "inherit", "&:hover": { backgroundColor: darkMode ? "#1A2F2A" : "rgba(0, 0, 0, 0.04)" } }}>
                             {diff}
                           </MenuItem>
                         ))}
@@ -306,9 +398,10 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                       onChange={(e) => handleChange("status", e.target.value)}
                       variant="outlined"
                       size="small"
+                      sx={getTextFieldSx()}
                     >
                       {STATUSES.map((status) => (
-                        <MenuItem key={status} value={status}>
+                        <MenuItem key={status} value={status} sx={{ color: darkMode ? "#E2E8F0" : "inherit", backgroundColor: darkMode ? "#13181D" : "inherit", "&:hover": { backgroundColor: darkMode ? "#1A2F2A" : "rgba(0, 0, 0, 0.04)" } }}>
                           {status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, " ")}
                         </MenuItem>
                       ))}
@@ -330,6 +423,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                       helperText="Leave blank to auto-generate from title"
                       variant="outlined"
                       size="small"
+                      sx={getTextFieldSx()}
                     />
                   </Box>
 
@@ -416,8 +510,8 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                 sx={{
                   p: { xs: 2, md: 2.5 },
                   pt: { xs: 1.5, md: 2 },
-                  borderTop: "1px solid #E2E8F0",
-                  backgroundColor: "#F7FAFC",
+                  borderTop: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+                  backgroundColor: darkMode ? "#1A2328" : "#F7FAFC",
                 }}
               >
                 <Button
@@ -431,6 +525,14 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                     fontWeight: 500,
                     py: 1,
                     fontSize: "0.875rem",
+                    background: darkMode
+                      ? "linear-gradient(135deg, #00ED64 0%, #00684A 100%)"
+                      : undefined,
+                    color: darkMode ? "#001E2B" : undefined,
+                    "&:hover": darkMode ? {
+                      background: "linear-gradient(135deg, #00ED64 0%, #00684A 100%)",
+                      filter: "brightness(1.1)",
+                    } : undefined,
                   }}
                 >
                   {saving ? "Saving..." : submitLabel}
@@ -461,9 +563,9 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   p: { xs: 2, md: 3 },
                   mb: { xs: 2, md: 2.5 },
                   borderRadius: { xs: 2, md: 8 },
-                  backgroundColor: "#F7FAFC",
-                  border: "1px solid #E2E8F0",
-                  borderLeft: "3px solid #00684A",
+                  backgroundColor: darkMode ? "#1A2328" : "#F7FAFC",
+                  border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+                  borderLeft: darkMode ? "3px solid #00ED64" : "3px solid #00684A",
                 }}
               >
                 <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: { xs: 1.5, md: 2 } }}>
@@ -503,13 +605,13 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   onChange={(e) => handleChange("hook", e.target.value)}
                   placeholder="Did you know that most MongoDB performance issues..."
                   variant="outlined"
-                  sx={{
+                  sx={getTextFieldSx({
                     "& .MuiInputBase-root": {
                       fontSize: { xs: "0.95rem", md: "1.05rem" },
                       lineHeight: 1.7,
-                      backgroundColor: "white",
+                      backgroundColor: darkMode ? "#0F1419" : "white",
                     },
-                  }}
+                  })}
                 />
               </Paper>
 
@@ -519,9 +621,9 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   p: { xs: 2, md: 3 },
                   mb: { xs: 2, md: 2.5 },
                   borderRadius: { xs: 2, md: 8 },
-                  backgroundColor: "#FFFFFF",
-                  border: "1px solid #E2E8F0",
-                  borderLeft: "3px solid #00ED64",
+                  backgroundColor: darkMode ? "#1A2328" : "#FFFFFF",
+                  border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+                  borderLeft: darkMode ? "3px solid #00ED64" : "3px solid #00ED64",
                 }}
               >
                 <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: { xs: 1.5, md: 2 } }}>
@@ -560,12 +662,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   onChange={(e) => handleChange("problem", e.target.value)}
                   placeholder="Many developers struggle with..."
                   variant="outlined"
-                  sx={{
+                  sx={getTextFieldSx({
                     "& .MuiInputBase-root": {
                       fontSize: { xs: "0.95rem", md: "1.05rem" },
                       lineHeight: 1.7,
                     },
-                  }}
+                  })}
                 />
               </Paper>
 
@@ -575,9 +677,9 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   p: { xs: 2, md: 3 },
                   mb: { xs: 2, md: 2.5 },
                   borderRadius: { xs: 2, md: 8 },
-                  backgroundColor: "#FFFFFF",
-                  border: "1px solid #E2E8F0",
-                  borderLeft: "3px solid #00684A",
+                  backgroundColor: darkMode ? "#1A2328" : "#FFFFFF",
+                  border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+                  borderLeft: darkMode ? "3px solid #00ED64" : "3px solid #00684A",
                 }}
               >
                 <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: { xs: 1.5, md: 2 } }}>
@@ -626,12 +728,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   onChange={(e) => handleChange("tip", e.target.value)}
                   placeholder="Here's the solution: use embedded documents to..."
                   variant="outlined"
-                  sx={{
+                  sx={getTextFieldSx({
                     "& .MuiInputBase-root": {
                       fontSize: { xs: "0.95rem", md: "1.05rem" },
                       lineHeight: 1.7,
                     },
-                  }}
+                  })}
                 />
               </Paper>
 
@@ -641,9 +743,9 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   p: { xs: 2, md: 3 },
                   mb: { xs: 2, md: 2.5 },
                   borderRadius: { xs: 2, md: 8 },
-                  backgroundColor: "#FFFFFF",
-                  border: "1px solid #E2E8F0",
-                  borderLeft: "3px solid #00ED64",
+                  backgroundColor: darkMode ? "#1A2328" : "#FFFFFF",
+                  border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+                  borderLeft: darkMode ? "3px solid #00ED64" : "3px solid #00ED64",
                 }}
               >
                 <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: { xs: 1.5, md: 2 } }}>
@@ -692,12 +794,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   onChange={(e) => handleChange("quickWin", e.target.value)}
                   placeholder="This approach reduced query time by 80%..."
                   variant="outlined"
-                  sx={{
+                  sx={getTextFieldSx({
                     "& .MuiInputBase-root": {
                       fontSize: { xs: "0.95rem", md: "1.05rem" },
                       lineHeight: 1.7,
                     },
-                  }}
+                  })}
                 />
               </Paper>
 
@@ -707,9 +809,9 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   p: { xs: 2, md: 3 },
                   mb: { xs: 2, md: 2.5 },
                   borderRadius: { xs: 2, md: 8 },
-                  backgroundColor: "#F7FAFC",
-                  border: "1px solid #E2E8F0",
-                  borderLeft: "3px solid #004D37",
+                  backgroundColor: darkMode ? "#1A2328" : "#F7FAFC",
+                  border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+                  borderLeft: darkMode ? "3px solid #00684A" : "3px solid #004D37",
                 }}
               >
                 <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: { xs: 1.5, md: 2 } }}>
@@ -758,13 +860,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   onChange={(e) => handleChange("cta", e.target.value)}
                   placeholder="Try this today and let me know how it works! Next week, I'll show you..."
                   variant="outlined"
-                  sx={{
+                  sx={getTextFieldSx({
                     "& .MuiInputBase-root": {
                       fontSize: { xs: "0.95rem", md: "1.05rem" },
                       lineHeight: 1.7,
-                      backgroundColor: "white",
                     },
-                  }}
+                  })}
                 />
               </Paper>
             </Box>
@@ -774,11 +875,11 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
               sx={{
                 p: { xs: 2, md: 3 },
                 borderRadius: { xs: 2, md: 8 },
-                backgroundColor: "#FFFFFF",
-                border: "1px dashed #CBD5E0",
+                backgroundColor: darkMode ? "#1A2328" : "#FFFFFF",
+                border: darkMode ? "1px dashed #2D3748" : "1px dashed #CBD5E0",
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: darkMode ? "#E2E8F0" : "inherit" }}>
                 Visual Suggestion
               </Typography>
               <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: "block" }}>
@@ -792,6 +893,12 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                 onChange={(e) => handleChange("visualSuggestion", e.target.value)}
                 placeholder="Show code example, diagram, or screen recording of..."
                 variant="outlined"
+                sx={getTextFieldSx({
+                  "& .MuiInputBase-root": {
+                    fontSize: { xs: "0.95rem", md: "1.05rem" },
+                    lineHeight: 1.7,
+                  },
+                })}
               />
             </Paper>
 
@@ -817,23 +924,26 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                   display: "none",
                 },
                 boxShadow: 1,
+                backgroundColor: darkMode ? "#13181D" : "background.paper",
+                border: darkMode ? "1px solid #2D3748" : undefined,
               }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMoreIcon sx={{ color: darkMode ? "#E2E8F0" : "inherit" }} />}
                 sx={{
                   px: 3,
                   py: 2,
                   "& .MuiAccordionSummary-content": {
                     my: 0,
                   },
+                  backgroundColor: darkMode ? "#1A2328" : undefined,
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: darkMode ? "#E2E8F0" : "inherit" }}>
                   Video & Social Links
                 </Typography>
               </AccordionSummary>
-              <AccordionDetails sx={{ px: 3, pb: 3 }}>
+              <AccordionDetails sx={{ px: 3, pb: 3, backgroundColor: darkMode ? "#13181D" : "background.paper" }}>
                 <Stack spacing={3}>
                   <TextField
                     fullWidth
@@ -842,6 +952,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                     onChange={(e) => handleChange("videoUrl", e.target.value)}
                     placeholder="https://youtube.com/watch?v=..."
                     variant="outlined"
+                    sx={getTextFieldSx()}
                   />
                   <Divider>Social Media Links</Divider>
                   <Grid container spacing={2}>
@@ -853,6 +964,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                         onChange={(e) => handleSocialLinkChange("youtube", e.target.value)}
                         variant="outlined"
                         size="small"
+                        sx={getTextFieldSx()}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
@@ -863,6 +975,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                         onChange={(e) => handleSocialLinkChange("tiktok", e.target.value)}
                         variant="outlined"
                         size="small"
+                        sx={getTextFieldSx()}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 4 }}>
@@ -873,6 +986,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                         onChange={(e) => handleSocialLinkChange("linkedin", e.target.value)}
                         variant="outlined"
                         size="small"
+                        sx={getTextFieldSx()}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 4 }}>
@@ -883,6 +997,7 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                         onChange={(e) => handleSocialLinkChange("instagram", e.target.value)}
                         variant="outlined"
                         size="small"
+                        sx={getTextFieldSx()}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 4 }}>
@@ -893,9 +1008,285 @@ export default function EpisodeForm({ initialData = {}, onSubmit, submitLabel = 
                         onChange={(e) => handleSocialLinkChange("x", e.target.value)}
                         variant="outlined"
                         size="small"
+                        sx={getTextFieldSx()}
                       />
                     </Grid>
                   </Grid>
+                </Stack>
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Enhanced Content - Collapsible */}
+            <Accordion
+              defaultExpanded={false}
+              sx={{
+                borderRadius: 3,
+                "&:before": {
+                  display: "none",
+                },
+                boxShadow: 1,
+                backgroundColor: darkMode ? "#13181D" : "background.paper",
+                border: darkMode ? "1px solid #2D3748" : undefined,
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: darkMode ? "#E2E8F0" : "inherit" }} />}
+                sx={{
+                  px: 3,
+                  py: 2,
+                  "& .MuiAccordionSummary-content": {
+                    my: 0,
+                  },
+                  backgroundColor: darkMode ? "#1A2328" : undefined,
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "0.9375rem", md: "1rem" }, color: darkMode ? "#E2E8F0" : "inherit" }}>
+                  Enhanced Content
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails sx={{ px: 3, pb: 3, backgroundColor: darkMode ? "#13181D" : "background.paper" }}>
+                <Stack spacing={3}>
+                  {/* AI Enhanced Content Helper */}
+                  <AIEnhancedContentHelper
+                    formData={formData}
+                    onImprove={(data) => {
+                      if (data.field === "keyConcepts" && data.subField) {
+                        // Handle keyConcepts sub-fields
+                        handleChange("keyConcepts", {
+                          ...formData.keyConcepts,
+                          [data.subField]: data.improvedContent,
+                        });
+                      } else if (data.field === "keyConcepts" && typeof data.improvedContent === "object") {
+                        // Handle full keyConcepts object
+                        handleChange("keyConcepts", data.improvedContent);
+                      } else if (data.field === "tags" && Array.isArray(data.improvedContent)) {
+                        // Handle tags array
+                        handleChange("tags", data.improvedContent);
+                      } else if (data.field && data.improvedContent) {
+                        // Handle simple field updates
+                        handleChange(data.field, data.improvedContent);
+                      }
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label="GitHub Repository URL"
+                    value={formData.githubRepo}
+                    onChange={(e) => handleChange("githubRepo", e.target.value)}
+                    placeholder="https://github.com/mrlynn/mongodb-minute-42"
+                    variant="outlined"
+                    size="small"
+                    helperText="Link to the episode's GitHub repository"
+                    sx={getTextFieldSx()}
+                  />
+
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={8}
+                    label="Deep Dive Content"
+                    value={formData.deepDive}
+                    onChange={(e) => handleChange("deepDive", e.target.value)}
+                    placeholder="Expanded explanation beyond the 60-second video. Supports markdown formatting."
+                    variant="outlined"
+                    helperText="Extended technical explanation with markdown support"
+                    sx={getTextFieldSx({
+                      "& .MuiInputBase-root": {
+                        fontSize: { xs: "0.95rem", md: "1rem" },
+                        lineHeight: 1.7,
+                      },
+                    })}
+                  />
+
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={6}
+                    label="Transcript"
+                    value={formData.transcript}
+                    onChange={(e) => handleChange("transcript", e.target.value)}
+                    placeholder="Full transcript of the video..."
+                    variant="outlined"
+                    helperText="Complete transcript of the episode"
+                    sx={getTextFieldSx({
+                      "& .MuiInputBase-root": {
+                        fontSize: { xs: "0.95rem", md: "1rem" },
+                        lineHeight: 1.7,
+                      },
+                    })}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="One-Sentence Summary"
+                    value={formData.summary}
+                    onChange={(e) => handleChange("summary", e.target.value)}
+                    placeholder="A concise one-sentence summary of what this episode covers"
+                    variant="outlined"
+                    size="small"
+                    helperText="Used in the hero section below the title"
+                    sx={getTextFieldSx()}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="Tags (comma-separated)"
+                    value={Array.isArray(formData.tags) ? formData.tags.join(", ") : formData.tags}
+                    onChange={(e) => {
+                      const tags = e.target.value.split(",").map(t => t.trim()).filter(t => t);
+                      handleChange("tags", tags);
+                    }}
+                    placeholder="indexing, performance, optimization"
+                    variant="outlined"
+                    size="small"
+                    helperText="Tags for discoverability and cross-linking"
+                    sx={getTextFieldSx()}
+                  />
+
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: darkMode ? "#E2E8F0" : "#001E2B" }}>
+                      Version Information
+                    </Typography>
+                    <Stack spacing={2}>
+                      <TextField
+                        fullWidth
+                        label="Driver Version"
+                        value={formData.versionTags?.driverVersion || ""}
+                        onChange={(e) => handleChange("versionTags", { ...formData.versionTags, driverVersion: e.target.value })}
+                        placeholder="6.0.0"
+                        variant="outlined"
+                        size="small"
+                        helperText="MongoDB Node.js driver version used"
+                        sx={getTextFieldSx()}
+                      />
+                      <TextField
+                        fullWidth
+                        label="Atlas Features (comma-separated)"
+                        value={Array.isArray(formData.versionTags?.atlasFeatures) ? formData.versionTags.atlasFeatures.join(", ") : ""}
+                        onChange={(e) => {
+                          const features = e.target.value.split(",").map(f => f.trim()).filter(f => f);
+                          handleChange("versionTags", { ...formData.versionTags, atlasFeatures: features });
+                        }}
+                        placeholder="Atlas Search, Vector Search, Serverless"
+                        variant="outlined"
+                        size="small"
+                        helperText="Atlas features referenced in this episode"
+                        sx={getTextFieldSx()}
+                      />
+                    </Stack>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600, color: darkMode ? "#E2E8F0" : "#001E2B" }}>
+                      Key Concepts (for Deep Dive Callouts)
+                    </Typography>
+                    <Stack spacing={2}>
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        label="Pitfalls to Avoid"
+                        value={formData.keyConcepts?.pitfalls || ""}
+                        onChange={(e) => handleChange("keyConcepts", { ...formData.keyConcepts, pitfalls: e.target.value })}
+                        placeholder="Common mistakes developers make with this concept..."
+                        variant="outlined"
+                        size="small"
+                        sx={getTextFieldSx()}
+                      />
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        label="When to Use"
+                        value={formData.keyConcepts?.whenToUse || ""}
+                        onChange={(e) => handleChange("keyConcepts", { ...formData.keyConcepts, whenToUse: e.target.value })}
+                        placeholder="Best scenarios for using this approach..."
+                        variant="outlined"
+                        size="small"
+                        sx={getTextFieldSx()}
+                      />
+                      <TextField
+                        fullWidth
+                        multiline
+                        rows={2}
+                        label="When NOT to Use"
+                        value={formData.keyConcepts?.whenNotToUse || ""}
+                        onChange={(e) => handleChange("keyConcepts", { ...formData.keyConcepts, whenNotToUse: e.target.value })}
+                        placeholder="Situations where this approach isn't ideal..."
+                        variant="outlined"
+                        size="small"
+                        sx={getTextFieldSx()}
+                      />
+                    </Stack>
+                  </Box>
+
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={4}
+                    label="Notes From Mike"
+                    value={formData.notesFromMike}
+                    onChange={(e) => handleChange("notesFromMike", e.target.value)}
+                    placeholder="Why this episode exists, real-world scenarios, FAQs..."
+                    variant="outlined"
+                    helperText="Personal insights and context about this episode"
+                    sx={getTextFieldSx({
+                      "& .MuiInputBase-root": {
+                        fontSize: { xs: "0.95rem", md: "1rem" },
+                        lineHeight: 1.7,
+                      },
+                    })}
+                  />
+
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={6}
+                    label="Resources (JSON)"
+                    value={JSON.stringify(formData.resources || [], null, 2)}
+                    onChange={(e) => {
+                      try {
+                        const resources = JSON.parse(e.target.value);
+                        handleChange("resources", resources);
+                      } catch (err) {
+                        // Invalid JSON, don't update
+                      }
+                    }}
+                    placeholder='[{"type": "code", "title": "Example", "content": "...", "language": "javascript"}]'
+                    variant="outlined"
+                    helperText="Array of resources: code snippets, downloads, etc. (JSON format)"
+                    sx={getTextFieldSx({
+                      "& .MuiInputBase-root": {
+                        fontFamily: "monospace",
+                        fontSize: { xs: "0.8rem", md: "0.85rem" },
+                      },
+                    })}
+                  />
+
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={6}
+                    label="Schema (JSON)"
+                    value={JSON.stringify(formData.schema || {}, null, 2)}
+                    onChange={(e) => {
+                      try {
+                        const schema = JSON.parse(e.target.value);
+                        handleChange("schema", schema);
+                      } catch (err) {
+                        // Invalid JSON, don't update
+                      }
+                    }}
+                    placeholder='{"documents": [...], "indexes": [...]}'
+                    variant="outlined"
+                    helperText="Sample documents and index definitions (JSON format)"
+                    sx={getTextFieldSx({
+                      "& .MuiInputBase-root": {
+                        fontFamily: "monospace",
+                        fontSize: { xs: "0.8rem", md: "0.85rem" },
+                      },
+                    })}
+                  />
                 </Stack>
               </AccordionDetails>
             </Accordion>

@@ -15,10 +15,12 @@ import {
   YouTube as YouTubeIcon,
   LinkedIn as LinkedInIcon,
   Twitter as TwitterIcon,
+  PlayCircle as PlayCircleIcon,
 } from "@mui/icons-material";
 import Link from "next/link";
 import Image from "next/image";
 import HighlightText from "./HighlightText";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const difficultyColors = {
   Beginner: { bg: "#E8F5E9", color: "#2E7D32" },
@@ -84,9 +86,42 @@ const categoryConfig = {
 };
 
 export default function EpisodeCard({ episode, searchQuery = "" }) {
+  const { darkMode } = useTheme();
   const categoryData = categoryConfig[episode.category] || categoryConfig["Data Modeling"];
   const CategoryIcon = categoryData.icon;
   const difficultyColor = difficultyColors[episode.difficulty] || difficultyColors.Beginner;
+
+  // Select a brand shape based on episode number or ID for variety
+  const shapeNumber = episode.episodeNumber
+    ? ((episode.episodeNumber - 1) % 8) + 1
+    : Math.abs((episode._id || "").split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % 8) + 1;
+  const shapeOptions = [1, 5, 10, 15, 20, 25, 30, 35];
+  const selectedShape = shapeOptions[shapeNumber - 1];
+
+  // Extract YouTube video ID and get thumbnail
+  const getYouTubeVideoId = (url) => {
+    if (!url) return null;
+    
+    // If already an embed URL
+    const embedMatch = url.match(/\/embed\/([^?&]+)/);
+    if (embedMatch) return embedMatch[1];
+    
+    // Standard watch URL
+    const watchMatch = url.match(/[?&]v=([^&]+)/);
+    if (watchMatch) return watchMatch[1];
+    
+    // Short URL
+    const shortMatch = url.match(/youtu\.be\/([^?&]+)/);
+    if (shortMatch) return shortMatch[1];
+    
+    return null;
+  };
+
+  const videoUrl = episode.videoUrl || episode.socialLinks?.youtube;
+  const youtubeVideoId = videoUrl ? getYouTubeVideoId(videoUrl) : null;
+  const thumbnailUrl = youtubeVideoId 
+    ? `https://img.youtube.com/vi/${youtubeVideoId}/hqdefault.jpg`
+    : null;
 
   return (
       <Card
@@ -97,16 +132,20 @@ export default function EpisodeCard({ episode, searchQuery = "" }) {
           flexDirection: "column",
           position: "relative",
           overflow: "hidden",
-          border: "1px solid #E2E8F0",
+          border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
           borderRadius: "12px",
-          boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.08), 0px 1px 3px rgba(0, 0, 0, 0.04)",
+          boxShadow: darkMode
+            ? "0px 2px 8px rgba(0, 237, 100, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2)"
+            : "0px 2px 8px rgba(0, 0, 0, 0.08), 0px 1px 3px rgba(0, 0, 0, 0.04)",
           transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          background: "#FFFFFF",
+          background: darkMode ? "#13181D" : "#FFFFFF",
           cursor: "pointer",
           "&:hover": {
             transform: "translateY(-4px)",
-            boxShadow: "0px 12px 24px rgba(0, 104, 74, 0.15), 0px 4px 8px rgba(0, 0, 0, 0.08)",
-            borderColor: categoryData.color,
+            boxShadow: darkMode
+              ? "0px 12px 24px rgba(0, 237, 100, 0.25), 0px 4px 8px rgba(0, 0, 0, 0.3)"
+              : "0px 12px 24px rgba(0, 104, 74, 0.15), 0px 4px 8px rgba(0, 0, 0, 0.08)",
+            borderColor: darkMode ? "#00ED64" : categoryData.color,
             "& .card-button": {
               background: categoryData.gradient,
               color: "#FFFFFF",
@@ -118,12 +157,16 @@ export default function EpisodeCard({ episode, searchQuery = "" }) {
             "& .accent-line": {
               width: "100%",
             },
+            "& .brand-shape": {
+              opacity: darkMode ? 0.18 : 0.12,
+              transform: "scale(1.05)",
+            },
           },
           "&:active": {
             transform: "translateY(-2px)",
           },
           "&:focus-visible": {
-            outline: "2px solid #00684A",
+            outline: darkMode ? "2px solid #00ED64" : "2px solid #00684A",
             outlineOffset: "4px",
           },
         }}
@@ -148,23 +191,215 @@ export default function EpisodeCard({ episode, searchQuery = "" }) {
         }}
       />
 
-      {/* Decorative background pattern */}
+      {/* Brand Shape Background - Upper Right */}
       <Box
         sx={{
           position: "absolute",
-          top: 4,
+          top: -10,
           right: -20,
-          width: 120,
-          height: 120,
-          opacity: 0.04,
+          width: 140,
+          height: 140,
           pointerEvents: "none",
           zIndex: 0,
+          transition: "all 0.3s ease",
+          opacity: darkMode ? 0.12 : 0.08,
+          backgroundColor: categoryData.color,
+          // Use CSS mask to apply the shape - the background color shows through
+          WebkitMaskImage: `url(/assets/shapes/shape-${selectedShape}.png)`,
+          WebkitMaskSize: "contain",
+          WebkitMaskRepeat: "no-repeat",
+          WebkitMaskPosition: "center",
+          maskImage: `url(/assets/shapes/shape-${selectedShape}.png)`,
+          maskSize: "contain",
+          maskRepeat: "no-repeat",
+          maskPosition: "center",
+          filter: darkMode ? "brightness(1.2)" : "none",
         }}
-      >
-        <CategoryIcon sx={{ fontSize: 120, color: categoryData.color }} />
-      </Box>
+        className="brand-shape"
+      />
+
+      {/* Brand Shape Background - Lower Left */}
+      <Box
+        sx={{
+          position: "absolute",
+          bottom: -15,
+          left: -25,
+          width: 120,
+          height: 120,
+          pointerEvents: "none",
+          zIndex: 0,
+          transition: "all 0.3s ease",
+          opacity: darkMode ? 0.1 : 0.06,
+          backgroundColor: categoryData.color,
+          // Use CSS mask to apply the shape - the background color shows through
+          WebkitMaskImage: `url(/assets/shapes/shape-${shapeOptions[(shapeNumber % shapeOptions.length)]}.png)`,
+          WebkitMaskSize: "contain",
+          WebkitMaskRepeat: "no-repeat",
+          WebkitMaskPosition: "center",
+          maskImage: `url(/assets/shapes/shape-${shapeOptions[(shapeNumber % shapeOptions.length)]}.png)`,
+          maskSize: "contain",
+          maskRepeat: "no-repeat",
+          maskPosition: "center",
+          filter: darkMode ? "brightness(1.2)" : "none",
+        }}
+        className="brand-shape"
+      />
 
       <CardContent sx={{ flexGrow: 1, p: 3, display: "flex", flexDirection: "column", pb: 1.5, width: "100%", boxSizing: "border-box", position: "relative", zIndex: 1 }}>
+        {/* Video Thumbnail/Placeholder */}
+        <Box
+          sx={{
+            width: "100%",
+            aspectRatio: "16/9",
+            mb: 2,
+            borderRadius: 2,
+            overflow: "hidden",
+            position: "relative",
+            background: darkMode
+              ? `linear-gradient(135deg, ${categoryData.color}20 0%, ${categoryData.color}10 100%)`
+              : `linear-gradient(135deg, ${categoryData.color}15 0%, ${categoryData.color}08 100%)`,
+            border: darkMode ? `1px solid ${categoryData.color}30` : `1px solid ${categoryData.color}20`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            "&:hover": {
+              "& .play-overlay": {
+                opacity: 1,
+                transform: "scale(1.1)",
+              },
+              "& .video-thumbnail": {
+                transform: "scale(1.05)",
+              },
+            },
+          }}
+        >
+          {thumbnailUrl ? (
+            <>
+              <Box
+                component="img"
+                src={thumbnailUrl}
+                alt={episode.title}
+                className="video-thumbnail"
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  transition: "transform 0.3s ease",
+                }}
+                onError={(e) => {
+                  // Fallback if thumbnail fails to load
+                  e.target.style.display = "none";
+                }}
+              />
+              <Box
+                className="play-overlay"
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: "rgba(0, 0, 0, 0.3)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: 0.7,
+                  transition: "all 0.3s ease",
+                }}
+              >
+                <PlayCircleIcon
+                  sx={{
+                    fontSize: 64,
+                    color: "#FFFFFF",
+                    filter: "drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.5))",
+                  }}
+                />
+              </Box>
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: 8,
+                  right: 8,
+                  backgroundColor: "rgba(255, 0, 0, 0.9)",
+                  color: "#FFFFFF",
+                  px: 1,
+                  py: 0.5,
+                  borderRadius: 1,
+                  fontSize: "0.625rem",
+                  fontWeight: 600,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                }}
+              >
+                <YouTubeIcon sx={{ fontSize: 12 }} />
+                YouTube
+              </Box>
+            </>
+          ) : (
+            <>
+              {/* Video Placeholder */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 1.5,
+                }}
+              >
+                <PlayCircleIcon
+                  sx={{
+                    fontSize: 64,
+                    color: categoryData.color,
+                    opacity: 0.6,
+                  }}
+                />
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: darkMode ? "#A0AEC0" : "#5F6C76",
+                    fontWeight: 500,
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  60-Second Video
+                </Typography>
+              </Box>
+              {/* Decorative elements */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  left: 8,
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  background: categoryData.gradient,
+                  opacity: 0.2,
+                }}
+              />
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: 8,
+                  right: 8,
+                  width: 24,
+                  height: 24,
+                  borderRadius: "50%",
+                  background: categoryData.gradient,
+                  opacity: 0.3,
+                }}
+              />
+            </>
+          )}
+        </Box>
+
         {/* Tags section with enhanced styling */}
         <Box sx={{ mb: 2, minHeight: "30px", display: "flex", alignItems: "flex-start" }}>
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 0.75 }}>
@@ -265,7 +500,7 @@ export default function EpisodeCard({ episode, searchQuery = "" }) {
               overflow: "hidden",
               overflowWrap: "break-word",
               wordBreak: "break-word",
-              color: "#001E2B",
+              color: darkMode ? "#E2E8F0" : "#001E2B",
             }}
           >
             <HighlightText text={episode.title} query={searchQuery} />
@@ -284,7 +519,7 @@ export default function EpisodeCard({ episode, searchQuery = "" }) {
               overflowWrap: "break-word",
               wordBreak: "break-word",
               lineHeight: 1.5,
-              color: "#5F6C76",
+              color: darkMode ? "#A0AEC0" : "#5F6C76",
               fontSize: "0.875rem",
             }}
           >
@@ -313,7 +548,7 @@ export default function EpisodeCard({ episode, searchQuery = "" }) {
               display: "flex",
               alignItems: "center",
               gap: 0.5,
-              color: "#5F6C76",
+              color: darkMode ? "#A0AEC0" : "#5F6C76",
               fontSize: "0.6875rem",
               fontWeight: 500,
             }}
@@ -350,7 +585,7 @@ export default function EpisodeCard({ episode, searchQuery = "" }) {
             <Typography
               variant="caption"
               sx={{
-                color: "#5F6C76",
+                color: darkMode ? "#A0AEC0" : "#5F6C76",
                 fontSize: "0.6875rem",
                 fontWeight: 500,
                 mr: 0.5,
@@ -510,15 +745,17 @@ export default function EpisodeCard({ episode, searchQuery = "" }) {
           fullWidth
           sx={{
             fontWeight: 600,
-            color: categoryData.color,
+            color: darkMode ? "#00ED64" : categoryData.color,
             fontSize: "0.875rem",
             transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
             borderRadius: "8px",
             py: 1.5,
-            border: `1px solid ${categoryData.color}20`,
+            border: darkMode
+              ? "1px solid #00ED6430"
+              : `1px solid ${categoryData.color}20`,
             "&:hover": {
-              backgroundColor: categoryData.lightBg,
-              borderColor: categoryData.color,
+              backgroundColor: darkMode ? "#1A3A2F" : categoryData.lightBg,
+              borderColor: darkMode ? "#00ED64" : categoryData.color,
             },
           }}
         >

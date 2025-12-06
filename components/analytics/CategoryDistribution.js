@@ -10,6 +10,7 @@ import {
   Chip,
 } from "@mui/material";
 import { PieChart as PieChartIcon } from "@mui/icons-material";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const CATEGORY_COLORS = {
   "Data Modeling": "#00684A",
@@ -38,6 +39,7 @@ const EXPECTED_CATEGORIES = [
 ];
 
 export default function CategoryDistribution({ episodes, stats }) {
+  const { darkMode } = useTheme();
   const distribution = useMemo(() => {
     if (!stats?.categoryCount) return [];
 
@@ -63,13 +65,14 @@ export default function CategoryDistribution({ episodes, stats }) {
       sx={{
         p: { xs: 2, md: 3 },
         borderRadius: { xs: 2, md: 3 },
-        border: "1px solid #E2E8F0",
+        border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+        backgroundColor: darkMode ? "#13181D" : "background.paper",
         height: "100%",
       }}
     >
       <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 3 }}>
-        <PieChartIcon sx={{ color: "#00684A", fontSize: 24 }} />
-        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1rem", md: "1.25rem" } }}>
+        <PieChartIcon sx={{ color: darkMode ? "#00ED64" : "#00684A", fontSize: 24 }} />
+        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1rem", md: "1.25rem" }, color: darkMode ? "#E2E8F0" : "inherit" }}>
           Category Distribution
         </Typography>
       </Stack>
@@ -97,6 +100,7 @@ export default function CategoryDistribution({ episodes, stats }) {
                   sx={{
                     fontWeight: 500,
                     fontSize: { xs: "0.875rem", md: "0.9375rem" },
+                    color: darkMode ? "#E2E8F0" : "inherit",
                   }}
                 >
                   {item.category}
@@ -107,7 +111,7 @@ export default function CategoryDistribution({ episodes, stats }) {
                   variant="body2"
                   sx={{
                     fontWeight: 600,
-                    color: "#001E2B",
+                    color: darkMode ? "#E2E8F0" : "#001E2B",
                     fontSize: { xs: "0.875rem", md: "0.9375rem" },
                   }}
                 >
@@ -132,7 +136,7 @@ export default function CategoryDistribution({ episodes, stats }) {
               sx={{
                 height: 8,
                 borderRadius: 4,
-                backgroundColor: "#E2E8F0",
+                backgroundColor: darkMode ? "#2D3748" : "#E2E8F0",
                 "& .MuiLinearProgress-bar": {
                   backgroundColor: item.color,
                   borderRadius: 4,

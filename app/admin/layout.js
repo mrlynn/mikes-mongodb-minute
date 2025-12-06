@@ -31,12 +31,15 @@ import {
   VideoCameraBack as RecorderIcon,
   Analytics as AnalyticsIcon,
   Settings as SettingsIcon,
+  Feedback as FeedbackIcon,
 } from "@mui/icons-material";
 import Link from "next/link";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function AdminLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { darkMode } = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width:900px)");
@@ -66,15 +69,23 @@ export default function AdminLayout({ children }) {
     { label: "Episodes", href: "/admin/episodes", icon: <ListIcon /> },
     { label: "Recorder", href: "/admin/recorder", icon: <RecorderIcon /> },
     { label: "Analytics", href: "/admin/analytics", icon: <AnalyticsIcon /> },
+    { label: "Feedback", href: "/admin/feedback", icon: <FeedbackIcon /> },
     { label: "Settings", href: "/admin/settings", icon: <SettingsIcon /> },
   ];
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <Box sx={{
+      display: "flex",
+      flexDirection: "column",
+      minHeight: "100vh",
+      backgroundColor: darkMode ? "#0A0F14" : "background.default",
+    }}>
       <AppBar
         position="static"
         sx={{
-          background: "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
+          background: darkMode
+            ? "linear-gradient(135deg, #1A3A2F 0%, #0F2619 100%)"
+            : "linear-gradient(135deg, #00684A 0%, #004D37 100%)",
           color: "#FFFFFF",
         }}
       >
@@ -209,7 +220,7 @@ export default function AdminLayout({ children }) {
           sx: {
             width: 280,
             pt: 2,
-            backgroundColor: "#FFFFFF",
+            backgroundColor: darkMode ? "#13181D" : "#FFFFFF",
           },
         }}
       >
@@ -222,14 +233,14 @@ export default function AdminLayout({ children }) {
             mb: 2,
           }}
         >
-          <Typography variant="h6" fontWeight={700} color="#001E2B">
+          <Typography variant="h6" fontWeight={700} color={darkMode ? "#E2E8F0" : "#001E2B"}>
             Navigation
           </Typography>
-          <IconButton onClick={handleMobileMenuClose} size="small">
+          <IconButton onClick={handleMobileMenuClose} size="small" sx={{ color: darkMode ? "#E2E8F0" : "inherit" }}>
             <CloseIcon />
           </IconButton>
         </Box>
-        <Divider sx={{ mb: 1 }} />
+        <Divider sx={{ mb: 1, borderColor: darkMode ? "#2D3748" : "divider" }} />
         <List>
           {navItems.map((item) => (
             <ListItem key={item.href} disablePadding>
@@ -240,20 +251,22 @@ export default function AdminLayout({ children }) {
                 selected={pathname === item.href}
                 sx={{
                   "&.Mui-selected": {
-                    backgroundColor: "#E6F7F0",
-                    color: "#00684A",
+                    backgroundColor: darkMode ? "#1A3A2F" : "#E6F7F0",
+                    color: darkMode ? "#00ED64" : "#00684A",
                     "&:hover": {
-                      backgroundColor: "#E6F7F0",
+                      backgroundColor: darkMode ? "#1A3A2F" : "#E6F7F0",
                     },
                   },
                   "&:hover": {
-                    backgroundColor: "#F7FAFC",
+                    backgroundColor: darkMode ? "#1A2F2A" : "#F7FAFC",
                   },
                 }}
               >
                 <ListItemIcon
                   sx={{
-                    color: pathname === item.href ? "#00684A" : "#5F6C76",
+                    color: pathname === item.href
+                      ? (darkMode ? "#00ED64" : "#00684A")
+                      : (darkMode ? "#A0AEC0" : "#5F6C76"),
                     minWidth: 40,
                   }}
                 >
@@ -263,14 +276,16 @@ export default function AdminLayout({ children }) {
                   primary={item.label}
                   primaryTypographyProps={{
                     fontWeight: pathname === item.href ? 600 : 400,
-                    color: pathname === item.href ? "#00684A" : "#001E2B",
+                    color: pathname === item.href
+                      ? (darkMode ? "#00ED64" : "#00684A")
+                      : (darkMode ? "#E2E8F0" : "#001E2B"),
                   }}
                 />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
-        <Divider sx={{ mt: 2, mb: 1 }} />
+        <Divider sx={{ mt: 2, mb: 1, borderColor: darkMode ? "#2D3748" : "divider" }} />
         <List>
           <ListItem disablePadding>
             <ListItemButton
@@ -280,17 +295,17 @@ export default function AdminLayout({ children }) {
               }}
               sx={{
                 "&:hover": {
-                  backgroundColor: "#F7FAFC",
+                  backgroundColor: darkMode ? "#1A2F2A" : "#F7FAFC",
                 },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 40, color: "#5F6C76" }}>
+              <ListItemIcon sx={{ minWidth: 40, color: darkMode ? "#A0AEC0" : "#5F6C76" }}>
                 <LogoutIcon />
               </ListItemIcon>
               <ListItemText
                 primary="Logout"
                 primaryTypographyProps={{
-                  color: "#001E2B",
+                  color: darkMode ? "#E2E8F0" : "#001E2B",
                 }}
               />
             </ListItemButton>

@@ -5,7 +5,9 @@ import EpisodeCard from "@/components/EpisodeCard";
 import EpisodeCardSkeleton from "@/components/EpisodeCardSkeleton";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 import PublicTour from "@/components/PublicTour";
+import HomepageFeedbackWidget from "@/components/HomepageFeedbackWidget";
 import { toast } from "@/components/Toast";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   Typography,
   Box,
@@ -22,6 +24,7 @@ import {
 } from "@mui/icons-material";
 
 export default function HomePage() {
+  const { darkMode } = useTheme();
   const [episodes, setEpisodes] = useState([]);
   const [allEpisodes, setAllEpisodes] = useState([]); // For infinite scroll
   const [loading, setLoading] = useState(true);
@@ -276,66 +279,116 @@ export default function HomePage() {
       {/* Hero Section */}
       <Box
         sx={{
-          background: "#FFFFFF",
+          position: "relative",
+          background: darkMode
+            ? "linear-gradient(135deg, #13181D 0%, #1A2F2A 50%, #1A2733 100%)"
+            : "linear-gradient(135deg, #FFFFFF 0%, #F0FFF4 50%, #E6FFFA 100%)",
           borderRadius: 8,
           p: { xs: 4, md: 5 },
           mb: 4,
-          border: "1px solid #E2E8F0",
-          boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.08), 0px 1px 2px rgba(0, 0, 0, 0.04)",
+          border: darkMode ? "1px solid #2D4A3F" : "1px solid #C6F6D5",
+          boxShadow: darkMode
+            ? "0px 4px 20px rgba(0, 237, 100, 0.1), 0px 1px 3px rgba(0, 0, 0, 0.2)"
+            : "0px 4px 20px rgba(0, 104, 74, 0.08), 0px 1px 3px rgba(0, 0, 0, 0.04)",
+          overflow: "hidden",
         }}
       >
+        {/* Brand Shape Decorations */}
+        <Box
+          component="img"
+          src="/assets/shapes/shape-1.png"
+          alt=""
+          sx={{
+            position: "absolute",
+            top: -30,
+            right: -30,
+            width: { xs: "120px", md: "180px" },
+            height: { xs: "120px", md: "180px" },
+            opacity: darkMode ? 0.12 : 0.06,
+            pointerEvents: "none",
+            transform: "rotate(25deg)",
+            filter: darkMode ? "brightness(1.2)" : "none",
+          }}
+        />
+        <Box
+          component="img"
+          src="/assets/shapes/shape-15.png"
+          alt=""
+          sx={{
+            position: "absolute",
+            bottom: -20,
+            left: -40,
+            width: { xs: "100px", md: "150px" },
+            height: { xs: "100px", md: "150px" },
+            opacity: darkMode ? 0.1 : 0.05,
+            pointerEvents: "none",
+            transform: "rotate(-15deg)",
+            filter: darkMode ? "brightness(1.2)" : "none",
+          }}
+        />
+
         <Box sx={{ position: "relative", zIndex: 1 }}>
           <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: "wrap", gap: 1 }}>
             <Chip
               label={`${episodes.length} Episodes`}
               size="small"
               sx={{
-                backgroundColor: "#EDF2F7",
+                backgroundColor: "#00ED64",
                 color: "#001E2B",
-                fontWeight: 500,
+                fontWeight: 600,
                 fontSize: "0.75rem",
                 height: "24px",
+                boxShadow: darkMode
+                  ? "0px 2px 8px rgba(0, 237, 100, 0.3)"
+                  : "0px 2px 4px rgba(0, 237, 100, 0.2)",
               }}
             />
             <Chip
-              icon={<PlayArrowIcon sx={{ color: "#00684A !important", fontSize: "16px !important" }} />}
+              icon={<PlayArrowIcon sx={{ color: darkMode ? "#00ED64 !important" : "#001E2B !important", fontSize: "16px !important" }} />}
               label="60-Second Tips"
               size="small"
               sx={{
-                backgroundColor: "#EDF2F7",
-                color: "#001E2B",
-                fontWeight: 500,
+                backgroundColor: darkMode ? "#1A3A2F" : "#C6F6D5",
+                color: darkMode ? "#00ED64" : "#00684A",
+                fontWeight: 600,
                 fontSize: "0.75rem",
                 height: "24px",
+                border: darkMode ? "1px solid #00ED6440" : "none",
               }}
             />
           </Stack>
-          
-          <Typography 
-            variant="h2" 
-            sx={{ 
-              fontWeight: 600, 
+
+          <Typography
+            variant="h2"
+            sx={{
+              fontWeight: 700,
               mb: 2,
-              fontSize: { xs: "1.75rem", md: "2.25rem" },
-              lineHeight: 1.3,
-              color: "#001E2B",
+              fontSize: { xs: "1.75rem", md: "2.5rem" },
+              lineHeight: 1.2,
+              color: darkMode ? "#E2E8F0" : "#001E2B",
+              background: darkMode
+                ? "linear-gradient(135deg, #E2E8F0 0%, #00ED64 100%)"
+                : "linear-gradient(135deg, #001E2B 0%, #00684A 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
             }}
           >
             Learn MongoDB 60 Seconds at a Time
           </Typography>
-          
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              mb: 0, 
-              fontSize: { xs: "0.9375rem", md: "1rem" },
+
+          <Typography
+            variant="body1"
+            sx={{
+              mb: 0,
+              fontSize: { xs: "0.9375rem", md: "1.0625rem" },
               fontWeight: 400,
               maxWidth: "640px",
-              color: "#5F6C76",
-              lineHeight: 1.6,
+              color: darkMode ? "#CBD5E0" : "#2D3748",
+              lineHeight: 1.7,
             }}
           >
-            Quick, practical tips on data modeling, indexing, Atlas features, Vector Search, and more. 
+            Quick, practical tips on data modeling, indexing, Atlas features, Vector Search, and more.
             Perfect for developers of all levels who want to master MongoDB efficiently.
           </Typography>
         </Box>
@@ -344,12 +397,36 @@ export default function HomePage() {
       {/* Search and Filter Section - Minimized */}
       <Paper
         sx={{
+          position: "relative",
           p: 2,
           mb: 3,
           borderRadius: 2,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: darkMode ? "#13181D" : "#FFFFFF",
+          border: darkMode ? "1px solid #2D4A3F" : "1px solid #E2F8F0",
+          boxShadow: darkMode
+            ? "0px 2px 8px rgba(0, 237, 100, 0.08)"
+            : "0px 2px 8px rgba(0, 104, 74, 0.04)",
+          overflow: "hidden",
         }}
       >
+        {/* Subtle Brand Shape */}
+        <Box
+          component="img"
+          src="/assets/shapes/shape-20.png"
+          alt=""
+          sx={{
+            position: "absolute",
+            bottom: -25,
+            right: -25,
+            width: "100px",
+            height: "100px",
+            opacity: darkMode ? 0.08 : 0.03,
+            pointerEvents: "none",
+            transform: "rotate(45deg)",
+            filter: darkMode ? "brightness(1.3)" : "none",
+          }}
+        />
+
         {/* Enhanced Search with Autocomplete */}
         <Box ref={searchInputRef} data-tour="search-bar" sx={{ mb: 2 }}>
           <SearchAutocomplete
@@ -696,6 +773,9 @@ export default function HomePage() {
 
       {/* Onboarding Tour */}
       <PublicTour />
+
+      {/* Homepage Feedback Widget */}
+      <HomepageFeedbackWidget />
     </>
   );
 }

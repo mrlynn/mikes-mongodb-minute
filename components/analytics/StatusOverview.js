@@ -11,6 +11,7 @@ import {
   Grid,
 } from "@mui/material";
 import { BarChart as BarChartIcon } from "@mui/icons-material";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const STATUS_COLORS = {
   draft: "#FF9800",
@@ -27,6 +28,7 @@ const STATUS_LABELS = {
 };
 
 export default function StatusOverview({ episodes, stats }) {
+  const { darkMode } = useTheme();
   const statusData = useMemo(() => {
     if (!stats?.statusCount) return [];
 
@@ -53,12 +55,13 @@ export default function StatusOverview({ episodes, stats }) {
       sx={{
         p: { xs: 2, md: 3 },
         borderRadius: { xs: 2, md: 3 },
-        border: "1px solid #E2E8F0",
+        border: darkMode ? "1px solid #2D3748" : "1px solid #E2E8F0",
+        backgroundColor: darkMode ? "#13181D" : "background.paper",
       }}
     >
       <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 3 }}>
-        <BarChartIcon sx={{ color: "#00684A", fontSize: 24 }} />
-        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1rem", md: "1.25rem" } }}>
+        <BarChartIcon sx={{ color: darkMode ? "#00ED64" : "#00684A", fontSize: 24 }} />
+        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: { xs: "1rem", md: "1.25rem" }, color: darkMode ? "#E2E8F0" : "inherit" }}>
           Status Overview
         </Typography>
       </Stack>
@@ -70,7 +73,7 @@ export default function StatusOverview({ episodes, stats }) {
               sx={{
                 p: 2,
                 borderRadius: 2,
-                backgroundColor: "#F7FAFC",
+                backgroundColor: darkMode ? "#1A2328" : "#F7FAFC",
                 border: `2px solid ${item.color}`,
                 textAlign: "center",
               }}
@@ -90,7 +93,7 @@ export default function StatusOverview({ episodes, stats }) {
                 variant="caption"
                 sx={{
                   fontWeight: 600,
-                  color: "#001E2B",
+                  color: darkMode ? "#E2E8F0" : "#001E2B",
                   fontSize: { xs: "0.75rem", md: "0.8125rem" },
                   display: "block",
                   mb: 0.5,

@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
-import { Typography, Box, Button, CircularProgress, Stack, Grid } from "@mui/material";
-import { ArrowBack as ArrowBackIcon, Videocam as VideocamIcon, FiberManualRecord as RecordIcon } from "@mui/icons-material";
+import { Typography, Box, Button, CircularProgress, Stack, Grid, Tabs, Tab } from "@mui/material";
+import { ArrowBack as ArrowBackIcon, Videocam as VideocamIcon, FiberManualRecord as RecordIcon, Edit as EditIcon, Image as ImageIcon } from "@mui/icons-material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import EpisodeForm from "@/components/EpisodeForm";
 import WorkflowStatus from "@/components/WorkflowStatus";
 import SocialMediaPublisher from "@/components/SocialMediaPublisher";
+import ThumbnailEditor from "@/components/ThumbnailEditor";
 
 export default function EditEpisodePage({ params }) {
   const resolvedParams = use(params);
   const [episode, setEpisode] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -42,6 +44,11 @@ export default function EditEpisodePage({ params }) {
 
   function handleWorkflowUpdate(updatedEpisode) {
     setEpisode(updatedEpisode);
+  }
+
+  function handleThumbnailSaved(thumbnailData) {
+    // Refresh episode data to get updated thumbnail
+    fetchEpisode();
   }
 
   if (loading) {
@@ -161,13 +168,34 @@ export default function EditEpisodePage({ params }) {
       </Box>
 
       <Box>
-        <EpisodeForm initialData={episode} onSubmit={handleSubmit} submitLabel="Update Episode" />
-        <Box sx={{ mt: { xs: 2, md: 3 } }}>
-          <WorkflowStatus episode={episode} onWorkflowUpdate={handleWorkflowUpdate} />
+        {/* Tabs */}
+        <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+          <Tabs value={activeTab} onChange={(e, newValue) => setActiveTab(newValue)}>
+            <Tab icon={<EditIcon />} iconPosition="start" label="Details" />
+            <Tab icon={<ImageIcon />} iconPosition="start" label="Thumbnail" />
+          </Tabs>
         </Box>
-        <Box sx={{ mt: { xs: 2, md: 3 } }}>
-          <SocialMediaPublisher episode={episode} />
-        </Box>
+
+        {/* Tab Content */}
+        {activeTab === 0 && (
+          <>
+            <EpisodeForm initialData={episode} onSubmit={handleSubmit} submitLabel="Update Episode" />
+            <Box sx={{ mt: { xs: 2, md: 3 } }}>
+              <WorkflowStatus episode={episode} onWorkflowUpdate={handleWorkflowUpdate} />
+            </Box>
+            <Box sx={{ mt: { xs: 2, md: 3 } }}>
+              <SocialMediaPublisher episode={episode} />
+            </Box>
+          </>
+        )}
+
+        {activeTab === 1 && (
+          <ThumbnailEditor
+            episodeId={resolvedParams.id}
+            episode={episode}
+            onThumbnailSaved={handleThumbnailSaved}
+          />
+        )}
       </Box>
     </Box>
   );
