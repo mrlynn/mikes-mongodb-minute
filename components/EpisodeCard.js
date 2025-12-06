@@ -117,11 +117,14 @@ export default function EpisodeCard({ episode, searchQuery = "" }) {
     return null;
   };
 
+  // Priority: Custom thumbnail > YouTube thumbnail > Placeholder
+  const customThumbnailUrl = episode.thumbnail?.mainUrl || episode.thumbnail?.smallUrl;
   const videoUrl = episode.videoUrl || episode.socialLinks?.youtube;
   const youtubeVideoId = videoUrl ? getYouTubeVideoId(videoUrl) : null;
-  const thumbnailUrl = youtubeVideoId 
+  const youtubeThumbnailUrl = youtubeVideoId 
     ? `https://img.youtube.com/vi/${youtubeVideoId}/hqdefault.jpg`
     : null;
+  const thumbnailUrl = customThumbnailUrl || youtubeThumbnailUrl;
 
   return (
       <Card
