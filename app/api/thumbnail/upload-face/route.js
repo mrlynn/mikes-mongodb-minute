@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
 import sharp from "sharp";
+import { put } from "@vercel/blob";
 
 export async function POST(req) {
   try {
@@ -33,10 +32,6 @@ export async function POST(req) {
       );
     }
 
-    // Create uploads directory
-    const uploadsDir = join(process.cwd(), "public", "uploads", "faces");
-    await mkdir(uploadsDir, { recursive: true });
-
     // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -55,16 +50,16 @@ export async function POST(req) {
     const filename = episodeId
       ? `episode-${episodeId}-face-${timestamp}.jpg`
       : `face-${timestamp}.jpg`;
-    const filepath = join(uploadsDir, filename);
 
-    // Save file
-    await writeFile(filepath, processedBuffer);
-
-    const url = `/uploads/faces/${filename}`;
+    // Upload to Vercel Blob Storage
+    const blob = await put(`faces/${filename}`, processedBuffer, {
+      access: 'public',
+      contentType: 'image/jpeg',
+    });
 
     return NextResponse.json({
       success: true,
-      url,
+      url: blob.url,
       filename,
     });
   } catch (error) {

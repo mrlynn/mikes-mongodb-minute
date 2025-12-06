@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateThumbnail, saveThumbnail } from "@/lib/thumbnail";
 import { updateEpisode } from "@/lib/episodes";
-import { join } from "path";
-import { existsSync } from "fs";
+import { put } from "@vercel/blob";
 
 export async function POST(req) {
   try {
@@ -27,27 +26,15 @@ export async function POST(req) {
       );
     }
 
-    // Resolve face image path
-    let faceImagePath = null;
-    if (faceAssetUrl) {
-      if (faceAssetUrl.startsWith("/uploads/")) {
-        const localPath = join(process.cwd(), "public", faceAssetUrl);
-        if (existsSync(localPath)) {
-          faceImagePath = localPath;
-        }
-      } else if (faceAssetUrl.startsWith("/")) {
-        const localPath = join(process.cwd(), "public", faceAssetUrl);
-        if (existsSync(localPath)) {
-          faceImagePath = localPath;
-        }
-      }
-    }
+    // Pass the face URL directly - it could be a Blob URL or local URL
+    // The generateThumbnail function will handle fetching it
+    const faceImageUrl = faceAssetUrl || null;
 
     // Generate thumbnail (optimized for YouTube best practices)
     const thumbnailBuffers = await generateThumbnail({
       episodeId,
       titleText,
-      faceImagePath,
+      faceImageUrl,
       layout,
       theme,
       backgroundType,
